@@ -20,13 +20,18 @@
 }
 
 .log-in-mode {
-    align-items: center;
+    font-size: x-large;
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
 }
 
-.log-in-mode h1{
-    font-weight: bolder;
-    font-size: larger;
-    margin: 10px;
+.idle-mode{
+    font-size: x-large;
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    opacity: 50%;
 }
 
 .line {
