@@ -9,8 +9,8 @@ const page = () => {
     const mode = useSelector(state => state.darkMode.value)
     const profile = useSelector(state => state.profile.value)
     return (
-        <div className={`w-full  h-screen flex ${mode ? 'bg-slate-800' : 'bg-slate-50'}`}>
-            <Navbar />
+        <div className={`w-full  h-screen flex ${mode ? 'bg-slate-800' : 'bg-neutral-50'}`}>
+            <Navbar active="Chat"/>
             <div className="grow">
                 <div className="bg-white w-2/12 h-full border-s py-5">
                     <h1 className="border-b">Messages</h1>

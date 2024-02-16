@@ -2,3 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+.buttons-log-in {
+    background: #00687B;
+    height: 45px;
+    width: 50%;
+    border-radius: 15px;
+    color: white;
+    margin: 10px;
+    margin-top: 50px;
+}
+
+.log-in-page {
+    flex: auto;
+    flex-direction: column;
+    align-items:center;
+    justify-content: center;
+}
+
+.log-in-mode {
+    font-size: x-large;
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.idle-mode{
+    font-size: x-large;
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    opacity: 50%;
+}
+
+.line {
+    margin: 10px;
+}
