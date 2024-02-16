@@ -1,6 +1,5 @@
 'use client'
 import React from 'react'
-import Link from 'next/link'
 
 const Login = () => {
   return (
@@ -31,7 +30,7 @@ const Login = () => {
             <button
               className='bg-[#00687B] h-[45px] w-1/4 rounded-[15px]
                 text-white font-semibold'>
-                    <Link href="/Dashboard">Log In</Link>
+              Log In
             </button>
           </div>
         </div>
