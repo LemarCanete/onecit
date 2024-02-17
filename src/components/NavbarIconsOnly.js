@@ -19,7 +19,7 @@ const NavbarIconsOnly = ({active}) => {
                 <Icon name="Chat" icon={<AiFillWechat className={iconClassName}/>} active={active}/>
                 <Icon name="Help" icon={<BiSolidHelpCircle className={iconClassName} />} active={active}/>
                 <Icon name="Settings" icon={<AiFillSetting className={iconClassName}/>} active={active}/>
-                <Icon name="Directories" icon={<VscTypeHierarchySub className={iconClassName}/>} active={active}/>
+                <Icon name="Directory" icon={<VscTypeHierarchySub className={iconClassName}/>} active={active}/>
             </div>
             <div className="flex-col flex ">
                 <Icon name="Logout" icon={<BiLogOutCircle className={`inline text-3xl me-2 ${mode ? 'text-white' : 'text-teal-800'}`}/>} />
