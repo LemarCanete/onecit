@@ -311,8 +311,7 @@ const Login = () => {
             <h1 className={` cursor-pointer ${!showLoginForm ? 'log-in-mode' : 'idle-mode'}`} onClick={toggleForm}>Sign Up</h1>
           </div>
 
-          {/*showLoginForm ? <LoginForm/> : <SignupForm/>*/}
-          <SignupForm/>
+          {showLoginForm ? <LoginForm/> : <SignupForm/>}
 
         </div>
 
