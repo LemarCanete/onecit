@@ -5,12 +5,12 @@ import Profile from '@/components/Profile'
 import Top from '@/components/Top'
 import { useSelector } from 'react-redux'
 
-const Dashboard = () => {
+const page = () => {
     const mode = useSelector(state => state.darkMode.value)
     const profile = useSelector(state => state.profile.value)
     return (
-        <div className={`w-full h-screen flex ${mode ? 'bg-slate-800' : 'bg-slate-50'}`}>
-            <Navbar />
+        <div className={`w-full h-screen flex ${mode ? 'bg-slate-800' : 'bg-neutral-50'}`}>
+            <Navbar active="Dashboard"/>
             <div className="grow px-10 py-5">
                 <Top />
             </div>
@@ -19,4 +19,4 @@ const Dashboard = () => {
     )
 }
 
-export default Dashboard
+export default page
