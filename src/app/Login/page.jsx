@@ -1,6 +1,6 @@
 'use client'
 import { useRef, useState } from 'react';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail  } from 'firebase/auth';
 import {auth, db} from '../../firebase-config'
 import {doc, setDoc} from 'firebase/firestore'
 import React from 'react'
@@ -22,6 +22,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { useRouter } from 'next/navigation';
 
 const frameworks = [
   {
@@ -47,19 +48,70 @@ const frameworks = [
 ]
 
 
-const LoginForm = ({email, password}) => {
+const LoginForm = () => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const router = useRouter();
+
+  const handlePasswordReset = (e) => {
+    sendPasswordResetEmail(auth, email)
+    .then(() => {
+      alert("Password reset email sent!")
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+    });
+  }
+
+  const handleSignIn = (e) => {
+    e.preventDefault()
+
+    if(!email || !password) {
+      alert("Email/Password missing.");
+      return;
+    }
+
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      console.log("Login Successful")
+      
+      user.getIdToken().then((token) => {
+        localStorage.setItem('token', token)
+        console.log("Session token:" + token);
+        router.push('/Dashboard')
+      })
+    })
+    .catch ((error) => {
+      const errorCode = error.code
+      const errorMessage = error.message
+      alert("Error code: " + errorCode + " Error Message: " + errorMessage)
+    })
+
+  }
+
+
  return (
     <div className='w-1/2'>
         <div className='m-5 w-full'>
           <div className='flex flex-col m-5'>
             <label className='font-semibold my-1'>Email</label>
-            <input type='email' value={email} placeholder='juandelacruz@gmail.com' className='block px-5 w-full rounded-[10px] border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'/>
+            <input 
+              type='email' value={email} 
+              placeholder='juandelacruz@gmail.com' 
+              onChange={e=>setEmail(e.target.value)}
+              className='block px-5 w-full rounded-[10px] border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'/>
           </div>
           
           <div className='flex flex-col m-5'>
             <label className='font-semibold my-1'>Password</label> 
-            <input type='password' value={password} placeholder='Enter Password' className='block px-5 w-full rounded-[10px] border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'/>
-            <a href='#' className='flex flex-row-reverse text-sm py-1.5 font-semibold'>
+            <input 
+              type='password' value={password} 
+              placeholder='Enter Password' 
+              onChange={e=>setPassword(e.target.value)}
+              className='block px-5 w-full rounded-[10px] border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'/>
+            <a onClick={handlePasswordReset} className='cursor-pointer flex flex-row-reverse text-sm py-1.5 font-semibold'>
               Forgot password?
             </a>
           </div>
@@ -69,10 +121,8 @@ const LoginForm = ({email, password}) => {
       <button
         className='bg-[#00687B] h-[45px] w-1/4 rounded-[15px]
           text-white font-semibold'
-        onClick={() => {}}>
-        <Link href="/Dashboard">
+        onClick={handleSignIn}>
         Log In
-        </Link>
       </button>
     </div>
   </div>
@@ -183,7 +233,7 @@ const SignupForm = () => {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-full justify-between"
+                    className="w-full justify-between rounded-[10px] border-1 shadow-sm bg-white"
                   >
                     {value
                       ? frameworks.find((framework) => framework.value === value)?.label
