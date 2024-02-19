@@ -1,6 +1,6 @@
 import React from 'react'
 import { AiFillHome, AiFillAppstore, AiFillWechat   } from "react-icons/ai";
-import { BiLogOutCircle, BiSolidHelpCircle } from "react-icons/bi";
+import { BiLogOutCircle, BiSolidChat, BiSolidHelpCircle } from "react-icons/bi";
 import { VscTypeHierarchySub } from "react-icons/vsc";
 import { AiFillSetting } from "react-icons/ai";
 import { useSelector } from 'react-redux';
@@ -13,10 +13,10 @@ const NavbarIconsOnly = ({active}) => {
     return (
         <div className={`h-full w-fit flex flex-col justify-between shadow-xl ${mode ? 'bg-slate-600 text-white': 'bg-white'}`}>
             <div className="flex-col flex items-center">
-                <a href="/" className='w-16 flex items-center mb-7 mt-4'><img src="schoolLogo.png" alt="" /></a>
+                <a href="/" className='w-16 flex items-center mb-7 mt-4'><img src="/schoolLogo.png" alt="" /></a>
                 <Icon name="Dashboard" icon={<AiFillHome className={iconClassName} />} active={active}/>
                 <Icon name="Apps" icon={<AiFillAppstore className={iconClassName} />} active={active}/>
-                <Icon name="Chat" icon={<AiFillWechat className={iconClassName}/>} active={active}/>
+                <Icon name="Chat" icon={<BiSolidChat className={iconClassName}/>} active={active}/>
                 <Icon name="Help" icon={<BiSolidHelpCircle className={iconClassName} />} active={active}/>
                 <Icon name="Settings" icon={<AiFillSetting className={iconClassName}/>} active={active}/>
                 <Icon name="Directory" icon={<VscTypeHierarchySub className={iconClassName}/>} active={active}/>

@@ -3,6 +3,7 @@ import NavbarIconsOnly from '@/components/NavbarIconsOnly'
 import React, {useCallback, useState} from 'react'
 import dynamic from 'next/dynamic';
 import { BiChat } from 'react-icons/bi';
+import data from './org';
 
 const DynamicTree = dynamic(() => import('react-d3-tree'), { ssr: false });
 
@@ -25,74 +26,74 @@ const renderRectSvgNode = ({ nodeDatum, toggleNode }) => (
 
 
 const page = () => {
-    const data = {
-        "name": "CEO",
-        "attributes": {
-            "department": "President"
-        },
-        "children": [
-          {
-            "name": "Manager",
-            "attributes": {
-              "department": "Production"
-            },
-            "children": [
-              {
-                "name": "Foreman",
-                "attributes": {
-                  "department": "Fabrication"
-                },
-                "children": [
-                  {
-                    "name": "Workers"
-                  }
-                ]
-              },
-              {
-                "name": "Foreman",
-                "attributes": {
-                  "department": "Assembly"
-                },
-                "children": [
-                  {
-                    "name": "Workers"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "name": "Manager",
-            "attributes": {
-              "department": "Marketing"
-            },
-            "children": [
-              {
-                "name": "Sales Officer",
-                "attributes": {
-                  "department": "A"
-                },
-                "children": [
-                  {
-                    "name": "Salespeople"
-                  }
-                ]
-              },
-              {
-                "name": "Sales Officer",
-                "attributes": {
-                  "department": "B"
-                },
-                "children": [
-                  {
-                    "name": "Salespeople"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-    }
+    // const data = {
+    //     "name": "CEO",
+    //     "attributes": {
+    //         "department": "President"
+    //     },
+    //     "children": [
+    //       {
+    //         "name": "Manager",
+    //         "attributes": {
+    //           "department": "Production"
+    //         },
+    //         "children": [
+    //           {
+    //             "name": "Foreman",
+    //             "attributes": {
+    //               "department": "Fabrication"
+    //             },
+    //             "children": [
+    //               {
+    //                 "name": "Workers"
+    //               }
+    //             ]
+    //           },
+    //           {
+    //             "name": "Foreman",
+    //             "attributes": {
+    //               "department": "Assembly"
+    //             },
+    //             "children": [
+    //               {
+    //                 "name": "Workers"
+    //               }
+    //             ]
+    //           }
+    //         ]
+    //       },
+    //       {
+    //         "name": "Manager",
+    //         "attributes": {
+    //           "department": "Marketing"
+    //         },
+    //         "children": [
+    //           {
+    //             "name": "Sales Officer",
+    //             "attributes": {
+    //               "department": "A"
+    //             },
+    //             "children": [
+    //               {
+    //                 "name": "Salespeople"
+    //               }
+    //             ]
+    //           },
+    //           {
+    //             "name": "Sales Officer",
+    //             "attributes": {
+    //               "department": "B"
+    //             },
+    //             "children": [
+    //               {
+    //                 "name": "Salespeople"
+    //               }
+    //             ]
+    //           }
+    //         ]
+    //       }
+    //     ]
+    // }
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
     const [dimensions, setDimensions] = useState();
     const containerRef = useCallback((containerElem) => {
@@ -123,7 +124,7 @@ const page = () => {
                         translate={translate}
                         enableLegacyTransitions
                         // dimensions={dimensions}
-                        svgClassName='border '
+                        svgClassName=' '
                         // leafNodeClassName='border'
                         // branchNodeClassName='border'
                         renderCustomNodeElement={renderRectSvgNode}

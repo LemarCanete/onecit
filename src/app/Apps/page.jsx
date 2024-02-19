@@ -12,10 +12,10 @@ const page = () => {
         <div className={`w-full  h-screen flex ${mode ? 'bg-slate-800' : 'bg-neutral-50'}`}>
             <Navbar active="Apps"/>
             <div className="grow px-10 py-5">
-                
+                <h1 className="text-2xl my-5">Apps</h1>
                 {/* Content */}
                 <div className="flex">
-                    <div className="w-5/6 grid grid-cols-6 mt-10 ">
+                    <div className="w-5/6 grid grid-cols-6 ">
                         <Box name="Directory"/>
                         <Box name="Services"/>
                         <Box name="Library"/>

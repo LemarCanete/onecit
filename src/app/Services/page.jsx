@@ -1,11 +1,84 @@
 'use client'
+import React from 'react'
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
-import Reactfrom from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 
-
+const services = [
+    {
+        name: "Appointments",
+        description: "rent equipments and places"
+    },
+    {
+        name: "Rental",
+        description: "rent equipments and places"
+    },
+    {
+        name: "Inquiry",
+        description: "rent equipments and places"
+    },
+    {
+        name: "Lost and Found",
+        description: "rent equipments and places"
+    },
+    {
+        name: "Requests",
+        description: "rent equipments and places"
+    },
+    {
+        name: "Ask Advice",
+        description: "rent equipments and places"
+    },
+    {
+        name: "Security",
+        description: "rent equipments and places"
+    },
+    {
+        name: "Sports",
+        description: "rent equipments and places"
+    },
+    {
+        name: "Trainings",
+        description: "rent equipments and places"
+    },
+    {
+        name: "Shift",
+        description: "rent equipments and places"
+    },
+    {
+        name: "Scholarships",
+        description: "rent equipments and places"
+    },
+    {
+        name: "Elementary",
+        description: "rent equipments and places"
+    },
+    {
+        name: "High School",
+        description: "rent equipments and places"
+    },
+    {
+        name: "Colleges",
+        description: "rent equipments and places"
+    },
+    {
+        name: "Alumni",
+        description: "rent equipments and places"
+    },
+    {
+        name: "Offices",
+        description: "rent equipments and places"
+    },
+    {
+        name: "Departments",
+        description: "rent equipments and places"
+    },
+    {
+        name: "Otheres",
+        description: "rent equipments and places"
+    },
+]
 
 const page = () => {
-
 
     return (
         <div className='w-full h-screen flex bg-neutral-50'>
@@ -16,24 +89,11 @@ const page = () => {
                 <input type="search" placeholder='Search' className='w-full rounded-lg p-2 my-3'/>
 
                 <div className='w-full h-auto grid grid-cols-4' >
-                    <Box name="Rental" description="rent equipments and places"/>
-                    <Box name="Security" description="rent equipments and places"/>
-                    <Box name="Sports" description="rent equipments and places"/>
-                    <Box name="Ask Advice" description="rent equipments and places"/>
-                    <Box name="Appointments" description="rent equipments and places"/>
-                    <Box name="Trainings" description="rent equipments and places"/>
-                    <Box name="Shift" description="rent equipments and places"/>
-                    <Box name="Scholarships" description="rent equipments and places"/>
-                    <Box name="Lost and Found" description="rent equipments and places"/>
-                    <Box name="Requests" description="rent equipments and places"/>
-                    <Box name="Inquiry" description="rent equipments and places"/>
-                    <Box name="Elementary" description="rent equipments and places"/>
-                    <Box name="High School" description="rent equipments and places"/>
-                    <Box name="Colleges" description="rent equipments and places"/>
-                    <Box name="Alumni" description="rent equipments and places"/>
-                    <Box name="Offices" description="rent equipments and places"/>
-                    <Box name="Departments" description="rent equipments and places"/>
-                    <Box name="Others" description="rent equipments and places"/>
+                    {services.map((service, id)=>{
+                        return(
+                            <Box name={service.name} description={service.description}/>
+                        )
+                    })}
 
                 </div>
             </div>
@@ -43,8 +103,11 @@ const page = () => {
 }
 
 const Box = ({name, icon, description}) =>{
+    const router = useRouter()
+    const paths = usePathname()
+
     return(
-        <div className="">
+        <div className="" onClick={() => router.push(`${paths}/${name}`)}>
             <div className="grid grid-rows-2 grid-flow-col border bg-white m-2 p-2 cursor-pointer shadow">
                 <img src="schoolLogo.png" alt="" className='w-12 h-12 row-span-2'/>
                 <p className=''>{name}</p>

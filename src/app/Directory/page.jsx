@@ -26,7 +26,7 @@ const page = () => {
 const Result = ({name, position}) => {
     const router = useRouter();
     return(
-        <div className="bg-white shadow p-2 cursor-pointer text-sm" onClick={() => router.push("/Directory2")}>
+        <div className="bg-white shadow p-2 cursor-pointer text-sm" onClick={() => router.push("/Directory/Directory2")}>
             <h3 className='font-bold'>{name}</h3>
             <p className=''>{position || "President> College of Engineering and Architecture> Student"}</p>
         </div>
