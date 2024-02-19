@@ -1,4 +1,4 @@
-import { Inter, Poppins } from "next/font/google";
+import { Inter, Poppins, Satisfy } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/GloabalRedux/provider";
 import NextBreadCrumb from "@/components/NextBreadCrumb";
@@ -13,6 +13,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+      <link href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" rel="stylesheet"/>
+      </head>
       <body className={poppins.className}>
         <Providers>
             <NextBreadCrumb
