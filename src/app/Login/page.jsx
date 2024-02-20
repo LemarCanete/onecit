@@ -52,11 +52,28 @@ const LoginForm = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const router = useRouter();
+  const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
 
   const handlePasswordReset = (e) => {
+    if(!email) {
+      setError('email');
+        setMessage('Enter an email you want to send the password reset link to.')
+        setTimeout(() => {
+          setError('')
+          setMessage('')
+        }, 6000);
+        return;
+    }
+
     sendPasswordResetEmail(auth, email)
     .then(() => {
-      alert("Password reset email sent!")
+      setError('password');
+        setMessage('Password reset link sent to email.')
+        setTimeout(() => {
+          setError('')
+          setMessage('')
+        }, 6000);
     })
     .catch((error) => {
       const errorCode = error.code;
@@ -67,10 +84,10 @@ const LoginForm = () => {
   const handleSignIn = (e) => {
     e.preventDefault()
 
-    if(!email || !password) {
+    {/*if(!email || !password) {
       alert("Email/Password missing.");
       return;
-    }
+    }*/}
 
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
@@ -86,7 +103,34 @@ const LoginForm = () => {
     .catch ((error) => {
       const errorCode = error.code
       const errorMessage = error.message
-      alert("Error code: " + errorCode + " Error Message: " + errorMessage)
+      if (errorCode === "auth/invalid-credential" || !email) {
+        // Handle user not found error
+        setError('credentials');
+        setMessage('Invalid credentials.')
+        setTimeout(() => {
+          setError('')
+          setMessage('')
+        }, 6000);
+      } else if (errorCode === "auth/invalid-email") {
+        // Handle user not found error
+        setError('email');
+        setMessage('Invalid Email.')
+        setTimeout(() => {
+          setError('')
+          setMessage('')
+        }, 6000);
+      } else if (errorCode === "auth/missing-password") {
+        // Handle user not found error
+        setError('password');
+        setMessage('Missing Password.')
+        setTimeout(() => {
+          setError('')
+          setMessage('')
+        }, 6000);
+      } else {
+        // Handle other errors
+        console.log("Error code: " + errorCode + " Error Message: " + errorMessage);
+      }  
     })
 
   }
@@ -101,7 +145,7 @@ const LoginForm = () => {
               type='email' value={email} 
               placeholder='juandelacruz@gmail.com' 
               onChange={e=>setEmail(e.target.value)}
-              className='block px-5 w-full rounded-[10px] border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'/>
+              className={` ${error=='email' || error=='credentials' ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}/>
           </div>
           
           <div className='flex flex-col m-5'>
@@ -110,7 +154,7 @@ const LoginForm = () => {
               type='password' value={password} 
               placeholder='Enter Password' 
               onChange={e=>setPassword(e.target.value)}
-              className='block px-5 w-full rounded-[10px] border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'/>
+              className= {` ${error=='password' || error=='credentials' ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px] border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6`}/>
             <a onClick={handlePasswordReset} className='cursor-pointer flex flex-row-reverse text-sm py-1.5 font-semibold'>
               Forgot password?
             </a>
@@ -125,6 +169,11 @@ const LoginForm = () => {
         Log In
       </button>
     </div>
+    
+    <div className={`${error ? 'text-red-900' : 'hidden'} fixed bottom-20 left-1/4 transform -translate-x-1/2`}>
+      {message}
+    </div>
+
   </div>
  );
 };
@@ -142,7 +191,8 @@ const SignupForm = () => {
   const [uid, setUid] = useState('');
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState("")
-  
+  const [errors, setErrors] = useState({})
+  const [message, setMessage] = useState('')
 
   const handleIdChange = (e) => {
     const value = e.target.value;
@@ -180,10 +230,41 @@ const SignupForm = () => {
   const handleSignUp =  (e) => {
     e.preventDefault()
 
+    if (!id || !program || !firstname || !lastname || !email || !birthdate || !password) {
+      setErrors({
+        id: !id ? 'ID is required' : '',
+        program: !program ? 'Program is required' : '',
+        firstname: !firstname ? 'First name is required' : '',
+        lastname: !lastname ? 'Last name is required' : '',
+        email: !email ? 'Email is required' : '',
+        birthdate: !birthdate ? 'Birthdate is required' : '',
+        password: !password ? 'Password is required' : '',
+      });
+      setMessage('Some credentials are missing.');
+      setTimeout(() => {
+        setErrors({});
+        setMessage('');
+      }, 6000);
+      return;
+    }    
+
     if(password!==confirmpassword) {
-      console.log("Passwords don't match");
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        password: 'Passwords do not match',
+      }));
+      setMessage('Passwords do not match.');
+      setTimeout(() => {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          program: '',
+        }));
+        setMessage('');
+      }, 6000);
       return;
     }
+
+
 
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
@@ -222,7 +303,9 @@ const SignupForm = () => {
                 type='string' value={id}
                 placeholder='00-000-000'
                 onChange={handleIdChange}
-                className='block px-5 w-full rounded-[10px] border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'/>
+                //className={`${error == 'id' || error=='credentials' ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}
+                className={` ${errors['id'] || errors['credentials'] ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}
+                />
             </div>
             <div className='flex flex-col mx-2.5 w-2/3'>
               <label className='font-semibold my-1'>Program</label>
@@ -233,7 +316,8 @@ const SignupForm = () => {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-full justify-between rounded-[10px] border-1 shadow-sm bg-white"
+                    //className={`${error=='program' || error=='credentials' ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-1'} w-full justify-between rounded-[10px] shadow-sm bg-white`}
+                    className={`${errors['program'] || errors['credentials'] ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-1'} w-full justify-between rounded-[10px] shadow-sm bg-white`}
                   >
                     {value
                       ? frameworks.find((framework) => framework.value === value)?.label
@@ -279,7 +363,7 @@ const SignupForm = () => {
                 type='string' value={firstname} 
                 placeholder='Juan' 
                 onChange={e => setFirstname(e.target.value)}
-                className='block px-5 w-full rounded-[10px] border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'/>
+                className={`${errors['firstname'] || errors['credentials'] ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px]  py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}/>
             </div>
             <div className='mx-2.5'>
               <label className='font-semibold my-1'>Last Name</label> 
@@ -287,7 +371,7 @@ const SignupForm = () => {
                 type='string' value={lastname} 
                 placeholder='Dela Cruz' 
                 onChange={e=>setLastname(e.target.value)}
-                className='block px-5 w-full rounded-[10px] border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'/>
+                className={`${errors['lastname'] || errors['credentials'] ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}/>
             </div>
           </div>
 
@@ -298,7 +382,7 @@ const SignupForm = () => {
                 type='email' value={email}
                 placeholder='juandelacruz@gmail.com' 
                 onChange={e=>setEmail(e.target.value)}
-                className='block px-5 w-full rounded-[10px] border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'/>
+                className={`${errors['email'] || errors['credentials'] ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}/>
             </div>
             <div className='mx-2.5 w-1/2'>
               <label className='font-semibold my-1'>Birthdate</label> 
@@ -307,7 +391,7 @@ const SignupForm = () => {
                 value={birthdate}
                 onChange={handleBirthdateChange}
                 placeholder='MM/DD/YYYY'
-                className='block px-5 w-full rounded-[10px] border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                className={`${errors['birthdate'] || errors['credentials'] ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}
               />
             </div>
           </div>
@@ -319,7 +403,7 @@ const SignupForm = () => {
                 type='password' value={password}
                 placeholder='Password' 
                 onChange={e=>setPassword(e.target.value)}
-                className='block px-5 w-full rounded-[10px] border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'/>
+                className={`${errors['password'] || errors['credentials'] ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}/>
             </div>
             <div className='mx-2.5 w-1/2'>
               <label className='font-semibold my-1'>Confirm Password</label> 
@@ -327,7 +411,7 @@ const SignupForm = () => {
                 type='password' value={confirmpassword} 
                 placeholder='Password'
                 onChange={e=>setConfirmpassword(e.target.value)}
-                className='block px-5 w-full rounded-[10px] border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'/>
+                className={`${errors['password'] || errors['credentials'] ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}/>
             </div>
           </div>
 
@@ -341,6 +425,11 @@ const SignupForm = () => {
               </Link>
             </button>
           </div>
+
+          <div className={`${errors ? 'text-red-900' : 'hidden'} fixed bottom-20 left-1/4 transform -translate-x-1/2`}>
+            {message}
+          </div>
+
         </div>
     </div>
   );
