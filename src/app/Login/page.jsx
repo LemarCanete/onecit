@@ -2,7 +2,7 @@
 import { useRef, useState } from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail  } from 'firebase/auth';
 import {auth, db} from '../../firebase-config'
-import {doc, setDoc} from 'firebase/firestore'
+import {collection, doc, query, setDoc, where, getDocs} from 'firebase/firestore'
 import React from 'react'
 import Link from 'next/link'
 
@@ -84,11 +84,6 @@ const LoginForm = () => {
   const handleSignIn = (e) => {
     e.preventDefault()
 
-    {/*if(!email || !password) {
-      alert("Email/Password missing.");
-      return;
-    }*/}
-
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const user = userCredential.user;
@@ -104,7 +99,6 @@ const LoginForm = () => {
       const errorCode = error.code
       const errorMessage = error.message
       if (errorCode === "auth/invalid-credential" || !email) {
-        // Handle user not found error
         setError('credentials');
         setMessage('Invalid credentials.')
         setTimeout(() => {
@@ -112,7 +106,6 @@ const LoginForm = () => {
           setMessage('')
         }, 6000);
       } else if (errorCode === "auth/invalid-email") {
-        // Handle user not found error
         setError('email');
         setMessage('Invalid Email.')
         setTimeout(() => {
@@ -120,7 +113,6 @@ const LoginForm = () => {
           setMessage('')
         }, 6000);
       } else if (errorCode === "auth/missing-password") {
-        // Handle user not found error
         setError('password');
         setMessage('Missing Password.')
         setTimeout(() => {
@@ -128,7 +120,6 @@ const LoginForm = () => {
           setMessage('')
         }, 6000);
       } else {
-        // Handle other errors
         console.log("Error code: " + errorCode + " Error Message: " + errorMessage);
       }  
     })
@@ -197,15 +188,12 @@ const SignupForm = () => {
   const handleIdChange = (e) => {
     const value = e.target.value;
     
-    // Remove any non-numeric characters
     const numericValue = value.replace(/\D/g, '');
     
-    // Format the numeric value as 00-0000-00
     const formattedValue = numericValue
       .replace(/(\d{2})(\d{4})(\d{2})/, '$1-$2-$3')
-      .slice(0, 11); // Limit to 00-0000-00 format
+      .slice(0, 11);
     
-    // Update the state with the formatted value
     setId(formattedValue);
   };
 
@@ -227,8 +215,8 @@ const SignupForm = () => {
     setBirthdateError('');
   };
 
-  const handleSignUp =  (e) => {
-    e.preventDefault()
+  const handleSignUp = async (e) => {
+    e.preventDefault();
 
     if (!id || !program || !firstname || !lastname || !email || !birthdate || !password) {
       setErrors({
@@ -257,41 +245,84 @@ const SignupForm = () => {
       setTimeout(() => {
         setErrors((prevErrors) => ({
           ...prevErrors,
-          program: '',
+          password: '',
         }));
         setMessage('');
       }, 6000);
       return;
     }
 
+    const checkIdExists = async (id) => {
+      try {
+        const q = query(collection(db, 'users'), where('schoolid', '==', id));
+        const querySnapshot = await getDocs(q);
 
+        return !querySnapshot.empty;
+      } catch (error) {
+        console.log("Error fetching user data: ", error)
+        throw error
+      }
+    }
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        const userId = user.uid;
-        console.log("User created! UserID: " + userId)
-        setUid(userId);
-        
-        setDoc(doc(db, "users", userId), {
-          schoolid: id,
-          program: program,
-          lastname: lastname,
-          firstname: firstname,
-          birthdate: birthdate,
-          email: email,
-          uid: uid
-        })
-        
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log("Errocode: " + errorCode + " Error Message: " + errorMessage)
-      })
+    try {
+      const exists = await checkIdExists(id);
 
-    
-  }
+      if (exists) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          id: 'ID already exists.',
+        }));
+        setMessage('ID already exists. Please seek assistance in retrieving your account.');
+        setTimeout(() => {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            id: '',
+          }));
+          setMessage('');
+        }, 6000);
+        return;
+      }
+
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const userId = user.uid;
+      console.log("User created! UserID: " + userId)
+      setUid(userId);
+      
+      await setDoc(doc(db, "users", userId), {
+        schoolid: id,
+        program: program,
+        lastname: lastname,
+        firstname: firstname,
+        birthdate: birthdate,
+        email: email,
+        uid: uid
+      });
+      
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+
+      if (errorCode === "auth/email-already-in-use") {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          email: 'Email is already in use.',
+        }));
+        setMessage('Email is already in use.');
+        setTimeout(() => {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            email: '',
+          }));
+          setMessage('');
+        }, 6000);
+        return;
+      }
+
+      console.log("Errocode: " + errorCode + " Error Message: " + errorMessage);
+    }
+  };
+
 
   return (
     <div>
