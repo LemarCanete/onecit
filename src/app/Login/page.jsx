@@ -298,6 +298,8 @@ const SignupForm = () => {
         email: email,
         uid: uid
       });
+
+      router.push('/Dashboard')
       
     } catch (error) {
       const errorCode = error.code;
