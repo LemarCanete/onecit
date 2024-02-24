@@ -48,22 +48,22 @@ const services = [
         name: "Scholarships",
         description: "rent equipments and places"
     },
-    {
-        name: "Elementary",
-        description: "rent equipments and places"
-    },
-    {
-        name: "High School",
-        description: "rent equipments and places"
-    },
-    {
-        name: "Colleges",
-        description: "rent equipments and places"
-    },
-    {
-        name: "Alumni",
-        description: "rent equipments and places"
-    },
+    // {
+    //     name: "Elementary",
+    //     description: "rent equipments and places"
+    // },
+    // {
+    //     name: "High School",
+    //     description: "rent equipments and places"
+    // },
+    // {
+    //     name: "Colleges",
+    //     description: "rent equipments and places"
+    // },
+    // {
+    //     name: "Alumni",
+    //     description: "rent equipments and places"
+    // },
     {
         name: "Offices",
         description: "rent equipments and places"
@@ -73,7 +73,7 @@ const services = [
         description: "rent equipments and places"
     },
     {
-        name: "Otheres",
+        name: "Others",
         description: "rent equipments and places"
     },
 ]

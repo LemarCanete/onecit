@@ -15,9 +15,9 @@ const renderRectSvgNode = ({ nodeDatum, toggleNode }) => (
         <text fill="black" fontSize={16} strokeWidth='0.4' x={50} >
             {nodeDatum.name}
         </text>
-        {nodeDatum.attributes?.department && (
+        {nodeDatum.attributes?.position && (
             <text fill="black" x="50" dy="20" strokeWidth="0" fontSize={14}>
-            Department: {nodeDatum.attributes?.department}
+            Position: {nodeDatum.attributes?.position}
             </text>
         )}
         <BiChat className='text-teal-500' y={30} x={50}/>
