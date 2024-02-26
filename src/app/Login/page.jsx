@@ -184,6 +184,7 @@ const SignupForm = () => {
   const [value, setValue] = React.useState("")
   const [errors, setErrors] = useState({})
   const [message, setMessage] = useState('')
+  const router = useRouter();
 
   const handleIdChange = (e) => {
     const value = e.target.value;
@@ -296,10 +297,14 @@ const SignupForm = () => {
         firstname: firstname,
         birthdate: birthdate,
         email: email,
-        uid: uid
+        uid: userId,
+        role: 'student'
+      }).then(() => {
+          router.push('/Dashboard');
+      }).catch((error) => {
+          console.error("Error setting document: ", error);
       });
-
-      router.push('/Dashboard')
+      
       
     } catch (error) {
       const errorCode = error.code;
