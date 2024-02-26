@@ -57,8 +57,8 @@
 }
 .quick-container a{
     display: block;
-    font-weight: 600;
     font-size:15px;
+    font-weight: 600;
     transition: .5s;
     padding:10px;
     text-align: center  ;
@@ -66,7 +66,7 @@
 .quick-container a:hover{
     background-color: gold;
     color: maroon;
-    font-weight: bold;
+    font-weight:700;
 }
 hr{
     margin: 0px 25px;
