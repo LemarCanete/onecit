@@ -1,12 +1,12 @@
 'use client'
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail  } from 'firebase/auth';
 import {auth, db} from '../../firebase-config'
 import {collection, doc, query, setDoc, where, getDocs} from 'firebase/firestore'
 import React from 'react'
 import Link from 'next/link'
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons"
- 
+import { useCookies } from 'react-cookie';
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -54,6 +54,16 @@ const LoginForm = () => {
   const router = useRouter();
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
+  const [cookie, setCookie] = useCookies(['id']);
+  const date = new Date();
+  date.setDate(date.getDate() + 1)
+
+  useEffect(() => {
+      // Clear existing cookies when component mounts
+      Object.keys(cookie).forEach((cookieName) => {
+        setCookie(cookieName, '', { expires: new Date(0), path: '/' });
+      });
+  }, []); 
 
   const handlePasswordReset = (e) => {
     if(!email) {
@@ -86,42 +96,52 @@ const LoginForm = () => {
 
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-      const user = userCredential.user;
-      console.log("Login Successful", userCredential)
-      
-      user.getIdToken().then((token) => {
+        const user = userCredential.user;
+        console.log("Login Successful", userCredential)
+        const userid = user.uid;
+        
+        // Clear existing cookies
+        Object.keys(cookie).forEach((cookieName) => {
+            setCookie(cookieName, '', { expires: new Date(0), path: '/' });
+        });
+
+        // Set new cookies
+        setCookie('id', userid, { expires: date, path: '/' });
+        console.log(user);
+
+    user.getIdToken().then((token) => {
         localStorage.setItem('token', token)
         console.log("Session token:" + token);
         router.push('/Dashboard')
-      })
+    })
     })
     .catch ((error) => {
-      const errorCode = error.code
-      const errorMessage = error.message
-      if (errorCode === "auth/invalid-credential" || !email) {
+    const errorCode = error.code
+    const errorMessage = error.message
+    if (errorCode === "auth/invalid-credential" || !email) {
         setError('credentials');
         setMessage('Invalid credentials.')
         setTimeout(() => {
-          setError('')
-          setMessage('')
+        setError('')
+        setMessage('')
         }, 6000);
-      } else if (errorCode === "auth/invalid-email") {
+    } else if (errorCode === "auth/invalid-email") {
         setError('email');
         setMessage('Invalid Email.')
         setTimeout(() => {
-          setError('')
-          setMessage('')
+        setError('')
+        setMessage('')
         }, 6000);
-      } else if (errorCode === "auth/missing-password") {
+    } else if (errorCode === "auth/missing-password") {
         setError('password');
         setMessage('Missing Password.')
         setTimeout(() => {
-          setError('')
-          setMessage('')
+        setError('')
+        setMessage('')
         }, 6000);
-      } else {
+    } else {
         console.log("Error code: " + errorCode + " Error Message: " + errorMessage);
-      }  
+    }  
     })
 
   }
@@ -185,6 +205,16 @@ const SignupForm = () => {
   const [errors, setErrors] = useState({})
   const [message, setMessage] = useState('')
   const router = useRouter();
+  const [cookie, setCookie] = useCookies(['id']);
+  const date = new Date();
+  date.setDate(date.getDate() + 1)
+
+  useEffect(() => {
+      // Clear existing cookies when component mounts
+      Object.keys(cookie).forEach((cookieName) => {
+        setCookie(cookieName, '', { expires: new Date(0), path: '/' });
+      });
+  }, []); 
 
   const handleIdChange = (e) => {
     const value = e.target.value;
@@ -300,6 +330,17 @@ const SignupForm = () => {
         uid: userId,
         role: 'student'
       }).then(() => {
+        console.log("Registration Successful", userCredential)
+        const userid = user.uid;
+        
+        // Clear existing cookies
+        Object.keys(cookie).forEach((cookieName) => {
+            setCookie(cookieName, '', { expires: new Date(0), path: '/' });
+        });
+
+        // Set new cookies
+        setCookie('id', userid, { expires: date, path: '/' });
+        console.log(user);
           router.push('/Dashboard');
       }).catch((error) => {
           console.error("Error setting document: ", error);
