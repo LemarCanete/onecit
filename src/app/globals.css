@@ -48,4 +48,24 @@
     color: white;
     text-shadow: 5px 5px 10px black;
 }
+.quick-links{
+    font-weight:bold;
+    padding-bottom: 10px;
+}
+.quick-container a{
+    display: block;
+    font-size: small;
+    transition: .5s;
+    border-radius: 10px;
+    padding: 2px 10px;
+}
+.quick-container a:hover{
+    background-color: gold;
+    color: maroon;
+    font-weight: bold;
+}
+hr{
+    margin: 0px 25px;
+    opacity: 1;
+}
 
