@@ -38,7 +38,7 @@ const page = () => {
                                 <p class="quick-links">Quick Links:</p>
                                 <li><a href="https://cit.edu/">CIT-U Official Website</a></li><hr/>
                                 <li><a href="https://www.facebook.com/CITUniversity">CIT-U Facebook Page</a></li><hr/>
-                                <li><a href="https://cituweb.pinnacle.com.ph/aims/students/">Student Access Module <br/> &#40;AIMS&#41;</a></li><hr/>
+                                <li><a href="https://cituweb.pinnacle.com.ph/aims/students/">Student Access Module &#40;AIMS&#41;</a></li><hr/>
                                 <li><a href="https://lair.education/">Wild Cats Lair</a></li>
 
                             </ul>
