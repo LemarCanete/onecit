@@ -297,10 +297,14 @@ const SignupForm = () => {
         firstname: firstname,
         birthdate: birthdate,
         email: email,
-        uid: uid
+        uid: userId,
+        role: 'student'
+      }).then(() => {
+          router.push('/Dashboard');
+      }).catch((error) => {
+          console.error("Error setting document: ", error);
       });
-
-      router.push('/Dashboard')
+      
       
     } catch (error) {
       const errorCode = error.code;
