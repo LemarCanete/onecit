@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { io } from 'socket.io-client'
 import Navbar from '@/components/Navbar'
 import { BiSend } from 'react-icons/bi'
+import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 
 const URL = 'http://localhost:4000'
 const socket = io(URL)
@@ -56,6 +57,7 @@ const page = () => {
                 <div className="bg-white w-3/12 h-full  ms-2">
                     <h1 className="p-3">Messages (12)</h1>
                     <hr />
+                    <ReactSearchAutocomplete styling={{ border: "0 0 1px 0 solid #dfe1e5",}} />
                     <div className="">
                         {users.map((user, id) => (
                             <div className="grid grid-flow-col grid-rows-2 px-3 py-2 hover:bg-neutral-50 cursor-pointer">
@@ -74,6 +76,7 @@ const page = () => {
                         <p className='mx-2 font-bold cursor-pointer'>Chat</p>
                         <p className='mx-2 cursor-pointer'>Files</p>
                     </div>
+                        
                         {/* Display messages */}
                     <div className="px-16 rounded ">
                         {chatMessages.map((msg, index) => (

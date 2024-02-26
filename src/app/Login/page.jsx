@@ -87,7 +87,7 @@ const LoginForm = () => {
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const user = userCredential.user;
-      console.log("Login Successful")
+      console.log("Login Successful", userCredential)
       
       user.getIdToken().then((token) => {
         localStorage.setItem('token', token)
@@ -184,6 +184,7 @@ const SignupForm = () => {
   const [value, setValue] = React.useState("")
   const [errors, setErrors] = useState({})
   const [message, setMessage] = useState('')
+  const router = useRouter();
 
   const handleIdChange = (e) => {
     const value = e.target.value;

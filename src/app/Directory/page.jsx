@@ -1,15 +1,81 @@
 'use client'
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import {db} from '../../firebase-config'
+
+import {collection, doc, query, setDoc, where, getDocs} from 'firebase/firestore'
+import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 
 const page = () => {
+    const [allUsers, setAllUsers] = useState([]);
+    useEffect(()=>{
+        const fetchData = async() =>{
+            try{
+                const q = query(collection(db, 'users'))
+                let querySnapshot = await getDocs(q);
+
+                const AllUsersResults = querySnapshot.docs.map((doc, id) => {
+                    const { uid, ...rest } = doc.data();
+                    return { uid, ...rest };
+                });
+                
+                setAllUsers(AllUsersResults)
+            }catch(err){
+                console.log(err)
+            }
+        }
+        fetchData();
+    }, [])
+
+    const handleOnSearch = (string, results) => {
+        console.log(string, results)
+    }
+    
+    const items = [
+        {
+          id: 0,
+          name: 'Cobol'
+        },
+        {
+          id: 1,
+          name: 'JavaScript'
+        },
+        {
+          id: 2,
+          name: 'Basic'
+        },
+        {
+          id: 3,
+          name: 'PHP'
+        },
+        {
+          id: 4,
+          name: 'Java'
+        }
+    ]
+
+    const formatResult = (item) => {
+        return (
+          <>
+            {/* <span className="block text-left" >id: {item.id}</span> */}
+            <span className="block text-left">{item.firstname} {item.lastname}</span>
+            <span className='block text-left'>{item.schoolid} | {item.email}</span>
+          </>
+        )
+      }
+      console.log(allUsers)
+      console.log(items)
     return (
         <div className='w-full h-screen flex bg-neutral-50'>
             <NavbarIconsOnly/>
             <div className="px-10 py-5 grow">
                 <h1 className="text-3xl">Directory</h1>
-                <input type="search" placeholder='Search' className='w-full rounded-lg p-2 my-3'/>
+                <ReactSearchAutocomplete items={allUsers}
+                    onSearch={handleOnSearch}
+                    autoFocus
+                    formatResult={formatResult}
+                    fuseOptions={{keys: ['firstname', "lastname", "email", "schoolid"]}}/>
 
                 <div className="">
                     <p className='mt-10 italic '>Results</p>
@@ -33,4 +99,4 @@ const Result = ({name, position}) => {
     )
 }
 
-export default page
+export default page 
