@@ -1,29 +1,26 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-import { io } from 'socket.io-client'
+import React, { useContext, useEffect, useState } from 'react'
 import Navbar from '@/components/Navbar'
-import { BiSend } from 'react-icons/bi'
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
-import {collection, doc, query, setDoc, where, getDocs} from 'firebase/firestore'
+import {collection, doc, query, setDoc, getDocs, updateDoc, serverTimestamp, getDoc, onSnapshot} from 'firebase/firestore'
 import { db } from '@/firebase-config'
+import { useCookies } from 'react-cookie'
+import { ChatContext } from '@/context/ChatContext'
+import Messages from './Messages'
+import Input from './Input'
+import NavbarIconsOnly from '@/components/NavbarIconsOnly'
 
-const URL = 'http://localhost:4000'
-const socket = io(URL)
 
 const page = () => {
     const [allUsers, setAllUsers] = useState([]);
-    const [message, setMessage] = useState('')
-    const [chatMessages, setChatMessages] = useState([])
-    const [allChats, setAllChats] = useState([])
-    useEffect(() => {
-        socket.on('receiveMessage', (data) => {
-            setChatMessages((prevMessages) => [...prevMessages, data]);
-        });
-        return () => {
-            socket.off('receiveMessage');
-        };
-    }, []);
+    const [chats, setChats] = useState([])
+    const [currentUser, setCurrentUser] = useState([]);
+    const [cookies] = useCookies(['id']);
+    const userId = cookies['id'];
 
+    const {dispatch} = useContext(ChatContext)
+    const {data} = useContext(ChatContext)
+    console.log(data)
     useEffect(()=>{
         const fetchData = async() =>{
             try{
@@ -36,27 +33,64 @@ const page = () => {
                 });
                 
                 setAllUsers(AllUsersResults)
+                const currentUser = AllUsersResults.filter((userInfo)=> userId === userInfo.uid)[0]
+                setCurrentUser(currentUser);
             }catch(err){
                 console.log(err)
             }
         }
         fetchData();
     }, [])
-
-    //function to send message
-    const sendMessage = () => {
-        if (message.trim() !== '') {
-            socket.emit('sendMessage', { user: currentChat, message });
-            setMessage('');
+    console.log(chats)
+    useEffect(()=>{
+        const getChats = () =>{
+            const unsub = onSnapshot(doc(db, "userChats", userId), (doc) => {
+                setChats(doc.data())
+                console.log(" data: ", doc.data());
+            });
+            return () =>{
+                unsub()
+            }
         }
-    };
-    console.log(allUsers)
+        userId && getChats();
+    }, [userId])
+    console.log(Object.entries(chats))
+
     const handleOnSearch = (string, results) => {
         console.log(string, results)
     }
-    const handleOnSelect = (item) => {
-        console.log(item)
-        setAllChats(prev => [{name: `${item.firstname} ${item.lastname}`}, ...prev])
+    const handleOnSelect = async(item) => {
+        // setReceiver(item)
+        // setAllChats(prev => [{name: `${item.firstname} ${item.lastname}`}, ...prev])
+        // check wether the group (chats in firestore) exists, if not create
+        const combinedId = userId > item.uid ? userId + item.uid : item.uid + userId;
+        try{
+            const res = await getDoc(doc(db, "chats", combinedId))
+            console.log(res)
+            if(!res.exists()){
+                //create chat in chats collection
+                await setDoc(doc(db, "chats", combinedId), { messages: [] })
+                //create user chats
+                await updateDoc(doc(db, "userChats", userId), {
+                    [combinedId + ".userInfo"] : {
+                        uid: item.uid,
+                        displayName: `${item.firstname} ${item.lastname}`
+                    },
+                    [combinedId+".date"]:serverTimestamp()
+                })
+                //create user chats
+                await updateDoc(doc(db, "userChats", item.uid), {
+                    [combinedId + ".userInfo"] : {
+                        uid: userId,
+                        displayName: `${currentUser.firstname} ${currentUser.lastname}`
+                    },
+                    [combinedId+".date"]:serverTimestamp()
+                })
+            }
+        }catch(err){
+            console.log(err)
+        }
+        //create user chats
     }   
     const formatResult = (item) => {
         return (
@@ -68,9 +102,13 @@ const page = () => {
         )
     }
 
+    const handleSelect = (u) =>{
+        dispatch({type: "CHANGE_USER", payload: u})
+    }
+
     return (
-        <div className='w-full  h-screen flex bg-neutral-100'>
-            <Navbar active="Chat"/>
+        <div className='w-full  h-screen flex bg-neutral-100 snap-none'>
+            <NavbarIconsOnly active="Chat"/>
             <div className="grow flex">
                 <div className="bg-white w-3/12 h-full  ms-2">
                     <h1 className="p-3">Messages (12)</h1>
@@ -84,11 +122,11 @@ const page = () => {
                         styling={{ fontSize: "14px", border: "0 0 1px 0 solid #dfe1e5", borderRadius: "0px",  boxShadow: "rgba(32, 33, 36, 0.28) 0px 1px 0px 0px"}} 
                         resultStringKeyName="schoolid"/>
                     <div className="">
-                        {allChats.map((user, id) => (
-                            <div className="grid grid-flow-col grid-rows-2 px-3 py-2 hover:bg-neutral-50 cursor-pointer" >
+                        {Object.entries(chats)?.sort((a, b)=> b[1].date - a[1].date).map((chat, id) => (
+                            <div className="grid grid-flow-col grid-rows-2 px-3 py-2 hover:bg-neutral-50 cursor-pointer" key={chats[0]} onClick={()=>handleSelect(chat[1].userInfo)}>
                                 <img src="schoolLogo.png" alt="" className='row-span-2 h-12 w-12'/>
-                                <p className="font-bold text-sm">{user.name}</p>
-                                <p className="col-span-6 text-sm">{user.chat}</p>
+                                <p className="font-bold text-sm">{chat[1].userInfo.displayName}</p>
+                                <p className="col-span-6 text-sm">{chat[1].lastMessage?.message ? chat[1].lastMessage.message : <span className='italic'>New message..</span>}</p>
                             </div>
                         ))}
                     </div>
@@ -97,25 +135,16 @@ const page = () => {
                 </div>
                 <div className="grow flex justify-between flex-col">
                     <div className="border flex bg-white p-2">
-                        <p className='mx-2'>Lemar Canete</p>
+                        <p className='mx-2'>{data.user.displayName}</p>
                         <p className='mx-2 font-bold cursor-pointer'>Chat</p>
                         <p className='mx-2 cursor-pointer'>Files</p>
                     </div>
                         
                         {/* Display messages */}
-                    <div className="px-16 rounded ">
-                        {chatMessages.map((msg, index) => (
-                            <div key={index} className="mb-2">
-                            <p className="text-sm font-bold">{msg.user}</p>
-                            <p className="text-sm">{msg.message}</p>
-                            </div>
-                        ))}
-                    </div>
+                    <Messages />
+                        
 
-                    <div className="px-16 rounded ">
-                        <input type="text" placeholder='Type a message...' className='w-full border p-2 mb-16 text-sm' value={message} onChange={(e)=> setMessage(e.target.value)}/>
-                        <button onClick={sendMessage} className='border-0'>Send</button>
-                    </div>
+                    <Input />
                 </div>
                 {/* team members */}
                 {/* <div className="w-2/12 bg-white h-full">
