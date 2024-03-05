@@ -1,10 +1,14 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
+import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
+import RadioButton from './RadioButton';
+import GuideData from './GuideData';
 import './inquiry.css';
 
 const page = () => {
@@ -55,6 +59,41 @@ const page = () => {
     return fileName;
   };
 
+  const [showState, setShowState] = useState({});
+  const [option, setOption] = useState({});
+
+  const toggleShow = (header) => {
+    // If the clicked header is already visible, hide it
+    if (showState[header]) {
+      setShowState(prevState => ({
+        ...prevState,
+        [header]: false
+      }));
+    } else {
+      // Show the clicked header and hide others
+      const updatedState = {};
+      Object.keys(showState).forEach(key => {
+        updatedState[key] = false;
+      });
+      updatedState[header] = true;
+      setShowState(updatedState);
+    }
+  };
+
+
+  const handleOptionChange = (selectedOption, header, email) => {
+    const newOption = {
+      header: header,
+      email: email,
+      subject: selectedOption,
+    };
+
+    setOption(newOption);
+  };
+
+  useEffect(() => {
+    console.log("Selected option: ", option);
+  })
 
   return (
     <div className={`w-full h-screen flex bg-neutral-100`}>
@@ -126,8 +165,35 @@ const page = () => {
           </div>
 
           {/*child2*/}
-          <div className='flex w-full justify-center items-center'>
-            Guide portion
+          <div className='p-[30px] flex w-full justify-center items-center'>
+
+            <div className='w-full flex flex-col'>
+              {GuideData.map((data, index) => (
+                <div key={index}>
+                  <div
+                    onClick={() => toggleShow(data.header)} 
+                    className={`${showState[data.header] ? 'bg-[#115E59] shadow-lg text-white' : 'text-black'} hover:bg-[#115E59] hover:shadow-lg hover:text-white cursor-pointer h-[40px] flex items-center font-bold px-[10px] rounded-[10px] mt-1.5 transition-all`}>
+                    {data.header}
+                    <div className='font-light ml-[10px] text-sm'>
+                    ({data.email})
+                    </div>
+                    {showState[data.header] ? 
+                      <ExpandMoreRoundedIcon className='flex justify-between ml-auto'/> :
+                      <ExpandLessRoundedIcon className='flex justify-between ml-auto'/>
+                    }
+                  </div>
+
+                  <div className={`${showState[data.header] ? '' : 'hidden'} bg-white p-[10px] rounded-[10px] shadow-md`}>
+                    <RadioButton
+                      options={data.options}
+                      selectedOption={option}
+                      onOptionChange={(selectedOption) => handleOptionChange(selectedOption, data.header, data.email)}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
           </div>
 
         </div>
