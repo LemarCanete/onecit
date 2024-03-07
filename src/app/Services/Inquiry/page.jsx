@@ -12,9 +12,8 @@ import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 import RadioButton from './RadioButton';
 import GuideData from './GuideData';
 import './inquiry.css';
-import { Timestamp, addDoc, arrayUnion } from 'firebase/firestore';
+import { Timestamp, addDoc, arrayUnion, collection, doc, setDoc } from 'firebase/firestore';
 import { db, storage } from '@/firebase-config';
-import { useCookies } from 'react-cookie';
 import {v4 as uuid} from "uuid"
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
@@ -23,7 +22,7 @@ const page = () => {
   const router = useRouter();
   const [errors, setErrors] = useState({});
   const [subject, setSubject] = useState('');
-  const [generatedId, setGeneratedId] = useState('')
+  const [message, setMessage] = useState('')
 
   const handlegoback = () => {
     window.history.back();
@@ -54,7 +53,7 @@ const page = () => {
 
     const filePromises = files.map((file) => {
       // Create a reference to the folder path
-      const storageRef = ref(storage, `attachments/${id}/${file.name}`);
+      const storageRef = ref(storage, `inquiries/attachments/${id}/${file.name}`);
       
       // Upload the file to the specified folder
       return uploadBytes(storageRef, file).then(() => getDownloadURL(storageRef));
@@ -132,36 +131,53 @@ const page = () => {
         subject: !subject ? 'subject' : '',
         content: !content ? 'content' : '',
       });
+
+      setMessage('Missing information.')
+      setTimeout(() => {
+        setMessage('')
+      }, 6000)
       return;
     }
   
     try {
-      setGeneratedId(uuid())
-      // Upload files to Firebase Storage and obtain download URLs
-      const downloadURLs = await uploadFilesToStorage(generatedId);
-  
-      // Construct document data
+      const uniqueid = uuid()
+      const downloadURLs = await uploadFilesToStorage(uniqueid);
       const docData = {
+        inquiryid: uniqueid,
         recipient: selectedoption.email,
         subject: subject,
         inquiries: arrayUnion({
-          id: generatedId,
+          id: uuid(),
           message: content,
           senderId: currentUser.uid,
           date: Timestamp.now(),
-          attachments: downloadURLs // Use the obtained download URLs here
+          attachments: downloadURLs
         })
       };
   
-      // Log document data
       console.log(docData);
+      await setDoc(doc(db, 'inquiries', uniqueid), docData)
+
+      setSelectedOption(prevState => ({
+        ...prevState,
+        email: '',
+        header: '',
+        subject: ''
+      }));
+      setContent('')
+      setSubject('')
+      setShowState('')
+      setFiles([])
+      setMessage('Inquiry successfully sent!')
+
+      setTimeout(() => {
+        setMessage('')
+      }, 6000)
     } catch (error) {
       console.error('Error uploading files:', error);
     }
   };
   
-
-
   return (
     <div className={`w-full h-screen flex bg-neutral-100`}>
       <NavbarIconsOnly/>
@@ -239,6 +255,10 @@ const page = () => {
                   className='ml-1.5'
                 />
               </button>
+            </div>
+
+            <div className='text-[#115E59] fixed bottom-20 left-1/4 transform -translate-x-1/2'>
+              {message}
             </div>
 
           </div>

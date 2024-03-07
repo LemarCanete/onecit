@@ -13,7 +13,7 @@ const RadioButton = ({ options, selectedOption, onOptionChange}) => {
             id={option.value}
             name="guideoptions"
             value={option.value}
-            //checked={selectedOption === option.value}
+            checked={selectedOption.subject === option.value}
             onChange={() => onOptionChange(option.value)}
           />
           <label className='ml-[10px]' htmlFor={option.value}>{option.label}</label>
