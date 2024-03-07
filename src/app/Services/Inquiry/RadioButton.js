@@ -3,10 +3,6 @@
 import React from 'react';
 
 const RadioButton = ({ options, selectedOption, onOptionChange}) => {
-  const handleOptionChange = (event) => {
-    const selectedValue = event.target.value;
-    onOptionChange(selectedValue);
-  };
 
   return (
     <div className=''>
@@ -15,10 +11,10 @@ const RadioButton = ({ options, selectedOption, onOptionChange}) => {
           <input
             type="radio"
             id={option.value}
-            name="radioOptions"
+            name="guideoptions"
             value={option.value}
-            checked={selectedOption === option.value}
-            onChange={handleOptionChange}
+            //checked={selectedOption === option.value}
+            onChange={() => onOptionChange(option.value)}
           />
           <label className='ml-[10px]' htmlFor={option.value}>{option.label}</label>
         </div>

@@ -156,6 +156,7 @@ const LoginForm = () => {
               type='email' value={email} 
               placeholder='juandelacruz@gmail.com' 
               onChange={e=>setEmail(e.target.value)}
+              name='email'
               className={` ${error=='email' || error=='credentials' ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}/>
           </div>
           
@@ -163,6 +164,7 @@ const LoginForm = () => {
             <label className='font-semibold my-1'>Password</label> 
             <input 
               type='password' value={password} 
+              name='password'
               placeholder='Enter Password' 
               onChange={e=>setPassword(e.target.value)}
               className= {` ${error=='password' || error=='credentials' ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px] border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6`}/>

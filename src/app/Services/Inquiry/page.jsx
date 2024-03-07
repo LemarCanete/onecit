@@ -1,5 +1,7 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
+import { useRouter } from 'next/navigation';
+import { AuthContext } from '@/context/AuthContext';
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
@@ -10,30 +12,18 @@ import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 import RadioButton from './RadioButton';
 import GuideData from './GuideData';
 import './inquiry.css';
+import { Timestamp, addDoc, arrayUnion } from 'firebase/firestore';
+import { db, storage } from '@/firebase-config';
+import { useCookies } from 'react-cookie';
+import {v4 as uuid} from "uuid"
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 const page = () => {
-  function checkAuthentication() {
-    // Implement your authentication check logic here
-    // For example, you can check if the user is logged in by verifying if the authentication token exists
-    const authToken = localStorage.getItem('authToken'); // Assuming you store the authentication token in localStorage
-    
-    if (!authToken) {
-        // Authentication token not found, user is not logged in
-        console.log("User is not logged in.");
-        // Redirect the user to the login page or perform any necessary action
-        // window.location.href = '/login'; // Example of redirecting to the login page
-        return false;
-    } else {
-        // Authentication token found, user is logged in
-        console.log("User is logged in.");
-        return true;
-    }
-  }
-
-  // Call the function to check authentication on page load
-  checkAuthentication();
-
-  const [errors, setErrors] = useState('')
+  const { currentUser } = useContext(AuthContext);
+  const router = useRouter();
+  const [errors, setErrors] = useState({});
+  const [subject, setSubject] = useState('');
+  const [generatedId, setGeneratedId] = useState('')
 
   const handlegoback = () => {
     window.history.back();
@@ -59,8 +49,31 @@ const page = () => {
     return fileName;
   };
 
+  const uploadFilesToStorage = async (id) => {
+    // Define the folder path in Firebase Storage
+
+    const filePromises = files.map((file) => {
+      // Create a reference to the folder path
+      const storageRef = ref(storage, `attachments/${id}/${file.name}`);
+      
+      // Upload the file to the specified folder
+      return uploadBytes(storageRef, file).then(() => getDownloadURL(storageRef));
+    });
+  
+    // Wait for all uploads to complete and get the download URLs
+    const downloadURLs = await Promise.all(filePromises);
+    return downloadURLs;
+  };
+  
+  
+
+
   const [showState, setShowState] = useState({});
-  const [option, setOption] = useState({});
+  const [selectedoption, setSelectedOption] = useState({
+    email: '',
+    subject: '',
+    header: '',
+  });
 
   const toggleShow = (header) => {
     // If the clicked header is already visible, hide it
@@ -88,12 +101,66 @@ const page = () => {
       subject: selectedOption,
     };
 
-    setOption(newOption);
+    setSelectedOption(newOption);
+    setSubject(selectedOption);
   };
 
+  const handleAdditionalSubject = (event) => {
+    setSubject(event.target.value);
+  }
+
   useEffect(() => {
-    console.log("Selected option: ", option);
-  })
+    if (!currentUser) {
+        router.push('/login');
+    } else {
+        console.log("User logged in:", currentUser);
+    }
+
+    console.log("Selected option: ", selectedoption);
+  }, [currentUser, router]);
+
+  const [content, setContent] = useState('');
+
+  const handleInquiryChange = (event) => {
+    setContent(event.target.value)
+  }
+
+  const handleSendEmail = async () => {
+    if (!selectedoption.email || !subject || !content) {
+      setErrors({
+        recipient: !selectedoption.email ? 'recipient' : '',
+        subject: !subject ? 'subject' : '',
+        content: !content ? 'content' : '',
+      });
+      return;
+    }
+  
+    try {
+      setGeneratedId(uuid())
+      // Upload files to Firebase Storage and obtain download URLs
+      const downloadURLs = await uploadFilesToStorage(generatedId);
+  
+      // Construct document data
+      const docData = {
+        recipient: selectedoption.email,
+        subject: subject,
+        inquiries: arrayUnion({
+          id: generatedId,
+          message: content,
+          senderId: currentUser.uid,
+          date: Timestamp.now(),
+          attachments: downloadURLs // Use the obtained download URLs here
+        })
+      };
+  
+      // Log document data
+      console.log(docData);
+    } catch (error) {
+      console.error('Error uploading files:', error);
+    }
+  };
+  
+
 
   return (
     <div className={`w-full h-screen flex bg-neutral-100`}>
@@ -114,18 +181,26 @@ const page = () => {
               <label>Recipient</label>
               <input
                 className={`${errors['recipient'] || errors['form'] ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px]  py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}
+                value={selectedoption.email}
+                name='recipient'
               />
             </div>
             <div className='flex flex-col w-full py-1'>
               <label>Subject</label>
               <input
                 className={`${errors['subject'] || errors['form'] ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px]  py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}
+                value={subject}
+                onChange={handleAdditionalSubject}
+                name='subject'
               />
             </div>
             <div className='flex flex-col w-full py-1'>
               <label>Message/Inquiry</label>
               <textarea
                 rows={5}
+                name='content'
+                value={content}
+                onChange={handleInquiryChange}
                 className={`${errors['subject'] || errors['form'] ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} resize-none block px-2 w-full rounded-[10px]  py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}
               />
             </div>
@@ -156,9 +231,13 @@ const page = () => {
             </div>
 
             <div className='w-full flex justify-end mt-[30px]'>
-              <button className='bg-[#115E59] hover:bg-[#883138] rounded-[10px] shadow-sm py-1.5 px-2.5 text-white flex items-center transition-all'>
+              <button 
+              onClick={handleSendEmail}
+              className='bg-[#115E59] hover:bg-[#883138] rounded-[10px] shadow-sm py-1.5 px-2.5 text-white flex items-center transition-all'>
                 Send
-                <SendRoundedIcon className='ml-1.5'/>
+                <SendRoundedIcon
+                  className='ml-1.5'
+                />
               </button>
             </div>
 
@@ -186,7 +265,7 @@ const page = () => {
                   <div className={`${showState[data.header] ? '' : 'hidden'} bg-white p-[10px] rounded-[10px] shadow-md`}>
                     <RadioButton
                       options={data.options}
-                      selectedOption={option}
+                      selectedOption={selectedoption}
                       onOptionChange={(selectedOption) => handleOptionChange(selectedOption, data.header, data.email)}
                     />
                   </div>
