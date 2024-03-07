@@ -1,35 +1,62 @@
 'use client'
-import React, { useState } from 'react';
-import Navbar from '@/components/Navbar';
+import React, { useState, useEffect } from 'react';
+import Navbar from '@/components/Navbar'; // Ensure the path is correct
 import AddAnnouncementForm from './AddAnnouncementForm';
+import { db } from '@/firebase-config'; // Ensure you have this correct import in your project
+import { doc, collection, getDocs, deleteDoc, setDoc } from 'firebase/firestore';
 
 const AnnouncementsPage = () => {
-    const initialAnnouncements = [
-        { id: 1, title: "Important Update", date: "2024-02-26", content: "AKOY NATUTULOG", category: "General" },
-        { id: 2, title: "New Feature Announcement", date: "2024-02-26", content: "HATDOG", category: "Updates" },
-        { id: 3, title: "Upcoming Maintenance", date: "2024-02-26", content: "LIBOG KO DAH", category: "Maintenance" },
-    ];
-    
-    const [announcements, setAnnouncements] = useState(initialAnnouncements);
+    const [announcements, setAnnouncements] = useState([]);
     const [showAddForm, setShowAddForm] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const categories = ["General", "Updates", "Maintenance", "Other"];
 
-    const handleAddAnnouncement = (announcement) => {
-        setAnnouncements([...announcements, { ...announcement, id: Math.random() }]);
-        setShowAddForm(false);
+    useEffect(() => {
+        const fetchAnnouncements = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'announcements'));
+                const fetchedAnnouncements = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                setAnnouncements(fetchedAnnouncements);
+            } catch (error) {
+                console.error('Error fetching announcements: ', error);
+            }
+        };
+        fetchAnnouncements();
+    }, []);
+
+    const handleAddAnnouncement = async (announcement) => {
+        const newAnnouncement = {
+            ...announcement,
+            id: undefined // Prevent trying to save ID to Firestore
+        };
+        try {
+            const docRef = await addDoc(collection(db, 'announcements'), newAnnouncement);
+            console.log('Document successfully written!');
+            setAnnouncements(prevAnnouncements => [...prevAnnouncements, { id: docRef.id, ...newAnnouncement }]);
+        } catch (error) {
+            console.error('Error writing document: ', error);
+        }
     };
 
-    const handleDeleteAnnouncement = (id) => {
-        setAnnouncements(announcements.filter(announcement => announcement.id !== id));
+    const handleDeleteAnnouncement = async (announcementId) => {
+        try {
+            await deleteDoc(doc(db, 'announcements', announcementId));
+            console.log('Document successfully deleted!');
+            setAnnouncements(prevAnnouncements => prevAnnouncements.filter(announcement => announcement.id !== announcementId));
+        } catch (error) {
+            console.error('Error removing document: ', error);
+        }
     };
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
     };
 
-    const filteredAnnouncements = searchTerm.length === 0 ? announcements : announcements.filter(announcement => 
-        announcement.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    const filteredAnnouncements = announcements.filter(announcement =>
+        announcement.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         announcement.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
         announcement.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -60,7 +87,7 @@ const AnnouncementsPage = () => {
                                 <p className="text-sm text-gray-500">{announcement.date}</p>
                                 <p className="mt-2 text-gray-700">{announcement.content}</p>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => handleDeleteAnnouncement(announcement.id)}
                                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-150"
                             >
