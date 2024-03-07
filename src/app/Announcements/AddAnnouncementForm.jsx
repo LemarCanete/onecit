@@ -1,5 +1,7 @@
 'use client'
 import React, { useState } from 'react';
+import { db } from '../../firebase-config';
+import { addDoc, collection } from 'firebase/firestore';
 
 const AddAnnouncementForm = ({ onSubmit, onCancel, categories }) => {
     const [title, setTitle] = useState('');
@@ -7,9 +9,24 @@ const AddAnnouncementForm = ({ onSubmit, onCancel, categories }) => {
     const [content, setContent] = useState('');
     const [category, setCategory] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onSubmit({ title, date, content, category });
+        try {
+            const docRef = await addDoc(collection(db, 'announcements'), {
+                title,
+                date,
+                content,
+                category
+            });
+            onSubmit({ id: docRef.id, title, date, content, category });
+
+            setTitle('');
+            setDate('');
+            setContent('');
+            setCategory('');
+        } catch (error) {
+            console.error('Error adding document: ', error);
+        }
     };
 
     return (
