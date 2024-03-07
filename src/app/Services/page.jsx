@@ -106,8 +106,10 @@ const Box = ({name, icon, description}) =>{
     const router = useRouter()
     const paths = usePathname()
 
+    const formattedName = name.replace(/\s/g, '');
+
     return(
-        <div className="" onClick={() => router.push(`${paths}/${name}`)}>
+        <div className="" onClick={() => router.push(`${paths}/${formattedName}`)}>
             <div className="grid grid-rows-2 grid-flow-col border bg-white m-2 p-2 cursor-pointer shadow">
                 <img src="schoolLogo.png" alt="" className='w-12 h-12 row-span-2'/>
                 <p className=''>{name}</p>

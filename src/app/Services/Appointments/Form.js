@@ -1,5 +1,6 @@
 import { AuthContext } from '@/context/AuthContext';
 import { db } from '@/firebase-config';
+import { query } from 'express';
 import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 import React, { useContext, useRef, useState } from 'react'
 
@@ -9,6 +10,8 @@ const Form = ({setIsOpen, name, to}) => {
     const [date, setDate] = useState(null);
     const [reason, setReason] = useState("");
     const {currentUser} = useContext(AuthContext)
+    const [step, setStep] = useState((name === "People") ? 1 : 2);
+    const [people, setPeople] = useState("");
     console.log(currentUser)
 
     const handleSubmit = async(e) =>{
@@ -24,24 +27,44 @@ const Form = ({setIsOpen, name, to}) => {
         }
     }
 
+    const handleSearch = (e) =>{
+        e.preventDefault();
+
+        
+    }
+
     return (
-        <form className='p-5 relative flex flex-col w-96' ref={ref}>
-            <h1 className='text-lg font-bold text-center p-3'>{name}</h1>
+        step === 2 ? (
+            <form className='p-5 relative flex flex-col w-96' ref={ref}>
+                <h1 className='text-lg font-bold text-center p-3'>{name}</h1>
 
-            <span className='absolute top-0 right-0 text-lg cursor-pointer' onClick={()=>setIsOpen(false)}>X</span>
+                <span className='absolute top-0 right-0 text-lg cursor-pointer' onClick={()=>setIsOpen(false)}>X</span>
 
-            <label htmlFor="phonenumber">Phonenumber</label>
-            <input type="text" id='phonenumber' className='border p-2 text-sm' onChange={(e)=>setPhonenumber(e.target.value)} required/>
+                <label htmlFor="phonenumber">Phonenumber</label>
+                <input type="text" id='phonenumber' className='border p-2 text-sm' onChange={(e)=>setPhonenumber(e.target.value)} required/>
 
-            <label htmlFor="date">Date</label>
-            <input type="datetime-local" id="date" className='border p-2 text-sm' onChange={(e)=>setDate(e.target.value)} required/>
+                <label htmlFor="date">Date</label>
+                <input type="datetime-local" id="date" className='border p-2 text-sm' onChange={(e)=>setDate(e.target.value)} required/>
 
-            <label className="" htmlFor='reason'>Reason for visit</label>
-            <textarea name="" id="reason" cols="30" rows="10" className='border p-2 text-sm' onChange={(e)=>setReason(e.target.value)} required></textarea>
+                <label className="" htmlFor='reason'>Reason for visit</label>
+                <textarea name="" id="reason" cols="30" rows="10" className='border p-2 text-sm' onChange={(e)=>setReason(e.target.value)} required></textarea>
 
-            <button className='p-3 bg-amber-400 my-2 hover:bg-amber-600 text-white' onClick={handleSubmit}>Book Now</button>
-        </form>
+                <button className='p-3 bg-amber-400 my-2 hover:bg-amber-600 text-white' onClick={handleSubmit}>Book Now</button>
+            </form>
+        ) : (
+            <form className='p-5 relative flex flex-col w-96' ref={ref}>
+                <label htmlFor="people">Search People</label>
+                <input type="search" id='people' className='border p-2 text-sm' onChange={handleSearch} required/>
+                <button className="" onClick={handleNext}>Next</button>
+            </form>
+        )
+
     )
+}
+
+
+const People = () => {
+
 }
 
 export default Form

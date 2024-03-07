@@ -56,8 +56,9 @@ const Box = ({image, name, to}) =>{
                 <img src="/schoolLogo.png" alt="" className='w-20 h-20'/>
                 <p className='text-sm m-1'>{name}</p>
             </div>
+
             <Modal isOpen={isOpen} onRequestClose={()=>setIsOpen(false) } style={customStyles}>
-                <Form setIsOpen={setIsOpen} name={name} to={to}/>
+                <Form setIsOpen={setIsOpen} name={name} to={to} />
             </Modal>
         </div>
     )
