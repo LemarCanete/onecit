@@ -51,6 +51,9 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        rotate: {
+            '330': '330deg'
+        }
       },
       borderRadius: {
         // lg: "var(--radius)",

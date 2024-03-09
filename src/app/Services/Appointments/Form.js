@@ -1,41 +1,56 @@
 import { AuthContext } from '@/context/AuthContext';
 import { db } from '@/firebase-config';
-import { query } from 'express';
-import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, setDoc, query, where, getDocs } from 'firebase/firestore';
 import React, { useContext, useRef, useState } from 'react'
 
-const Form = ({setIsOpen, name, to}) => {
+const Form = ({setIsOpen, name, emailTo}) => {
+
     const ref = useRef();
     const [phonenumber, setPhonenumber] = useState("");
     const [date, setDate] = useState(null);
     const [reason, setReason] = useState("");
     const {currentUser} = useContext(AuthContext)
     const [step, setStep] = useState((name === "People") ? 1 : 2);
-    const [people, setPeople] = useState("");
-    console.log(currentUser)
+    const [search, setSearch] = useState(null);
+    const [searchExist, setSearchExist] = useState(false)
+    const [people, setPeople] = useState("")
+    const [err, setErr] = useState("")
 
     const handleSubmit = async(e) =>{
         e.preventDefault()
         try{
             const {firstname, lastname, email, program, role, schoolid} = currentUser;
             const appointment = await addDoc(collection(db, "appointments"), 
-                {phonenumber, date, reason, status: "pending", to: to, position: name, from:{firstname, lastname, email, program, role, schoolid}})
+                {phonenumber, date, reason, status: "pending", 
+                    to: {email: emailTo || people, position: name}, 
+                    from:{firstname, lastname, email, program, role, schoolid}})
                 setIsOpen(false)
             console.log(appointment)
         }catch(err){
             console.log(err)
         }
     }
+    console.log(emailTo)
+    const handleSearch = async() =>{
+        const q = query(collection(db, "users"), where("email", "==", search));
 
-    const handleSearch = (e) =>{
-        e.preventDefault();
-
-        
+        const querySnapShot = await getDocs(q);
+        if(!querySnapShot.empty){
+            setSearchExist(true)
+            setPeople(search)
+            setErr("")
+        }else{
+            setSearchExist(false)
+            setErr("User does not exist!")
+        }
     }
-
+    const handleKey = (e) =>{
+        e.key === "Enter" && handleSearch();
+    }
+    console.log(searchExist)
     return (
         step === 2 ? (
-            <form className='p-5 relative flex flex-col w-96' ref={ref}>
+            <div className='p-5 relative flex flex-col w-96' ref={ref}>
                 <h1 className='text-lg font-bold text-center p-3'>{name}</h1>
 
                 <span className='absolute top-0 right-0 text-lg cursor-pointer' onClick={()=>setIsOpen(false)}>X</span>
@@ -50,21 +65,19 @@ const Form = ({setIsOpen, name, to}) => {
                 <textarea name="" id="reason" cols="30" rows="10" className='border p-2 text-sm' onChange={(e)=>setReason(e.target.value)} required></textarea>
 
                 <button className='p-3 bg-amber-400 my-2 hover:bg-amber-600 text-white' onClick={handleSubmit}>Book Now</button>
-            </form>
+            </div>
         ) : (
-            <form className='p-5 relative flex flex-col w-96' ref={ref}>
-                <label htmlFor="people">Search People</label>
-                <input type="search" id='people' className='border p-2 text-sm' onChange={handleSearch} required/>
-                <button className="" onClick={handleNext}>Next</button>
-            </form>
+            <div className='p-5 relative flex flex-col w-96' ref={ref}>
+                <label htmlFor="search">Search People</label>
+                <input type="email" id='search' className='border p-2 text-sm' onChange={(e)=> setSearch(e.target.value)} onKeyDown={handleKey} required placeholder='Enter Email Address...'/>
+                <span className='text-red-500'>{err}</span>
+                <button className={`self-end py-3 ${searchExist ? 'underline cursor-pointer' : 'text-slate-50'} `} onClick={()=>setStep(2)} disabled={!searchExist} >Next</button>
+            </div>
         )
-
     )
 }
 
 
-const People = () => {
 
-}
 
 export default Form
