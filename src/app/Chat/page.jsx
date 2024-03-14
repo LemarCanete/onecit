@@ -1,6 +1,5 @@
 'use client'
 import React, { useContext, useEffect, useState } from 'react'
-import Navbar from '@/components/Navbar'
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import {collection, doc, query, setDoc, getDocs, updateDoc, serverTimestamp, getDoc, onSnapshot} from 'firebase/firestore'
 import { db } from '@/firebase-config'
@@ -10,14 +9,24 @@ import Messages from './Messages'
 import Input from './Input'
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
 
-
 const page = () => {
     const [allUsers, setAllUsers] = useState([]);
     const [chats, setChats] = useState([])
     const [currentUser, setCurrentUser] = useState([]);
     const [cookies] = useCookies(['id']);
-    const userId = cookies['id'];
+    const [email, setEmail] = useState("");
 
+    useEffect(() => {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const email = urlParams.get('email');
+    
+        if (email) {
+          setEmail(email)
+        }
+      }, []);
+
+    const userId = cookies['id'];
     const {dispatch} = useContext(ChatContext)
     const {data} = useContext(ChatContext)
     console.log(data)
@@ -56,8 +65,9 @@ const page = () => {
     }, [userId])
     console.log(Object.entries(chats))
 
-    const handleOnSearch = (string, results) => {
-        console.log(string, results)
+    const handleOnSearch = (string=email, results) => {
+        console.log(string)
+        console.log(results)
     }
     const handleOnSelect = async(item) => {
         // setReceiver(item)
@@ -106,6 +116,8 @@ const page = () => {
         dispatch({type: "CHANGE_USER", payload: u})
     }
 
+
+
     return (
         <div className='w-full  h-screen flex bg-neutral-100 snap-none'>
             <NavbarIconsOnly active="Chat"/>
@@ -117,6 +129,8 @@ const page = () => {
                         onSearch={handleOnSearch}
                         onSelect={handleOnSelect}
                         autoFocus
+                        value={email}
+                        placeholder={email}
                         formatResult={formatResult}
                         fuseOptions={{keys: ['firstname', "lastname", "email", "schoolid"], threshold: 0.2}}
                         styling={{ fontSize: "14px", border: "0 0 1px 0 solid #dfe1e5", borderRadius: "0px",  boxShadow: "rgba(32, 33, 36, 0.28) 0px 1px 0px 0px"}} 
@@ -155,5 +169,7 @@ const page = () => {
         </div>
     )
 }
+
+
 
 export default page

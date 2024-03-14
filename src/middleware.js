@@ -9,6 +9,10 @@ export function middleware(req) {
         return NextResponse.redirect(new URL('/', req.url));
     }
 
+    // if(url.includes('@')){
+    //     return NextResponse.redirect(new URL('/Chat', req.url))
+    // }
+
   console.log('User verified (middleware)'); 
   return NextResponse.next();
 
