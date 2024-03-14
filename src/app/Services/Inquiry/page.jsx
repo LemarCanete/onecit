@@ -12,10 +12,14 @@ import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 import RadioButton from './RadioButton';
 import GuideData from './GuideData';
 import './inquiry.css';
-import { Timestamp, addDoc, arrayUnion, collection, doc, setDoc } from 'firebase/firestore';
+import { Timestamp, addDoc, arrayUnion, collection, doc, limit, onSnapshot, or, orderBy, query, setDoc, where } from 'firebase/firestore';
 import { db, storage } from '@/firebase-config';
 import {v4 as uuid} from "uuid"
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import Modal from 'react-modal'
+import Message from './Message';
 
 const page = () => {
   const { currentUser } = useContext(AuthContext);
@@ -23,9 +27,26 @@ const page = () => {
   const [errors, setErrors] = useState({});
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('')
+  const [showInbox, setShowInbox] = useState('')
+  const [parameters, setParameters] = useState('')
+  const [isOpen, setIsOpen] = useState(false);
+
+  Modal.setAppElement("body")
+
+  const rowclickhandler = (params) => {
+    const rowdata = params.row;
+    setIsOpen(true)
+    setParameters(rowdata)
+    console.log("Row is clicked. Params.row value: ", rowdata)
+  }
 
   const handlegoback = () => {
     window.history.back();
+  }
+
+  const handleRightPanelSwitch = () => {
+    if(!showInbox) setShowInbox('Show Inbox');
+    else setShowInbox('');
   }
   
   const [files, setFiles] = useState([]);
@@ -64,9 +85,6 @@ const page = () => {
     return downloadURLs;
   };
   
-  
-
-
   const [showState, setShowState] = useState({});
   const [selectedoption, setSelectedOption] = useState({
     email: '',
@@ -75,14 +93,12 @@ const page = () => {
   });
 
   const toggleShow = (header) => {
-    // If the clicked header is already visible, hide it
     if (showState[header]) {
       setShowState(prevState => ({
         ...prevState,
         [header]: false
       }));
     } else {
-      // Show the clicked header and hide others
       const updatedState = {};
       Object.keys(showState).forEach(key => {
         updatedState[key] = false;
@@ -91,7 +107,6 @@ const page = () => {
       setShowState(updatedState);
     }
   };
-
 
   const handleOptionChange = (selectedOption, header, email) => {
     const newOption = {
@@ -108,16 +123,76 @@ const page = () => {
     setSubject(event.target.value);
   }
 
+  const columns = [
+    { field: 'recipient', headerClassName: 'header', headerName: 'Recipient', flex: 0.2},
+    { field: 'subject', headerClassName: 'header', headerName: 'Subject', flex: 0.4},
+    { field: 'date', headerClassName: 'header', headerName: 'Date', flex: 0.2},
+    { field: 'time', headerClassName: 'header', headerName: 'Time', flex: 0.2},
+  ]
+  const [rows, setRows] = useState([])
+
   useEffect(() => {
-    if (!currentUser) {
-        router.push('/login');
-    } else {
-        console.log("User logged in:", currentUser);
+    if (currentUser && currentUser.uid) {
+      const q = query(
+        collection(db, "inquiries"), 
+        or(
+          where('senderId', '==', currentUser.uid),
+          where('recipient', '==', currentUser.email)
+        )
+      );
+  
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const retrievedrows = [];
+        querySnapshot.forEach((doc) => {
+          retrievedrows.push({
+            id: doc.data().inquiryid, 
+            recipient: doc.data().recipient, 
+            subject: doc.data().subject, 
+            rowClassName: 'row',
+            attachments: doc.data().attachments,
+            date: doc.data().date,
+            time: doc.data().time,
+            status: `${doc.data().status}`,
+            senderId: doc.data().senderId,
+            message: `${doc.data().message}`
+          });
+        });
+        retrievedrows.sort((a, b) => a.date.localeCompare(b.date));
+        retrievedrows.sort((a, b) => a.time.localeCompare(b.time));
+        retrievedrows.sort((a, b) => a.id.localeCompare(b.id));
+
+        const filteredRows = [];
+
+        for (let i = 0; i < retrievedrows.length; i++) {
+          if (i === retrievedrows.length - 1) {
+            filteredRows.push(retrievedrows[i]);
+            break;
+          }
+  
+          if (retrievedrows[i].id !== retrievedrows[i + 1].id) {
+            filteredRows.push(retrievedrows[i]);
+          }
+        }
+        
+        // Sort the retrieved rows by date and time
+        filteredRows.sort((b, a) => {
+          // First, compare by date
+          const dateComparison = a.date.localeCompare(b.date);
+          if (dateComparison !== 0) {
+            return dateComparison;
+          }
+          // If dates are equal, compare by time
+          return a.time.localeCompare(b.time);
+        });
+        
+        setRows(filteredRows);
+        console.log("Retrieved docs: ", filteredRows);
+      });
+      console.log("Retrieved docs: ", rows);
+      return () => unsubscribe();
     }
-
-    console.log("Selected option: ", selectedoption);
-  }, [currentUser, router]);
-
+  }, [currentUser]);
+  
   const [content, setContent] = useState('');
 
   const handleInquiryChange = (event) => {
@@ -135,6 +210,7 @@ const page = () => {
       setMessage('Missing information.')
       setTimeout(() => {
         setMessage('')
+        setErrors({})
       }, 6000)
       return;
     }
@@ -146,13 +222,13 @@ const page = () => {
         inquiryid: uniqueid,
         recipient: selectedoption.email,
         subject: subject,
-        inquiries: arrayUnion({
-          id: uuid(),
-          message: content,
-          senderId: currentUser.uid,
-          date: Timestamp.now(),
-          attachments: downloadURLs
-        })
+        message: content,
+        senderId: currentUser.uid,
+        date: Timestamp.now().toDate().toLocaleDateString(),
+        time: Timestamp.now().toDate().toLocaleTimeString(),
+        lastinteraction: currentUser.uid,
+        status: 'Sent',
+        attachments: downloadURLs
       };
   
       console.log(docData);
@@ -181,12 +257,21 @@ const page = () => {
   return (
     <div className={`w-full h-screen flex bg-neutral-100`}>
       <NavbarIconsOnly/>
+      <Messagebox params={parameters} isOpen={isOpen} setIsOpen={setIsOpen}/>
       <div className='w-full h-full flex flex-col'>
         <div className='flex flex-row w-full h-[45px] py-10 items-center px-2'>
-          <button onClick={handlegoback}>
-            <ArrowBackIosNewRoundedIcon sx={{ fontSize: 35}} className='bg-[#115E59] text-[#F5F5F5] rounded-full p-2 m-2 '/>
-          </button>
-          Go back
+          <div className='ml-[30px]'>
+            <button onClick={handlegoback}>
+              <ArrowBackIosNewRoundedIcon sx={{ fontSize: 35}} className='bg-[#115E59] hover:bg-[#883138] text-[#F5F5F5] rounded-full p-2 m-2 '/>
+            </button>
+            Go back
+          </div>
+          <div className='flex items-center justify-end ml-auto mr-[30px]'>
+            <button onClick={handleRightPanelSwitch}>
+              <QuestionAnswerIcon sx={{ fontSize: 35}} className='bg-[#115E59] hover:bg-[#883138] text-[#F5F5F5] rounded-full p-2 m-2 '/>
+            </button>
+            Inquiries
+          </div>
         </div>
 
         <div className='flex flex-1 w-full'>
@@ -266,32 +351,60 @@ const page = () => {
           {/*child2*/}
           <div className='p-[30px] flex w-full justify-center items-center'>
 
-            <div className='w-full flex flex-col'>
-              {GuideData.map((data, index) => (
-                <div key={index}>
-                  <div
-                    onClick={() => toggleShow(data.header)} 
-                    className={`${showState[data.header] ? 'bg-[#115E59] shadow-lg text-white' : 'text-black'} hover:bg-[#115E59] hover:shadow-lg hover:text-white cursor-pointer h-[40px] flex items-center font-bold px-[10px] rounded-[10px] mt-1.5 transition-all`}>
-                    {data.header}
-                    <div className='font-light ml-[10px] text-sm'>
-                    ({data.email})
+            {!showInbox &&
+              <div className='w-full flex flex-col'>
+                {GuideData.map((data, index) => (
+                  <div key={index}>
+                    <div
+                      onClick={() => toggleShow(data.header)} 
+                      className={`${showState[data.header] ? 'bg-[#115E59] shadow-lg text-white' : 'text-black'} hover:bg-[#115E59] hover:shadow-lg hover:text-white cursor-pointer h-[40px] flex items-center font-bold px-[10px] rounded-[10px] mt-1.5 transition-all`}>
+                      {data.header}
+                      <div className='font-light ml-[10px] text-sm'>
+                      ({data.email})
+                      </div>
+                      {showState[data.header] ? 
+                        <ExpandMoreRoundedIcon className='flex justify-between ml-auto'/> :
+                        <ExpandLessRoundedIcon className='flex justify-between ml-auto'/>
+                      }
                     </div>
-                    {showState[data.header] ? 
-                      <ExpandMoreRoundedIcon className='flex justify-between ml-auto'/> :
-                      <ExpandLessRoundedIcon className='flex justify-between ml-auto'/>
-                    }
-                  </div>
 
-                  <div className={`${showState[data.header] ? '' : 'hidden'} bg-white p-[10px] rounded-[10px] shadow-md`}>
-                    <RadioButton
-                      options={data.options}
-                      selectedOption={selectedoption}
-                      onOptionChange={(selectedOption) => handleOptionChange(selectedOption, data.header, data.email)}
-                    />
+                    <div className={`${showState[data.header] ? '' : 'hidden'} bg-white p-[10px] rounded-[10px] shadow-md`}>
+                      <RadioButton
+                        options={data.options}
+                        selectedOption={selectedoption}
+                        onOptionChange={(selectedOption) => handleOptionChange(selectedOption, data.header, data.email)}
+                      />
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            }
+
+            {showInbox &&
+              <div className='w-full flex flex-col justify-start h-full'>
+                <DataGrid
+                  rows={rows}
+                  onRowClick={rowclickhandler}
+                  columns={columns}
+                  sx={{
+                    '& .header' : {
+                      fontWeight: 'bold',
+                    },
+                    '& .rows' : {
+                      '&:hover' : { backgroundColor: '#115E59', color: 'white', cursor: 'pointer'}
+                    }
+                  }}
+                  getRowClassName={(params) => 'rows'}
+                  initialState={{
+                    pagination: {
+                      paginationModel: { page: 0, pageSize: 5 },
+                    },
+                  }}
+                  pageSizeOptions={[5, 10]}
+                  disableRowSelectionOnClick
+                />
+              </div>
+            }
 
           </div>
 
@@ -299,6 +412,34 @@ const page = () => {
       </div>
     </div>
   )
+}
+//
+const Messagebox = ({params, isOpen, setIsOpen}) => {
+  const customStyles = {
+    content: {
+      borderRadius: '10px', 
+      width: '50%',
+      height: '80%',
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+      backgroundColor: '#FFFFFF',
+    },
+    overlay:{
+      backgroundColor: "rgba(0, 0, 0, 0.5)"
+
+    }
+  };
+
+
+  return (
+    <Modal isOpen={isOpen} onRequestClose={()=>setIsOpen(false)} style={customStyles}>
+          <Message setIsOpen={setIsOpen} message={params}/>
+    </Modal>
+  ) 
 }
 
 export default page

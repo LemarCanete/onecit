@@ -2,11 +2,12 @@ import { AuthContext } from '@/context/AuthContext';
 import { db } from '@/firebase-config';
 import { collection, doc, documentId, getDoc, getDocs, or, query, where, updateDoc, deleteDoc } from 'firebase/firestore';
 import React, { useContext, useDebugValue, useEffect, useState } from 'react'
-import { BsCheck, BsGrid, BsList, BsPen, BsThreeDots, BsTrash, BsX } from 'react-icons/bs'
+import { BsChat, BsCheck, BsGrid, BsList, BsPen, BsThreeDots, BsTrash, BsX } from 'react-icons/bs'
 import Box from '@mui/material/Box';
 import { DataGrid  } from '@mui/x-data-grid';
 import Modal from 'react-modal'
 import UpdateForm from './UpdateForm'
+import { useRouter } from 'next/navigation';
 
 const customStyles = {
     content: {
@@ -25,13 +26,13 @@ const customStyles = {
 
 Modal.setAppElement("body")
 
-const Appointments = () => {
+const Appointments = ({email}) => {
     const [appointments, setAppointments] = useState([]);
     const {currentUser} = useContext(AuthContext);
     const [selectedRows, setSelectedRows] = useState([])
     const [isDeleteModal, setIsDeleteModal] = useState(false)
     const [isEdit, setIsEdit] = useState(false)
-    const [selectedToEdit, setSelectedToEdit] = useState();
+    const router = useRouter();
 
     const columns = [
         // { field: 'id', headerName: 'ID', width: 90 },
@@ -113,13 +114,17 @@ const Appointments = () => {
                 console.log(params)
                 if (row.to.email === currentUser.email && row.status === "pending") {
                   return (
-                    <div>
-                      <button className="text-teal-500 pe-2" onClick={() => handleStatus("Accepted", id)} >Accept<BsCheck className='text-center'/></button>
-                      <button className='text-red-500' onClick={() => handleStatus("Declined", id)} >Decline<BsX className='text-center'/></button>
+                    <div className='flex'>
+                        <button className="text-teal-500 pe-2" onClick={() => handleStatus("Accepted", id)} >Accept<BsCheck className='text-center'/></button>
+                        <button className='text-red-500' onClick={() => handleStatus("Declined", id)} >Decline<BsX className='text-center'/></button>
+                        <BsChat className='ms-3 text-lg cursor-pointer' onClick={() => handleChat(row.to.email)}/>
                     </div>
                   );
                 } else {
-                  return <span>{row.status}</span>;
+                  return <div className="flex w-28 justify-items-end justify-between">
+                    <span>{row.status}</span>
+                    <BsChat className='cursor-pointer text-lg' onClick={() => handleChat(row.to.email)}/>
+                  </div>
                 }
               },
         },
@@ -174,6 +179,11 @@ const Appointments = () => {
 
         window.location.reload();
     }
+
+    const handleChat = (e) =>{
+        e && router.push(`/Chat/?email=${encodeURIComponent(e)}`)
+    }
+    console.log(selectedRows);
     return (
         <div className=''>
             <div className="flex justify-between items-center">
@@ -220,6 +230,9 @@ const Appointments = () => {
         </div>
   )
 }
+
+
+
 
 
 export default Appointments

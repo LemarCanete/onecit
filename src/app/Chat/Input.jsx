@@ -55,21 +55,21 @@ const Input = () => {
                   }),
             })
         }
+        (message !== "") && await Promise.all([
+            updateDoc(doc(db, "userChats", currentUser.uid), {
+                [data.chatId + ".lastMessage"]: {
+                  message,
+                },
+                [data.chatId + ".date"]: serverTimestamp(),
+              }),
 
-        await updateDoc(doc(db, "userChats", currentUser.uid), {
-            [data.chatId + ".lastMessage"]: {
-              message,
-            },
-            [data.chatId + ".date"]: serverTimestamp(),
-          });
-      
-          await updateDoc(doc(db, "userChats", data.user.uid), {
-            [data.chatId + ".lastMessage"]: {
-              message,
-            },
-            [data.chatId + ".date"]: serverTimestamp(),
-          });
-
+              updateDoc(doc(db, "userChats", data.user.uid), {
+                [data.chatId + ".lastMessage"]: {
+                  message,
+                },
+                [data.chatId + ".date"]: serverTimestamp(),
+              })
+        ])
         setMessage("");
         setImg(null)
     };

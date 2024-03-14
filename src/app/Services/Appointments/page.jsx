@@ -4,6 +4,8 @@ import NavbarIconsOnly from '@/components/NavbarIconsOnly'
 import Modal from 'react-modal'
 import Form from './Form'
 import Appointments from './Appointments'
+import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
+import { useRouter } from 'next/navigation';
 
 const customStyles = {
     content: {
@@ -23,12 +25,19 @@ const customStyles = {
 Modal.setAppElement("body")
 
 const page = () => {
+    const router = useRouter();
 
     return (
         <div className={`w-full h-screen flex bg-neutral-50`}>
             <NavbarIconsOnly />
             <div className="grow px-10 py-5">
-                <h1 className="text-2xl">Appointments</h1>
+                <div className='flex flex-row w-full h-[45px] py-10 items-center px-2 gap-16'>
+                    <button onClick={()=>router.back()}>
+                        <ArrowBackIosNewRoundedIcon sx={{ fontSize: 35}} className='bg-[#115E59] text-[#F5F5F5] rounded-full p-2 m-2 '/>Go back
+                    </button>
+                    
+                    <h1 className="text-2xl">Appointments</h1>
+                </div>
                 <div className="w-full grid grid-cols-8">
                         <Box name="Library" emailTo="citlibrary@gmail.com"/>
                         <Box name="Research Labs" emailTo="citresearch@gmail.com"/>
