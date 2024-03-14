@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect } from 'react'
-import puppeteer from 'puppeteer'
+//import puppeteer from 'puppeteer'
 
 const Results = () => {
 
