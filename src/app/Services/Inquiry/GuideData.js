@@ -89,6 +89,14 @@ const GuideData = [
         { label: 'International student orientation information', value: 'International student orientation information |' },
       ],
     },
+    {
+      header: `Lost and Found`,
+      email: 'lostandfound@cit.edu',
+      options: [
+        { label: 'Report Found Object', value: 'Found Object |' },
+        { label: 'Report Missing Object', value: 'Missing Object |' },
+      ],
+    },
   ];
   
   export default GuideData;
