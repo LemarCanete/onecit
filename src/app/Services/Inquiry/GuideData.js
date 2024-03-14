@@ -1,7 +1,7 @@
 const GuideData = [
     {
       header: 'Admissions and Enrollment',
-      email: 'oas@cit.edu',
+      email: 'ocon.christiane@gmail.com',//'oas@cit.edu',
       options: [
         { label: 'Application status', value: 'Application status |' },
         { label: 'Enrollment requirements', value: 'Enrollment requirements |' },
@@ -10,7 +10,7 @@ const GuideData = [
     },
     {
       header: 'Financial Aid and Scholarships',
-      email: 'oas@cit.edu',
+      email: 'ocon.christiane@gmail.com',//'oas@cit.edu',
       options: [
         { label: 'FAFSA assistance', value: 'FAFSA assistance |' },
         { label: 'Scholarship opportunities', value: 'Scholarship opportunities |' },
@@ -19,7 +19,7 @@ const GuideData = [
     },
     {
       header: 'Academic Advising',
-      email: 'guidance@cit.edu',
+      email: 'ocon.christiane@gmail.com',//'guidance@cit.edu',
       options: [
         { label: 'Course registration assistance', value: 'Course registration assistance |' },
         { label: 'Degree requirements clarification', value: 'Degree requirements clarification |' },
@@ -28,7 +28,7 @@ const GuideData = [
     },
     {
       header: 'Student Services',
-      email: 'sao@cit.edu',
+      email: 'ocon.christiane@gmail.com',//'sao@cit.edu',
       options: [
         { label: 'Housing and accommodation inquiries', value: 'Housing and accommodation inquiries |' },
         { label: 'Campus meal plans', value: 'Campus meal plans |' },
@@ -37,7 +37,7 @@ const GuideData = [
     },
     {
       header: 'Student Life and Activities',
-      email: 'sao@cit.edu',
+      email: 'ocon.christiane@gmail.com',//'sao@cit.edu',
       options: [
         { label: 'Club or organization information', value: 'Club or organization information |' },
         { label: 'Campus event inquiries', value: 'Campus event inquiries |' },
@@ -46,7 +46,7 @@ const GuideData = [
     },
     {
       header: 'IT Support',
-      email: 'tsg@cit.edu',
+      email: 'ocon.christiane@gmail.com',//'tsg@cit.edu',
       options: [
         { label: 'Technical assistance with campus systems (e.g., email, learning management system)', value: 'Technical assistance |' },
         { label: 'WiFi connectivity issues', value: 'WiFi connectivity issues |' },
@@ -55,7 +55,7 @@ const GuideData = [
     },
     {
       header: 'Library Services',
-      email: 'library@cit.edu',
+      email: 'ocon.christiane@gmail.com',//'library@cit.edu',
       options: [
         { label: 'Research assistance', value: 'Research assistance |' },
         { label: 'Book checkout and renewal', value: 'Book checkout and renewal |' },
@@ -64,7 +64,7 @@ const GuideData = [
     },
     {
       header: 'Career Services',
-      email: 'careers@cit.edu',
+      email: 'ocon.christiane@gmail.com',//'careers@cit.edu',
       options: [
         { label: 'Resume and cover letter assistance', value: 'Resume and cover letter assistance |' },
         { label: 'Internship and job opportunities', value: 'Internship and job opportunities |' },
@@ -73,7 +73,7 @@ const GuideData = [
     },
     {
       header: `Registrar's Office`,
-      email: 'registrar@cit.edu',
+      email: 'ocon.christiane@gmail.com',//'registrar@cit.edu',
       options: [
         { label: 'Transcript requests', value: 'Transcript requests |' },
         { label: 'Diploma replacement inquiries', value: 'Diploma replacement inquiries |' },
@@ -82,7 +82,7 @@ const GuideData = [
     },
     {
       header: `International Student Services`,
-      email: 'iss@cit.edu',
+      email: 'ocon.christiane@gmail.com',//'iss@cit.edu',
       options: [
         { label: 'Visa and immigration inquiries', value: 'Visa and immigration inquiries |' },
         { label: 'Cultural adjustment support', value: 'Cultural adjustment support |' },
@@ -91,7 +91,7 @@ const GuideData = [
     },
     {
       header: `Lost and Found`,
-      email: 'lostandfound@cit.edu',
+      email: 'ocon.christiane@gmail.com',//'lostandfound@cit.edu',
       options: [
         { label: 'Report Found Object', value: 'Found Object |' },
         { label: 'Report Missing Object', value: 'Missing Object |' },
