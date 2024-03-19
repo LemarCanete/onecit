@@ -16,6 +16,7 @@ export async function POST(request) {
             headless: false,
         });
         const page = await browser.newPage();
+        await page.setViewport({width: 2560, height: 1953});
 
         await page.goto(goto);
 

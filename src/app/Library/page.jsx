@@ -2,25 +2,28 @@
 import React, { useState } from 'react'
 import Results from './Results'
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
-import { BsSearch } from 'react-icons/bs'
 
 const sites = [
-    {
-        title: "",
-        description: "",
-        origin: "",
-        goto: "",
-        searchElement: "",
-        titleElement: "",
-        authorElement: "",
-        imageElement: "",
-        dateElement: "",
-        descriptionElement: "",
-        linkElement: ""
-    },
+    // {
+    //     title: "",
+    //     description: "",
+    //     username: "",
+    //     password: "",
+    //     origin: "",
+    //     goto: "",
+    //     searchElement: "",
+    //     titleElement: "",
+    //     authorElement: "",
+    //     imageElement: "",
+    //     dateElement: "",
+    //     descriptionElement: "",
+    //     linkElement: ""
+    // },
     {
         title: "Directory of Open Access Books (DOAB)",
         description: "E-books",
+        username: "",
+        password: "",
         origin: "https://directory.doabooks.org",
         goto: "https://directory.doabooks.org/discover?locale-attribute=en",
         searchElement: ".ds-text-field",
@@ -34,6 +37,8 @@ const sites = [
     {
         title: "Philippine Ebook Hub",
         description: "E-book",
+        username: "",
+        password: "",
         origin: "https://ebookhub.ph/",
         goto: "https://ebookhub.ph/collection.php?q",
         searchElement: ".search_box form input[type='text']",
@@ -47,6 +52,8 @@ const sites = [
     {
         title: "Scientific Academic Research",
         description: " Academic Research E-books and E-journals (Open Access)",
+        username: "",
+        password: "",
         origin: "https://www.scirp.org/journal/",
         goto: "https://www.scirp.org/journal/articles?searchcode=",
         searchElement: "#ContentPlaceHolder1_txtSearch",
@@ -60,6 +67,8 @@ const sites = [
     {
         title: "PubMed",
         description: "E-Journal (Open Access)",
+        username: "",
+        password: "",
         origin: "https://www.ncbi.nlm.nih.gov",
         goto: "https://www.ncbi.nlm.nih.gov/pmc/?term=",
         searchElement: "#term",
@@ -70,6 +79,66 @@ const sites = [
         descriptionElement: "",
         linkElement: ".title a"
     },
+    {
+        title: "Cambridge Core",
+        description: "E-book",
+        username: "llrc.lisa@gmail.com",
+        password: "libService2019",
+        origin: "https://www.cambridge.org",
+        goto: "https://www.cambridge.org/core/search?q=",
+        searchElement: ".small-10 input[name='q']",
+        titleElement: ".title h3",
+        authorElement: "li.paragraph_05 ",
+        imageElement: "",
+        dateElement: ".author",
+        descriptionElement: "li dl.do-not-mathjax",
+        linkElement: ".title h3 a"
+    },
+    {
+        title: "Emerald emerging market case studies",
+        description: "Journals, Books and Case Studies",
+        username: "OAN: 307501991999617",
+        password: "",
+        origin: "https://www.emerald.com",
+        goto: "https://www.emerald.com/insight/search?q=",
+        searchElement: "#terms",
+        titleElement: ".intent_item .intent_title",
+        authorElement: ".intent_item p a",
+        imageElement: "",
+        dateElement: ".intent_item .intent_publication_date",
+        descriptionElement: ".intent_item p:nth-child(4)",
+        linkElement: ".intent_item h2 a"
+    },
+    {
+        title: "Taylor & Francis Online",
+        description: "E-journal (Open Access) - not working",
+        username: "",
+        password: "",
+        origin: "https://www.tandfonline.com/openaccess/openjournals",
+        goto: "https://www.tandfonline.com/action/doSearch?AllField=",
+        searchElement: "#advSearch_keyw_for_1",
+        titleElement: ".hlFld-Title",
+        authorElement: ".author",
+        imageElement: "",
+        dateElement: ".publication-year",
+        descriptionElement: ".publication-meta",
+        linkElement: ".hlFld-Title a"
+    },
+    {
+        title: "Wiley Online Library",
+        description: "E-book - not working",
+        username: "CEBU",
+        password: "CEBU12345",
+        origin: "https://onlinelibrary.wiley.com/action/showPublications",
+        goto: "https://onlinelibrary.wiley.com/action/doSearch?AllField=",
+        searchElement: "#searchField1",
+        titleElement: ".meta__title",
+        authorElement: "",
+        imageElement: ".item__image img",
+        dateElement: ".meta__details",
+        descriptionElement: "",
+        linkElement: ".meta__title span a"
+    },
 ]
 
 const page = () => {
@@ -77,6 +146,7 @@ const page = () => {
         {
             title: "No site selected", origin: "", 
             description: "", goto: "",
+            username: "", password: "",
             searchElement: "", titleElement: "", 
             authorElement: "", imageElement: "",
             dateElement: "", descriptionElement: "",
@@ -117,7 +187,7 @@ const page = () => {
 const Lib = ({title, description}) =>{
 
     return (
-        <div className="flex gap-3 hover:bg-neutral-100 cursor-pointer p-1">
+        <div className="flex gap-3 hover:bg-neutral-100 cursor-pointer p-1 hover:underline my-1">
             <img src="/schoolLogo.png" alt="" className="h-12 w-12 " />
             <div className="">
                 <h4 className="text-sm font-black">{title}</h4>

@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
+import {FaExternalLinkAlt} from 'react-icons/fa'
+import LibraryInfo from './LibraryInfo';
 
 const Results = ({details}) => {
     const [search, setSearch] = useState("");
@@ -22,6 +24,7 @@ const Results = ({details}) => {
                     return;
                 }
                 setLoading("Loading...")
+                setSearchResults([{}, {}, {}, {}, {}, {}])
                 const res = await fetch("/Library/scrapping/searchprod/", {
                     method: "POST",
                     body: JSON.stringify({ search, goto, searchElement, titleElement, authorElement, imageElement, dateElement, descriptionElement, linkElement }),
@@ -46,8 +49,23 @@ const Results = ({details}) => {
     return (
         <div className='px-10 py-5 grow h-full overflow-y-auto h-screen w-11/12'>
            <div className="flex justify-between align-center">
-                <h1 className="text-2xl">Library </h1>
-                <span className="text-sm">{details.title}</span>
+                <div className="flex align-center gap-2">
+                    <h1 className="text-2xl">Library </h1>
+                    <LibraryInfo />
+                </div>
+
+                {details.username !== "" && (
+                    <>
+                        <p className="text-sm text-black/50"><span className='font-bold'>Username:</span> {details.username}</p>
+                        <p className="text-sm text-black/50"><span className='font-bold'>Password:</span> {details.password}</p>
+                    </>
+                    )
+                }
+                <div className="cursor-pointer text-sm flex align-center gap-3">
+                    <p className="">{details.title} </p>
+                    <a href={details.origin} className="" target='_blank'><FaExternalLinkAlt className=' '/></a>
+                </div>
+                
            </div>
             <input type="search" 
                 className='w-full border rounded p-2 text-sm outline-none' 
@@ -65,7 +83,7 @@ const Results = ({details}) => {
             </div>}
 
             {searchResults && searchResults.map((res, i)=>(
-                <div className='bg-white my-2 p-3 text-sm cursor-pointer hover:scale-105 shadow-lg flex gap-5' key={i}>
+                <div className={`bg-white my-2 p-3 text-sm cursor-pointer shadow-lg flex gap-5 rounded ${res.title ? 'hover:scale-105' : 'hover:scale-100 shadow-sm animate-pulse'}`} key={i}>
                     <img src={`${details.origin}${res.image}`} alt="" className='h-28'/>
                     <div className="">
                         <a href={`${details.origin}${res.link}`} className="" target='__blank'><p className='font-bold hover:underline'>{res.title}</p></a>
