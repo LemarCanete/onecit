@@ -31,10 +31,11 @@ const Navbar = ({active}) => {
 
 const Icon = ({icon, name, active})=>{
     const mode = useSelector(state => state.darkMode.value);
-    const isActive = `border-s-8 border-teal-800 `
+    const isActive = `border-s-8 border-teal-800`
+    const formattedName = (name === "Logout") ? "Login" : name
     
     return(
-        <Link href={`/${(name === "Logout") ? "Login" : name}`} 
+        <Link href={`/${formattedName}`} 
             className={`px-5  py-2 hover:bg-slate-50 text-base mb-3 ${mode && 'text-white hover:bg-slate-500' } ${(name === active && active !== undefined) && isActive} `}>
             {icon}{name}
         </Link>
