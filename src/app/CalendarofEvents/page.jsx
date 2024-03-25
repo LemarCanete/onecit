@@ -12,6 +12,7 @@ import Modal from 'react-modal';
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 import EventForm from './EventForm'
 import { useRouter } from 'next/navigation'
+import { FcCalendar } from "react-icons/fc";
 
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from '@/firebase-config'
@@ -42,6 +43,8 @@ const page = () => {
     const [selectedDate, setSelectedDate] = useState('');
     const [dateText, setDateText] = useState(null);
     const {currentUser} = useContext(AuthContext)
+    const [isOpenAdmin, setIsOpenAdmin]  = useState(false)
+
 
     const router = useRouter()
 
@@ -55,8 +58,13 @@ const page = () => {
         const fetchData = async () => {
             const fetchedEvents = [];
             const user = currentUser.uid;
-    
-            const e = await getDocs(query(collection(db, "calendarEvents"), where("user", "==", user)));
+            
+            let e;
+            if(isOpenAdmin){
+                e = await getDocs(query(collection(db, "calendarEvents"), where("role", "==", 'admin')));
+            }else{
+                e = await getDocs(query(collection(db, "calendarEvents"), where("user", "==", user)));
+            }
     
             e.forEach((doc) => {
                 const eventData = doc.data();
@@ -82,22 +90,27 @@ const page = () => {
     
             setEvents(fetchedEvents);
         };
-    
+        
         if (currentUser.uid) {
             fetchData();
         }
-    }, [currentUser, events]);
+    }, [currentUser, isOpenAdmin]);
     
-    console.log(events)
+    
+
     return (
         <div className='w-full h-screen flex bg-neutral-100 overflow-hidden'>
             <NavbarIconsOnly />
             <div className='grow px-10 py-5 overflow-y-scroll'>
-                <div className="flex gap-5 align-center">
+                <div className="flex gap-5 align-center justify-between">
                     <button onClick={()=>router.back()}>
                         <ArrowBackIosNewRoundedIcon sx={{ fontSize: 35}} className='bg-[#115E59] text-[#F5F5F5] rounded-full p-2 m-2 '/>Go back
                     </button>
                     <h1 className="text-2xl">Calendar of Events</h1>
+                    {currentUser.role === 'student' && <button className="flex items-center gap-2 text-sm hover:underline" onClick={()=>setIsOpenAdmin(!isOpenAdmin)}>
+                        <span className="">{isOpenAdmin ? 'My' : 'Admin'} Calendar</span>
+                        <FcCalendar className='text-2xl'/>
+                    </button>}
                 </div>
                 
                 {/* Calendar */}
@@ -121,7 +134,8 @@ const page = () => {
                         eventClassNames="text-center border-0"
                         dayHeaderClassNames="bg-yellow-500"
                         eventInteractive={true}
-                        eventTimeFormat={{hour: 'numeric', minute: '2-digit', timeZoneName: 'short'}}
+                        // eventTimeFormat={{hour: 'numeric', minute: '2-digit', timeZoneName: 'short'}}
+                        eventTimeFormat={{hour: 'numeric', minute: '2-digit'}}
                         dateClick={(info)=>
                             {
                                 const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];

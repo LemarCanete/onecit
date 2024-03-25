@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { BsPlusCircle, BsX } from 'react-icons/bs';
+import { BsPlusCircle, BsTrash, BsX } from 'react-icons/bs';
 import Datepicker from "react-tailwindcss-datepicker"; 
 import { db } from '@/firebase-config';
 import { addDoc, collection } from 'firebase/firestore';
+import Modal from 'react-modal';
+
 
 const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setEvents}) => {
     const nd = new Date(dateText);
@@ -34,30 +36,28 @@ const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setE
         const checkEventDate = () => {
             const filteredMainEvents = [];
             const filteredSubEvents = [];
-    
+        
             events.forEach(event => {
                 const eventStartDate = new Date(event.start);
                 const eventEndDate = new Date(event.end);
                 const checkDate = new Date(dateText);
-    
+        
                 // Extract the date part from the event start and end dates
                 const eventStartDateOnly = new Date(eventStartDate.getFullYear(), eventStartDate.getMonth(), eventStartDate.getDate());
                 const eventEndDateOnly = new Date(eventEndDate.getFullYear(), eventEndDate.getMonth(), eventEndDate.getDate());
                 const checkDateOnly = new Date(checkDate.getFullYear(), checkDate.getMonth(), checkDate.getDate());
-    
-                const isMainEvent = eventStartDateOnly.getTime() === eventEndDateOnly.getTime();
-    
-                if (checkDateOnly.getTime() === eventStartDateOnly.getTime() ||
-                    checkDateOnly.getTime() === eventEndDateOnly.getTime() ||
-                    (checkDateOnly > eventStartDateOnly && checkDateOnly < eventEndDateOnly)) {
-                    if (isMainEvent) {
+        
+                // Rule for Main Event: If it has allDay field
+                if (event.allDay && checkDateOnly.getTime() >= eventStartDateOnly.getTime() && checkDateOnly.getTime() < eventEndDateOnly.getTime()) {
+                    filteredMainEvents.push(event);
+                } else {
+                    // Rule for Sub Event: If the dateText is the same as the startDate and endDate
+                    if (checkDateOnly.getTime() === eventStartDateOnly.getTime() && checkDateOnly.getTime() === eventEndDateOnly.getTime()) {
                         filteredSubEvents.push(event);
-                    } else {
-                        filteredMainEvents.push(event);
                     }
                 }
             });
-    
+        
             setMainEvents(filteredMainEvents);
             setSubTasks(filteredSubEvents);
         };
@@ -65,8 +65,7 @@ const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setE
         if (events) {
             checkEventDate();
         }
-    }, [events, dateText]);
-    
+    }, [dateText]);
     
 
     const handleMain = async() =>{
@@ -74,15 +73,15 @@ const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setE
 
         try{
             const user = currentUser.uid;
+            const role = currentUser.role
             const addMainEvent = await addDoc(collection(db, "calendarEvents"),
-                {value, title: mainTitle, user,allDay }
+                {value, title: mainTitle, user,allDay, role }
             )
+
             setStatus("Successfully Added!")
-            setEvents(null);
         }catch(err){
             console.log(err.message);
             setStatus("Something went wrong!")
-            setEvents(null)
         }
     }
 
@@ -90,15 +89,20 @@ const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setE
         if(subTitle === "" || startTime === null || endTime === null) return;
 
         try{
+            const role = currentUser.role
             const user = currentUser.uid;
             const addMainEvent = await addDoc(collection(db, "calendarEvents"),
-                {value: {startDate: `${dateText}T${startTime}`, endDate: `${dateText}T${endTime}`}, title: subTitle, user }
+                {value: {startDate: `${dateText}T${startTime}`, endDate: `${dateText}T${endTime}`}, title: subTitle, user, role }
             )
             setStatus("Successfully Added!")
         }catch(err){
             console.log(err.message);
             setStatus("Something went wrong!")
         }
+    }
+
+    const handleDeleteEvent = (task) =>{
+        alert(task.title)
     }
 
     console.log(startTime, endTime)
@@ -118,7 +122,7 @@ const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setE
                                 // Convert start and end times to Date objects
                                 const startDate = new Date(task.start);
                                 const endDate = new Date(task.end);
-
+                                console.log(task)
                                 // Subtract one day from the end date
                                 endDate.setDate(endDate.getDate() - 1);
 
@@ -130,8 +134,9 @@ const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setE
                                 const dateRange = `${task.title} ${formattedStartDate} - ${formattedEndDate}`;
 
                                 return (
-                                    <li className='list-decimal list-inside' key={i}>
+                                    <li className='list-decimal list-inside flex gap-3' key={i}>
                                         {dateRange}
+                                        <span className="inline hover:text-teal-500 cursor-pointer text-2xl" onClick={()=>handleDeleteEvent(task)}><BsX /></span>
                                     </li>
                                 );
                             }): <span className='text-black/25 italic flex justify-center items-center h-72 text-2xl'>No event yet!</span> }
@@ -153,7 +158,10 @@ const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setE
                                 const timeRange = `${formattedStartTime} - ${formattedEndTime}`;
 
                                 return (
-                                    <li className='list-disc list-inside' key={i}>{task.title} <span className="">{timeRange}</span></li>
+                                    <li className='list-disc list-inside flex gap-3' key={i}>{task.title}
+                                        <span className="">{timeRange}</span>
+                                        <span className="inline hover:text-teal-500 cursor-pointer text-2xl" onClick={()=>handleDeleteEvent(task)}><BsX /></span>
+                                    </li>
                                 );
                             }): <li className='text-black/25 italic list-disc list-inside'>No event yet!</li> }
                         </ul>
@@ -191,7 +199,7 @@ const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setE
                         <span className={`absolute bottom-0 mb-8 ${(status === 'Successfully Added!') ? 'text-teal-500' : 'text-red-500'}`}>{status}</span>
                     </form>
                     <form className='border-s ps-3 '>
-                        <h2 className="font-bold text-center text-base">Sub Events</h2>
+                        <h2 className="font-bold text-center text-base">Today's Event</h2>
                         
                         <div className="flex flex-col mb-2">
                             <label htmlFor="taskTitle">Task Title: </label>

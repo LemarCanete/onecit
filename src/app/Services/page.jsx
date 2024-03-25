@@ -2,6 +2,7 @@
 import React from 'react'
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
 import { usePathname, useRouter } from 'next/navigation'
+import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 
 const services = [
     {
@@ -79,13 +80,19 @@ const services = [
 ]
 
 const page = () => {
+    const router = useRouter()
 
     return (
         <div className='w-full h-screen flex bg-neutral-50'>
             <NavbarIconsOnly/>
 
             <div className="px-10 py-5 grow flex-col justify-center items-center">
-                <h1 className="text-3xl">Services</h1>
+                <div className="flex gap-3">
+                    <button onClick={()=>router.back()}>
+                        <ArrowBackIosNewRoundedIcon sx={{ fontSize: 35}} className='bg-[#115E59] text-[#F5F5F5] rounded-full p-2 m-2 '/>Go back
+                    </button>
+                    <h1 className="text-3xl">Services</h1>
+                </div>
                 <input type="search" placeholder='Search' className='w-full rounded-lg p-2 my-3'/>
 
                 <div className='w-full h-auto grid grid-cols-4' >
