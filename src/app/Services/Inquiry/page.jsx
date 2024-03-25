@@ -30,6 +30,15 @@ const page = () => {
   const [showInbox, setShowInbox] = useState('')
   const [parameters, setParameters] = useState('')
   const [isOpen, setIsOpen] = useState(false);
+  const [files, setFiles] = useState([]);
+  const [showState, setShowState] = useState({});
+  const [selectedoption, setSelectedOption] = useState({
+    email: '',
+    subject: '',
+    header: '',
+  });
+  const [rows, setRows] = useState([])
+
 
   Modal.setAppElement("body")
 
@@ -49,7 +58,6 @@ const page = () => {
     else setShowInbox('');
   }
   
-  const [files, setFiles] = useState([]);
 
   const handleFileChange = (e) => {
     const fileList = Array.from(e.target.files);
@@ -84,13 +92,6 @@ const page = () => {
     const downloadURLs = await Promise.all(filePromises);
     return downloadURLs;
   };
-  
-  const [showState, setShowState] = useState({});
-  const [selectedoption, setSelectedOption] = useState({
-    email: '',
-    subject: '',
-    header: '',
-  });
 
   const toggleShow = (header) => {
     if (showState[header]) {
@@ -129,8 +130,8 @@ const page = () => {
     { field: 'date', headerClassName: 'header', headerName: 'Date', flex: 0.2},
     { field: 'time', headerClassName: 'header', headerName: 'Time', flex: 0.2},
   ]
-  const [rows, setRows] = useState([])
-
+  
+// SAMPLE HERE
   useEffect(() => {
     if (currentUser && currentUser.uid) {
       const q = query(
@@ -140,7 +141,7 @@ const page = () => {
           where('recipient', '==', currentUser.email)
         )
       );
-  
+
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const retrievedrows = [];
         querySnapshot.forEach((doc) => {
