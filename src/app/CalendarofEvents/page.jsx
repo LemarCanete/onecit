@@ -14,7 +14,7 @@ import EventForm from './EventForm'
 import { useRouter } from 'next/navigation'
 import { FcCalendar } from "react-icons/fc";
 
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
 import { db } from '@/firebase-config'
 import { AuthContext } from '@/context/AuthContext';
 
@@ -45,7 +45,6 @@ const page = () => {
     const {currentUser} = useContext(AuthContext)
     const [isOpenAdmin, setIsOpenAdmin]  = useState(false)
 
-
     const router = useRouter()
 
     const [events, setEvents] = useState([
@@ -54,49 +53,95 @@ const page = () => {
         { title: 'Play', start: '2024-03-25T14:00:00', end: '2024-03-25T18:00:00'},
     ])
 
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         const fetchedEvents = [];
+    //         const user = currentUser.uid;
+            
+    //         let e;
+    //         if(isOpenAdmin){
+    //             e = await getDocs(query(collection(db, "calendarEvents"), where("role", "==", 'admin')));
+    //         }else{
+    //             e = await getDocs(query(collection(db, "calendarEvents"), where("user", "==", user)));
+    //         }
+    
+    //         e.forEach((doc) => {
+    //             const eventData = doc.data();
+    
+    //             const startDate = eventData.value.startDate.includes('T')
+    //                 ? eventData.value.startDate
+    //                 : `${eventData.value.startDate}T00:00:00`; 
+    
+    //             const endDate = eventData.value.endDate.includes('T')
+    //                 ? eventData.value.endDate
+    //                 : new Date(
+    //                     new Date(eventData.value.endDate.split('-').map(v => parseInt(v, 10))).getTime() +
+    //                     (1000 * 60 * 60 * 24)
+    //                 ).toISOString();
+    
+    //             fetchedEvents.push({
+    //                 title: eventData.title,
+    //                 start: startDate,
+    //                 end: endDate,
+    //                 allDay: eventData.allDay
+    //             });
+    //         });
+    
+    //         setEvents(fetchedEvents);
+    //     };
+        
+    //     if (currentUser.uid) {
+    //         fetchData();
+    //     }
+    // }, [currentUser, isOpenAdmin]);
+    
     useEffect(() => {
         const fetchData = async () => {
-            const fetchedEvents = [];
             const user = currentUser.uid;
             
             let e;
             if(isOpenAdmin){
-                e = await getDocs(query(collection(db, "calendarEvents"), where("role", "==", 'admin')));
+                e = query(collection(db, "calendarEvents"), where("role", "==", 'admin'));
             }else{
-                e = await getDocs(query(collection(db, "calendarEvents"), where("user", "==", user)));
+                e = query(collection(db, "calendarEvents"), where("user", "==", user));
             }
     
-            e.forEach((doc) => {
-                const eventData = doc.data();
+            const unsubscribe = onSnapshot(e, (querySnapshot) => {
+                const fetchedEvents = [];
+
+                querySnapshot.forEach((doc) => {
+                    const eventData = doc.data();
     
-                const startDate = eventData.value.startDate.includes('T')
-                    ? eventData.value.startDate
-                    : `${eventData.value.startDate}T00:00:00`; 
-    
-                const endDate = eventData.value.endDate.includes('T')
-                    ? eventData.value.endDate
-                    : new Date(
-                        new Date(eventData.value.endDate.split('-').map(v => parseInt(v, 10))).getTime() +
-                        (1000 * 60 * 60 * 24)
-                    ).toISOString();
-    
-                fetchedEvents.push({
-                    title: eventData.title,
-                    start: startDate,
-                    end: endDate,
-                    allDay: eventData.allDay
+                    const startDate = eventData.value.startDate.includes('T')
+                        ? eventData.value.startDate
+                        : `${eventData.value.startDate}T00:00:00`; 
+        
+                    const endDate = eventData.value.endDate.includes('T')
+                        ? eventData.value.endDate
+                        : new Date(
+                            new Date(eventData.value.endDate.split('-').map(v => parseInt(v, 10))).getTime() +
+                            (1000 * 60 * 60 * 24)
+                        ).toISOString();
+        
+                    fetchedEvents.push({
+                        title: eventData.title,
+                        start: startDate,
+                        end: endDate,
+                        allDay: eventData.allDay,
+                        user: eventData.user
+                    });
                 });
+                setEvents(fetchedEvents);
+
             });
+              
     
-            setEvents(fetchedEvents);
         };
         
         if (currentUser.uid) {
             fetchData();
         }
     }, [currentUser, isOpenAdmin]);
-    
-    
 
     return (
         <div className='w-full h-screen flex bg-neutral-100 overflow-hidden'>
@@ -106,7 +151,7 @@ const page = () => {
                     <button onClick={()=>router.back()}>
                         <ArrowBackIosNewRoundedIcon sx={{ fontSize: 35}} className='bg-[#115E59] text-[#F5F5F5] rounded-full p-2 m-2 '/>Go back
                     </button>
-                    <h1 className="text-2xl">Calendar of Events</h1>
+                    <h1 className="text-2xl font-bold tracking-widest">Calendar of Events</h1>
                     {currentUser.role === 'student' && <button className="flex items-center gap-2 text-sm hover:underline" onClick={()=>setIsOpenAdmin(!isOpenAdmin)}>
                         <span className="">{isOpenAdmin ? 'My' : 'Admin'} Calendar</span>
                         <FcCalendar className='text-2xl'/>
@@ -132,7 +177,7 @@ const page = () => {
                         viewClassNames="cursor-pointer bg-white/75 text-sm z-0"
                         dayCellClassNames="hover:bg-white"
                         eventClassNames="text-center border-0"
-                        dayHeaderClassNames="bg-yellow-500"
+                        dayHeaderClassNames="bg-teal-500"
                         eventInteractive={true}
                         // eventTimeFormat={{hour: 'numeric', minute: '2-digit', timeZoneName: 'short'}}
                         eventTimeFormat={{hour: 'numeric', minute: '2-digit'}}
@@ -163,12 +208,14 @@ const page = () => {
     )
 }
 function renderEventContent(eventInfo) {
-    const timeText = eventInfo.timeText === ""    
-    console.log(eventInfo.timeText, timeText)
+    const timeText = eventInfo.timeText === ""  
+    const isAllDay = eventInfo.event._def.allDay  
+
+    console.log(isAllDay)
     return (
-      <div className='text-center w-full'>
+      <div className={`${isAllDay ? 'bg-teal-800' : ''} text-center w-full`}>
         {eventInfo.timeText && <b>{eventInfo.timeText} - </b>}
-        <i className={`${timeText} ? '' : 'font-bold' `}>{eventInfo.event.title}</i>
+        <i className={`${timeText ? '' : 'font-bold'}`}>{eventInfo.event.title}</i>
       </div>
     )
 }

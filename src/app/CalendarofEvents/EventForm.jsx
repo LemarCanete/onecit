@@ -2,8 +2,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import { BsPlusCircle, BsTrash, BsX } from 'react-icons/bs';
 import Datepicker from "react-tailwindcss-datepicker"; 
 import { db } from '@/firebase-config';
-import { addDoc, collection } from 'firebase/firestore';
-import Modal from 'react-modal';
+import { addDoc, collection, deleteDoc, getDocs, query, where,  } from 'firebase/firestore';
 
 
 const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setEvents}) => {
@@ -65,7 +64,7 @@ const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setE
         if (events) {
             checkEventDate();
         }
-    }, [dateText]);
+    }, [dateText, events]);
     
 
     const handleMain = async() =>{
@@ -92,7 +91,7 @@ const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setE
             const role = currentUser.role
             const user = currentUser.uid;
             const addMainEvent = await addDoc(collection(db, "calendarEvents"),
-                {value: {startDate: `${dateText}T${startTime}`, endDate: `${dateText}T${endTime}`}, title: subTitle, user, role }
+                {value: {startDate: `${dateText}T${startTime}`, endDate: `${dateText}T${endTime}`}, title: subTitle, user, role}
             )
             setStatus("Successfully Added!")
         }catch(err){
@@ -101,15 +100,45 @@ const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setE
         }
     }
 
-    const handleDeleteEvent = (task) =>{
-        alert(task.title)
-    }
+    const handleDeleteEvent = async (task) => {
+        const { title, start, end, allDay: wholeDay } = task;
+        
+        try {
+            let q;
+            if(!wholeDay){
+                q = query(
+                    collection(db, 'calendarEvents'),
+                    where('title', '==', title),
+                    where('value.startDate', '==', start.toString()),
+                    where('value.endDate', '==', end.toString()),
+                );
+            }else{
+                q = query(
+                    collection(db, 'calendarEvents'),
+                    where('title', '==', title),
+                    where('value.startDate', '==', start.toString().split('T')[0]),
+                    where('value.endDate', '==', end.toString().split('T')[0]),
+                );
+            }
+            
+            const querySnapshot = await getDocs(q);
+            
+            console.log("Number of documents found:", querySnapshot.size);
 
-    console.log(startTime, endTime)
-    console.log(mainEvents, subTasks)
+            querySnapshot.forEach(async (doc) => {
+                await deleteDoc(doc.ref);
+                alert("Successfully Deleted!");
+            });
+    
+        } catch (err) {
+            alert("Something went Wrong!");
+            console.error("Error deleting document: ", err);
+        }
+    };
+
 
     return (
-        <div className="z-40 text-sm flex flex-col content-between justify-between h-full">
+        <div className="z-20 text-sm flex flex-col content-between justify-between h-full">
             <div className="flex flex-col relative">
                 <h1 className="">{selectedDate}</h1>
                 <p className="absolute right-0 text-2xl cursor-pointer hover:text-teal-500" onClick={()=>setIsOpen(false)}><BsX /></p>
@@ -136,7 +165,7 @@ const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setE
                                 return (
                                     <li className='list-decimal list-inside flex gap-3' key={i}>
                                         {dateRange}
-                                        <span className="inline hover:text-teal-500 cursor-pointer text-2xl" onClick={()=>handleDeleteEvent(task)}><BsX /></span>
+                                        {currentUser.uid === task.user && <span className="inline hover:text-teal-500 cursor-pointer text-2xl" onClick={()=>handleDeleteEvent(task)}><BsX /></span>}
                                     </li>
                                 );
                             }): <span className='text-black/25 italic flex justify-center items-center h-72 text-2xl'>No event yet!</span> }
@@ -160,7 +189,7 @@ const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setE
                                 return (
                                     <li className='list-disc list-inside flex gap-3' key={i}>{task.title}
                                         <span className="">{timeRange}</span>
-                                        <span className="inline hover:text-teal-500 cursor-pointer text-2xl" onClick={()=>handleDeleteEvent(task)}><BsX /></span>
+                                        {currentUser.uid === task.user && <span className="inline hover:text-teal-500 cursor-pointer text-2xl" onClick={()=>handleDeleteEvent(task)}><BsX /></span>}
                                     </li>
                                 );
                             }): <li className='text-black/25 italic list-disc list-inside'>No event yet!</li> }
