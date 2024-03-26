@@ -15,21 +15,28 @@ const page = () => {
                 <h1 className="text-2xl my-5">Apps</h1>
                 {/* Content */}
                 <div className="flex">
-                    <div className="w-5/6 grid grid-cols-6 ">
-                        <Box name="Directory"/>
-                        <Box name="Services"/>
-                        <Box name="Library"/>
-                        <Box name="Personal Details"/>
-                        <Box name="Chat"/>
-                        <Box name="Task Management"/>
-                        <Box name="Announcements"/>
-                        <Box name="Calendar of Events"/>
-                        <Box name="Forum"/>
-                        <Box name="Feedback and Complaints"/>
-                        <Box name="Careers"/>
-                        <Box name="Grade Calculator"/>
-                        <Box name="Class Tracker"/>
-                        <Box name="Courses"/>
+                    <div className="w-5/6">
+                        <p className="text-sm italic text-black/25">Done or Working</p>
+                        <div className="w-full grid grid-cols-6 ">
+                            <Box name="Services"/>
+                            <Box name="Library"/>
+                            <Box name="Chat"/>
+                            <Box name="Calendar of Events"/>
+                            <Box name="Announcements"/>
+                            <Box name="Forum"/>
+                            <Box name="Feedback and Complaints"/>
+                        </div>
+                        <p className="text-sm italic text-black/25">Not started</p>
+                        <div className="w-full grid grid-cols-6">
+                            <Box name="Directory"/>
+                            <Box name="Personal Details"/>
+                            <Box name="Task Management"/>
+                            <Box name="Careers"/>
+                            <Box name="Grade Calculator"/>
+                            <Box name="Class Tracker"/>
+                            <Box name="Courses"/>
+                            <Box name="Campus Map"/>
+                        </div>
                     </div>
 
                     <div class="quicklink-background">

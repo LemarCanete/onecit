@@ -36,7 +36,7 @@ const page = () => {
                         <ArrowBackIosNewRoundedIcon sx={{ fontSize: 35}} className='bg-[#115E59] text-[#F5F5F5] rounded-full p-2 m-2 '/>Go back
                     </button>
                     
-                    <h1 className="text-2xl">Appointments</h1>
+                    <h1 className="text-2xl tracking-widest	">Appointments</h1>
                 </div>
                 <div className="w-full grid grid-cols-8">
                         <Box name="Library" emailTo="citlibrary@gmail.com"/>
