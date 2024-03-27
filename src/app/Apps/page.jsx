@@ -1,13 +1,133 @@
 'use client'
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import Navbar from '@/components/Navbar'
 import Profile from '@/components/Profile'
 import { useSelector } from 'react-redux'
 import { useRouter } from 'next/navigation'
+import { AuthContext } from '@/context/AuthContext'
+
+
+const userApps = [
+    {
+        name: "Services",
+        isDone: true,
+    },
+    {
+        name: "Library",
+        isDone: true,
+    },
+    {
+        name: "Chat",
+        isDone: true,
+    },
+    {
+        name: "Calendar of Events",
+        isDone: true,
+    },
+    {
+        name: "Directory",
+        isDone: true,
+    },
+    {
+        name: "Announcements",
+        isDone: true,
+    },
+    {
+        name: "Forum",
+        isDone: true,
+    },
+    {
+        name: "Feedback and Complaints",
+        isDone: true,
+    },
+    {
+        name: "Personal Details",
+        isDone: false,
+    },
+    {
+        name: "Task Management",
+        isDone: false,
+    },
+    {
+        name: "Careers",
+        isDone: false,
+    },
+    {
+        name: "Grade Calculator",
+        isDone: false,
+    },
+    {
+        name: "Class Tracker",
+        isDone: false,
+    },
+    {
+        name: "Courses",
+        isDone: false,
+    },
+    {
+        name: "Campus Map",
+        isDone: false,
+    },
+    
+]
+
+const adminApps = [
+    {
+        name: "Services",
+        isDone: true,
+    },
+    {
+        name: "Library",
+        isDone: true,
+    },
+    {
+        name: "Chat",
+        isDone: true,
+    },
+    {
+        name: "Calendar of Events",
+        isDone: true,
+    },
+    {
+        name: "User Management",
+        isDone: false,
+    },
+    {
+        name: "Directory",
+        isDone: true,
+    },
+]
 
 const page = () => {
     const mode = useSelector(state => state.darkMode.value)
     const profile = useSelector(state => state.profile.value)
+    const {currentUser} = useContext(AuthContext);
+
+    const isAdmin = currentUser.role === "admin"
+    
+    const renderDoneApps = () =>{
+        if(isAdmin){
+            return adminApps.map((app)=>{
+                return app.isDone && <Box name={app.name} />
+            })
+        }else{
+            return userApps.map((app)=>{
+                return app.isDone && <Box name={app.name} />
+            })
+        }
+    }
+    const renderNotStartedApps = () =>{
+        if(isAdmin){
+            return adminApps.map((app)=>{
+                return !app.isDone && <Box name={app.name} />
+            })
+        }else{
+            return userApps.map((app)=>{
+                return !app.isDone && <Box name={app.name} />
+            })
+        }
+    }
+
     return (
         <div className={`w-full  h-screen flex ${mode ? 'bg-slate-800' : 'bg-neutral-50'}`}>
             <Navbar active="Apps"/>
@@ -18,24 +138,11 @@ const page = () => {
                     <div className="w-5/6">
                         <p className="text-sm italic text-black/25">Done or Working</p>
                         <div className="w-full grid grid-cols-6 ">
-                            <Box name="Services"/>
-                            <Box name="Library"/>
-                            <Box name="Chat"/>
-                            <Box name="Calendar of Events"/>
-                            <Box name="Announcements"/>
-                            <Box name="Forum"/>
-                            <Box name="Feedback and Complaints"/>
+                            {currentUser.role && renderDoneApps()}
                         </div>
                         <p className="text-sm italic text-black/25">Not started</p>
                         <div className="w-full grid grid-cols-6">
-                            <Box name="Directory"/>
-                            <Box name="Personal Details"/>
-                            <Box name="Task Management"/>
-                            <Box name="Careers"/>
-                            <Box name="Grade Calculator"/>
-                            <Box name="Class Tracker"/>
-                            <Box name="Courses"/>
-                            <Box name="Campus Map"/>
+                            {currentUser.role && renderNotStartedApps()}
                         </div>
                     </div>
 

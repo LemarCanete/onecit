@@ -8,19 +8,19 @@ import data from './org';
 const DynamicTree = dynamic(() => import('react-d3-tree'), { ssr: false });
 
 const renderRectSvgNode = ({ nodeDatum, toggleNode }) => (
-    <g>
+    <g >
         {/* <rect width="20" height="20" x="-10" onClick={toggleNode} /> */}
         {/* <circle r={20} onClick={toggleNode}/> */}
-        <image href="/schoolLogo.png" x="-25" y="-25" width="60" height="60" onClick={toggleNode} />
-        <text fill="black" fontSize={16} strokeWidth='0.4' x={50} >
+        <image href="/schoolLogo.png" x="-30" y="-25" width="60" height="60" onClick={toggleNode} />
+        <text fill="black" fontSize={16} strokeWidth='0.4' x={40} >
             {nodeDatum.name}
         </text>
-        {nodeDatum.attributes?.position && (
-            <text fill="black" x="50" dy="20" strokeWidth="0" fontSize={14}>
-            Position: {nodeDatum.attributes?.position}
+        {nodeDatum.position && (
+            <text fill="black" x="40" dy="20" strokeWidth="0" fontSize={14}>
+            {nodeDatum.position}
             </text>
         )}
-        <BiChat className='text-teal-500' y={30} x={50}/>
+        {nodeDatum.position && <BiChat className='text-teal-500' y={30} x={40}/>}
     </g>
   );
 
@@ -119,10 +119,11 @@ const page = () => {
                         data={data} 
                         orientation='vertical' 
                         pathFunc='step' 
-                        collapsible="false" 
+                        collapsible="true" 
                         draggable="true"
                         translate={translate}
                         enableLegacyTransitions
+                        nodeSize={{x: 500, y: 150}}
                         // dimensions={dimensions}
                         svgClassName=' '
                         // leafNodeClassName='border'

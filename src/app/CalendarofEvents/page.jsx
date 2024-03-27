@@ -183,6 +183,7 @@ const page = () => {
                         eventTimeFormat={{hour: 'numeric', minute: '2-digit'}}
                         dateClick={(info)=>
                             {
+                                console.log(info)
                                 const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
                                 const yearNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                                 
@@ -190,7 +191,7 @@ const page = () => {
                                 const formattedDate = `${dayNames[date.getDay()]} - ${yearNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
                                 setSelectedDate(formattedDate)
                                 setDateText(info.dateStr)
-                                setIsOpen(true)
+                                currentUser.uid === events[0].user && setIsOpen(true)
                             }
                         }
                     />}

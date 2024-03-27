@@ -16,10 +16,10 @@ const Navbar = ({active}) => {
                 <a href="/" className='w-16 flex items-center mb-7 m-4'><img src="schoolLogo.png" alt="" /><span className=' ms-3 font-bold'>OneCIT</span></a>
                 <Icon name="Dashboard" icon={<AiFillHome className={iconClassName} />} active={active}/>
                 <Icon name="Apps" icon={<AiFillAppstore className={iconClassName} />} active={active}/>
-                <Icon name="Chat" icon={<BiSolidChat className={iconClassName}/>} active={active}/>
-                <Icon name="Help" icon={<BiSolidHelpCircle className={iconClassName} />} active={active}/>
-                <Icon name="Settings" icon={<AiFillSetting className={iconClassName}/>} active={active}/>
-                <Icon name="Directory" icon={<VscTypeHierarchySub className={iconClassName}/>} active={active}/>
+                {/* <Icon name="Chat" icon={<BiSolidChat className={iconClassName}/>} active={active}/> */}
+                {/* <Icon name="Help" icon={<BiSolidHelpCircle className={iconClassName} />} active={active}/> */}
+                {/* <Icon name="Settings" icon={<AiFillSetting className={iconClassName}/>} active={active}/> */}
+                {/* <Icon name="Directory" icon={<VscTypeHierarchySub className={iconClassName}/>} active={active}/> */}
             </div>
             <div className="flex-col flex ">
                 <Icon name="Logout" icon={<BiLogOutCircle className={`inline text-3xl me-2 ${mode ? 'text-white' : 'text-teal-800'}`}/>} />

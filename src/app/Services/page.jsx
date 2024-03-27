@@ -1,84 +1,85 @@
 'use client'
-import React from 'react'
+import React, { useContext } from 'react'
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
 import { usePathname, useRouter } from 'next/navigation'
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
+import { AuthContext } from '@/context/AuthContext';
 
-const services = [
+const userServices = [
     {
         name: "Appointments",
         description: "rent equipments and places",
-        done: true
+        isDone: true
     },
     {
         name: "Rental",
         description: "rent equipments and places",
-        done: false
+        isDone: false
     },
     {
         name: "Inquiry",
         description: "rent equipments and places",
-        done: true
+        isDone: true
     },
     {
         name: "Requests",
         description: "rent equipments and places",
-        done: true
+        isDone: true
     },
     {
         name: "Lost and Found",
         description: "rent equipments and places",
-        done: true
+        isDone: true
     },
     {
         name: "Ask Advice",
         description: "rent equipments and places",
-        done: true
+        isDone: true
     },
     {
         name: "Security",
         description: "rent equipments and places",
-        done: false
+        isDone: false
     },
     {
         name: "Sports",
         description: "rent equipments and places",
-        done: false
+        isDone: false
     },
     {
         name: "Trainings",
         description: "rent equipments and places",
-        done: false
+        isDone: false
     },
     {
         name: "Shift",
         description: "rent equipments and places",
-        done: false
+        isDone: false
     },
     {
         name: "Scholarships",
         description: "rent equipments and places",
-        done: false
+        isDone: false
     },
     {
         name: "Offices",
         description: "rent equipments and places",
-        done: false
+        isDone: false
     },
     {
         name: "Departments",
         description: "rent equipments and places",
-        done: false
+        isDone: false
     },
     {
         name: "Others",
         description: "rent equipments and places",
-        done: false
+        isDone: false
     },
     {
         name: "Student Organizations",
         description: "rent equipments and places",
-        done: false
+        isDone: false
     },
         // {
     //     name: "Elementary",
@@ -97,10 +98,50 @@ const services = [
     //     description: "rent equipments and places"
     // },
 ]
-
+const adminServices = [
+    {
+        name: "Appointments",
+        description: "rent equipments and places",
+        isDone: true
+    },
+    {
+        name: "Rental",
+        description: "rent equipments and places",
+        isDone: false
+    },
+    {
+        name: "Security",
+        description: "rent equipments and places",
+        isDone: false
+    },
+]
 const page = () => {
     const router = useRouter()
+    const {currentUser} = useContext(AuthContext);
 
+    const isAdmin = currentUser.role === "admin"
+    const renderDoneApps = () =>{
+        if(isAdmin){
+            return adminServices.map((service)=>{
+                return service.isDone && <Box name={service.name} description={service.description}/>
+            })
+        }else{
+            return userServices.map((service)=>{
+                return service.isDone && <Box name={service.name} description={service.description}/>
+            })
+        }
+    }
+    const renderNotStartedApps = () =>{
+        if(isAdmin){
+            return adminServices.map((service)=>{
+                return !service.isDone && <Box name={service.name} description={service.description}/>
+            })
+        }else{
+            return userServices.map((service)=>{
+                return !service.isDone && <Box name={service.name} description={service.description}/>
+            })
+        }
+    }
     return (
         <div className='w-full h-screen flex bg-neutral-50'>
             <NavbarIconsOnly/>
@@ -117,21 +158,13 @@ const page = () => {
                 {/* Done Working */}
                 <p className="text-sm italic text-black/25">Done or Working</p>
                 <div className='w-full h-auto grid grid-cols-4' >
-                    {services.map((service, id)=>{
-                        return(
-                            service.done && (<Box name={service.name} description={service.description}/>)
-                        )
-                    })}
+                    {currentUser.role && renderDoneApps()}
                 </div>
 
                 {/* Not Started */}
                 <p className="text-sm italic text-black/25">Not Started</p>
                 <div className='w-full h-auto grid grid-cols-4' >
-                    {services.map((service, id)=>{
-                        return(
-                            !service.done && (<Box name={service.name} description={service.description}/>)
-                        )
-                    })}
+                    {currentUser.role && renderNotStartedApps()}
                 </div>
 
             </div>

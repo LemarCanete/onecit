@@ -33,7 +33,7 @@ const Appointments = ({email}) => {
     const [isDeleteModal, setIsDeleteModal] = useState(false)
     const [isEdit, setIsEdit] = useState(false)
     const router = useRouter();
-
+    
     const columns = [
         // { field: 'id', headerName: 'ID', width: 90 },
         {
@@ -135,8 +135,15 @@ const Appointments = ({email}) => {
     useEffect(()=>{
         const fetchData = async () => {
             try {
-                const querydata = query(collection(db, "appointments"),
-                    or(where("from.email", "==", currentUser.email), where("to.email", "==", currentUser.email)))
+                let querydata;
+
+                if(currentUser.role === "admin"){
+                    querydata = query(collection(db, "appointments"))
+                }else{
+                    querydata = query(collection(db, "appointments"),
+                        or(where("from.email", "==", currentUser.email), where("to.email", "==", currentUser.email)))
+                }
+                
 
                 const querySnapshot = await getDocs(querydata)
                 
@@ -154,7 +161,7 @@ const Appointments = ({email}) => {
             }
           };
           fetchData();
-    }, [currentUser.email])
+    }, [currentUser])
 
     const handleStatus = async(stat, id) =>{
         const status = doc(db, "appointments", id)
@@ -187,7 +194,7 @@ const Appointments = ({email}) => {
     return (
         <div className=''>
             <div className="flex justify-between items-center">
-                <h1 className='text-lg py-5'>My Appointments</h1>
+                <h1 className='text-lg py-5'>{currentUser.role === "admin" ? "All" : "My"} Appointments</h1>
                 <div className="flex gap-3">
                     <p className="rounded inline text-sm p-2 cursor-pointer border"><BsList className='inline text-lg'/> List</p>
                     <p className="rounded inline text-sm p-2 cursor-pointer border"><BsGrid className='inline text-lg'/> Grid</p>
@@ -197,14 +204,14 @@ const Appointments = ({email}) => {
             </div>
             <div className="w-full">
                 {appointments && 
-                <Box className="h-96" style={{width: "100%"}}>
-                    <DataGrid
+                <Box className={`${currentUser.role === "admin" ? 'h-5/6' : 'h-96'}`} style={{width: "100%"}}>
+                    {currentUser.role && <DataGrid
                         rows={appointments}
                         columns={columns}
                         initialState={{
                         pagination: {
                             paginationModel: {
-                            pageSize: 5,
+                            pageSize: currentUser.role === "admin" ? 10 : 5,
                             },
                         },
                         }}
@@ -212,7 +219,7 @@ const Appointments = ({email}) => {
                         checkboxSelection
                         // disableRowSelectionOnClick
                         onRowSelectionModelChange={rows => setSelectedRows(rows) }
-                    />
+                    />}
                 </Box>}
 
                 <Modal isOpen={isDeleteModal} onRequestClose={()=>setIsDeleteModal(false) } style={customStyles}>

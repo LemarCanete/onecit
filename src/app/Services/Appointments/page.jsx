@@ -1,11 +1,12 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
 import Modal from 'react-modal'
 import Form from './Form'
 import Appointments from './Appointments'
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 import { useRouter } from 'next/navigation';
+import { AuthContext } from '@/context/AuthContext'
 
 const customStyles = {
     content: {
@@ -26,6 +27,7 @@ Modal.setAppElement("body")
 
 const page = () => {
     const router = useRouter();
+    const {currentUser} = useContext(AuthContext)
 
     return (
         <div className={`w-full h-screen flex bg-neutral-50`}>
@@ -38,7 +40,7 @@ const page = () => {
                     
                     <h1 className="text-2xl tracking-widest	">Appointments</h1>
                 </div>
-                <div className="w-full grid grid-cols-8">
+                {currentUser.role && currentUser.role !== "admin" && <div className="w-full grid grid-cols-8">
                         <Box name="Library" emailTo="citlibrary@gmail.com"/>
                         <Box name="Research Labs" emailTo="citresearch@gmail.com"/>
                         <Box name="Orgs" emailTo="citorgs@gmail.com"/>
@@ -47,7 +49,7 @@ const page = () => {
                         <Box name="Clinic" emailTo="citclinic@gmail.com"/>
                         <Box name="Couselling" emailTo="citcouncelling@gmail.com"/>
                         <Box name="People" />
-                </div>
+                </div>}
 
                 <div className="">
                     <hr />
