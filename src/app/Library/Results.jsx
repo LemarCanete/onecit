@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import {FaExternalLinkAlt} from 'react-icons/fa'
 import LibraryInfo from './LibraryInfo';
+import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
+import { useRouter } from 'next/navigation';
 
 const Results = ({details}) => {
     const [search, setSearch] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState("")
+    const router = useRouter()
 
     const handleSubmit = async (e) => {
         let goto = details.goto;
@@ -49,9 +52,12 @@ const Results = ({details}) => {
     return (
         <div className='px-10 py-5 grow h-full overflow-y-auto h-screen w-11/12'>
            <div className="flex justify-between align-center">
+                <button onClick={()=>router.back()}>
+                    <ArrowBackIosNewRoundedIcon sx={{ fontSize: 35}} className='bg-[#115E59] text-[#F5F5F5] rounded-full p-2 m-2 '/>Go back
+                </button>
                 <div className="flex align-center gap-2">
-                    <h1 className="text-2xl">Library </h1>
                     <LibraryInfo />
+                    <h1 className="text-2xl">Library </h1>
                 </div>
 
                 {details.username !== "" && (
