@@ -172,7 +172,7 @@ const Box = ({image, name}) =>{
 
     return (
         <div className="flex justify-center flex-col border rounded-lg w-40 h-36 items-center m-2 bg-white cursor-pointer text-center" onClick={() => router.push(`/${name.replaceAll(/\s+/g, '')}`)}>
-            <img src="schoolLogo.png" alt="" className='w-20 h-20'/>
+            <img src="./schoolLogo.png" alt="" className='w-20 h-20'/>
             <p className='text-sm m-1'>{name}</p>
         </div>
     )
