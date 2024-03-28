@@ -47,54 +47,8 @@ const page = () => {
 
     const router = useRouter()
 
-    const [events, setEvents] = useState([
-        { title: 'My day', start: '2024-03-25', end: '2024-03-27', allDay: true },
-        { title: 'Lunch', start: '2024-03-25T12:00:00', end: '2024-03-25T13:00:00'},
-        { title: 'Play', start: '2024-03-25T14:00:00', end: '2024-03-25T18:00:00'},
-    ])
+    const [events, setEvents] = useState([])
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         const fetchedEvents = [];
-    //         const user = currentUser.uid;
-            
-    //         let e;
-    //         if(isOpenAdmin){
-    //             e = await getDocs(query(collection(db, "calendarEvents"), where("role", "==", 'admin')));
-    //         }else{
-    //             e = await getDocs(query(collection(db, "calendarEvents"), where("user", "==", user)));
-    //         }
-    
-    //         e.forEach((doc) => {
-    //             const eventData = doc.data();
-    
-    //             const startDate = eventData.value.startDate.includes('T')
-    //                 ? eventData.value.startDate
-    //                 : `${eventData.value.startDate}T00:00:00`; 
-    
-    //             const endDate = eventData.value.endDate.includes('T')
-    //                 ? eventData.value.endDate
-    //                 : new Date(
-    //                     new Date(eventData.value.endDate.split('-').map(v => parseInt(v, 10))).getTime() +
-    //                     (1000 * 60 * 60 * 24)
-    //                 ).toISOString();
-    
-    //             fetchedEvents.push({
-    //                 title: eventData.title,
-    //                 start: startDate,
-    //                 end: endDate,
-    //                 allDay: eventData.allDay
-    //             });
-    //         });
-    
-    //         setEvents(fetchedEvents);
-    //     };
-        
-    //     if (currentUser.uid) {
-    //         fetchData();
-    //     }
-    // }, [currentUser, isOpenAdmin]);
-    
     useEffect(() => {
         const fetchData = async () => {
             const user = currentUser.uid;
@@ -131,6 +85,15 @@ const page = () => {
                         user: eventData.user
                     });
                 });
+
+                if(fetchedEvents.length < 1){
+                    setEvents([
+                        {
+                            user: currentUser.uid
+                        }
+                    ])
+                    return
+                }
                 setEvents(fetchedEvents);
 
             });

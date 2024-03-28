@@ -51,13 +51,13 @@ const Results = ({details}) => {
 
     return (
         <div className='px-10 py-5 grow h-full overflow-y-auto h-screen w-11/12'>
-           <div className="flex justify-between align-center">
+           <div className="flex justify-between items-center mb-3">
                 <button onClick={()=>router.back()}>
                     <ArrowBackIosNewRoundedIcon sx={{ fontSize: 35}} className='bg-[#115E59] text-[#F5F5F5] rounded-full p-2 m-2 '/>Go back
                 </button>
-                <div className="flex align-center gap-2">
+                <div className="flex items-center gap-2 justify-center">
                     <LibraryInfo />
-                    <h1 className="text-2xl">Library </h1>
+                    <h1 className="text-2xl tracking-widest	font-bold">Library </h1>
                 </div>
 
                 {details.username !== "" && (
