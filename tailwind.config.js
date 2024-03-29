@@ -55,7 +55,8 @@ module.exports = {
         },
         rotate: {
             '330': '330deg'
-        }
+        },
+        
       },
       borderRadius: {
         // lg: "var(--radius)",

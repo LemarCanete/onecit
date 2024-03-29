@@ -41,8 +41,8 @@ const userApps = [
         isDone: true,
     },
     {
-        name: "Personal Details",
-        isDone: false,
+        name: "Settings",
+        isDone: true,
     },
     {
         name: "Task Management",
@@ -94,6 +94,10 @@ const adminApps = [
     },
     {
         name: "Directory",
+        isDone: true,
+    },
+    {
+        name: "Settings",
         isDone: true,
     },
 ]

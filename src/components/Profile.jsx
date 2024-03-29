@@ -54,7 +54,7 @@ const Profile = () => {
                 </div>
 
             </div>
-            <p className="my-2 text-center italic text-sm">"Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore, ad?"</p>
+            <p className="my-2 text-center italic text-sm">{currentUser.bio}</p>
             <div className="text-sm leading-loose tracking-wider mt-6">
                 <h2 className="text-lg">Basic Info</h2>
                 <p>Name: {currentUser.firstname} {currentUser.lastname}</p>
