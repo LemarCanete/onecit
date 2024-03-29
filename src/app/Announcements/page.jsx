@@ -1,8 +1,8 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import Navbar from '@/components/Navbar'; // Ensure the path is correct
+import Navbar from '@/components/Navbar';
 import AddAnnouncementForm from './AddAnnouncementForm';
-import { db } from '@/firebase-config'; // Ensure you have this correct import in your project
+import { db } from '@/firebase-config';
 import { doc, collection, getDocs, deleteDoc, setDoc } from 'firebase/firestore';
 
 const AnnouncementsPage = () => {
@@ -30,7 +30,7 @@ const AnnouncementsPage = () => {
     const handleAddAnnouncement = async (announcement) => {
         const newAnnouncement = {
             ...announcement,
-            id: undefined // Prevent trying to save ID to Firestore
+            id: undefined
         };
         try {
             const docRef = await addDoc(collection(db, 'announcements'), newAnnouncement);
