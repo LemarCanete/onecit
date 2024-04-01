@@ -62,9 +62,9 @@ const AnnouncementsPage = () => {
     );
 
     return (
-        <div className="w-full h-screen flex bg-neutral-50">
+        <div className="w-full h-screen flex bg-neutral-50 overflow-hidden">
             <Navbar active="Announcements" />
-            <div className="grow px-10 py-5">
+            <div className="grow px-10 py-5 overflow-y-scroll">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">Announcements</h1>
                     <div>
@@ -79,10 +79,10 @@ const AnnouncementsPage = () => {
                     </div>
                 </div>
                 {showAddForm && <AddAnnouncementForm onSubmit={handleAddAnnouncement} onCancel={() => setShowAddForm(false)} categories={categories} />}
-                <div className="space-y-4 mt-4">
+                <div className="space-y-4 mt-4 block">
                     {filteredAnnouncements.map((announcement) => (
                         <div key={announcement.id} className="bg-white shadow rounded-lg p-6 flex justify-between items-center">
-                            <div>
+                            <div className=''>
                                 <h2 className="text-lg font-semibold">{announcement.title}</h2>
                                 <p className="text-sm text-gray-500">{announcement.date}</p>
                                 <p className="mt-2 text-gray-700">{announcement.content}</p>

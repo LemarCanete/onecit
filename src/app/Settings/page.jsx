@@ -6,6 +6,7 @@ import { AuthContext } from '@/context/AuthContext'
 import { doc, getDoc } from "firebase/firestore";
 import { db } from '@/firebase-config'
 import Password from './Password'
+import DeleteAccount from './DeleteAccount'
 
 const header = [
     {
@@ -51,6 +52,8 @@ const page = () => {
             return <PersonalDetails userData={userData}/>
         }else if(selected === "Password"){
             return <Password />
+        }else if(selected === "Delete Account"){
+            return <DeleteAccount />
         }
     }
 

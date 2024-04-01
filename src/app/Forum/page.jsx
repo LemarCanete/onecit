@@ -124,9 +124,9 @@ const ForumPage = () => {
     );
 
     return (
-        <div className="w-full h-screen flex bg-neutral-50">
+        <div className="w-full h-screen flex bg-neutral-50 overflow-hidden">
             <Navbar active="Forum" />
-            <div className="grow px-10 py-5">
+            <div className="grow px-10 py-5 overflow-y-scroll">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">Forum</h1>
                     <div>
@@ -151,9 +151,11 @@ const ForumPage = () => {
                                 <p className="text-sm text-gray-500">{thread.date}</p>
                                 <p className="mt-2 text-gray-700">{thread.content}</p>
                             </div>
-                            <div className="mt-4">
-                                <button onClick={() => handleDeleteThread(thread.id)} className="bg-red-500 text-white px-4 py-2 rounded-md mr-2">Delete Thread</button>
-                                <button onClick={() => handleToggleCommentForm(thread.id)} className="bg-green-500 text-white px-4 py-2 rounded-md mr-2">{showCommentForm[thread.id] ? 'Cancel' : 'Add Comment'}</button>
+                            <div className="mt-4 text-sm">
+                                <div className="flex justify-end">
+                                    <button onClick={() => handleDeleteThread(thread.id)} className="bg-red-500 text-white px-4 py-2 rounded-md mr-2">Delete Thread</button>
+                                    <button onClick={() => handleToggleCommentForm(thread.id)} className="bg-[#115E59] text-white px-4 py-2 rounded-md mr-2">{showCommentForm[thread.id] ? 'Cancel' : 'Add Comment'}</button>
+                                </div>
                                 {showCommentForm[thread.id] && (
                                     <div className="mt-2"> {/* Adjusted layout here */}
                                         <textarea 

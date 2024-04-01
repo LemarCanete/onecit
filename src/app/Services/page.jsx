@@ -12,11 +12,6 @@ const userServices = [
         isDone: true
     },
     {
-        name: "Rental",
-        description: "rent equipments and places",
-        isDone: false
-    },
-    {
         name: "Inquiry",
         description: "rent equipments and places",
         isDone: true
@@ -31,13 +26,13 @@ const userServices = [
         description: "rent equipments and places",
         isDone: true
     },
+    // {
+    //     name: "Ask Advice",
+    //     description: "rent equipments and places",
+    //     isDone: true
+    // },
     {
-        name: "Ask Advice",
-        description: "rent equipments and places",
-        isDone: true
-    },
-    {
-        name: "Security",
+        name: "Campus Security",
         description: "rent equipments and places",
         isDone: false
     },

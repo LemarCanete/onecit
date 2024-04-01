@@ -139,7 +139,7 @@ const page = () => {
                         editable={true}
                         viewClassNames="cursor-pointer bg-white/75 text-sm z-0"
                         dayCellClassNames="hover:bg-white"
-                        eventClassNames="text-center border-0"
+                        eventClassNames="border-0"
                         dayHeaderClassNames="bg-teal-500"
                         eventInteractive={true}
                         // eventTimeFormat={{hour: 'numeric', minute: '2-digit', timeZoneName: 'short'}}
@@ -177,7 +177,7 @@ function renderEventContent(eventInfo) {
 
     console.log(isAllDay)
     return (
-      <div className={`${isAllDay ? 'bg-teal-800' : ''} text-center w-full`}>
+      <div className={`${isAllDay ? 'bg-teal-800 text-center' : 'ps-2'} w-full`}>
         {eventInfo.timeText && <b>{eventInfo.timeText} - </b>}
         <i className={`${timeText ? '' : 'font-bold'}`}>{eventInfo.event.title}</i>
       </div>

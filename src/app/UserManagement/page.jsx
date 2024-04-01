@@ -1,13 +1,15 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { collection, query, where, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 import { db } from '@/firebase-config';
 import { DataGrid  } from '@mui/x-data-grid';
 import Modal from 'react-modal'
 import { BsGrid, BsList, BsPen, BsPlus, BsTrash } from 'react-icons/bs';
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 import { useRouter } from 'next/navigation';
+import Form from './Form';
+import { deleteUser, getAuth } from "firebase/auth";
 
 const customStyles = {
     content: {
@@ -116,13 +118,29 @@ const page = () => {
             setIsDeleteModal(false)
             return;
         }
-        selectedRows.forEach(async(id) => {
-            await deleteDoc(doc(db, 'appointments', id))
-        })
 
-        window.location.reload();
+        // const usersToDelete = users.filter(user => selectedRows.includes(user.uid));
+
+        // console.log(usersToDelete);
+        // usersToDelete.forEach(async(user) => {
+        //     await deleteUser(user).then(() => {
+        //         alert("Successfully deleted")
+        //       }).catch((error) => {
+        //         console.log(error.message)
+        //       });
+              
+        // })
+        
+        const auth = getAuth();
+        const user = auth.currentUser;
+        console.log(auth)
+
+        setIsDeleteModal(false)
     }
 
+
+
+    console.log(selectedRows)
     return (
         <div className='w-full h-screen flex bg-neutral-100'>
             <NavbarIconsOnly/>
@@ -133,8 +151,6 @@ const page = () => {
                     </button>
                     <h1 className="text-2xl tracking-widest	font-bold">User Management</h1>
                     <div className="flex gap-3">
-                        <p className="rounded inline text-sm p-2 cursor-pointer border"><BsList className='inline text-lg'/> List</p>
-                        <p className="rounded inline text-sm p-2 cursor-pointer border"><BsGrid className='inline text-lg'/> Grid</p>
                         <p className="inline cursor-pointer bg-teal-500 rounded p-2 text-white" onClick={handleAdd}><BsPlus className='inline' /> Add</p>
                         <p className="inline cursor-pointer bg-red-500 rounded p-2 text-white" onClick={()=>setIsDeleteModal(true)}><BsTrash className='inline' /> Delete</p>
                         <p className="inline cursor-pointer bg-yellow-500 rounded p-2 text-white" onClick={handleUpdate}><BsPen className='inline'/> Edit</p>
@@ -168,10 +184,10 @@ const page = () => {
                     </div>
                 </Modal>
                 <Modal isOpen={isEdit} onRequestClose={()=>setIsEdit(false) } style={customStyles}>
-                    <h1 className="">Are you sure to Edit?</h1>
+                    {<Form user={users.filter((user)=> user.id === selectedRows[0])} title="Edit" />}
                 </Modal>
-                <Modal isOpen={isAdd} onRequestClose={()=>setIsAdd(false) } style={customStyles}>
-                    <h1 className="">Add</h1>
+                <Modal isOpen={isAdd} onRequestClose={()=>setIsAdd(false) } style={customStyles} >
+                    <Form title="Add"/>
                 </Modal>
             </div>
         </div>
