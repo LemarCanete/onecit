@@ -1,4 +1,5 @@
 import React from 'react'
+// import { getAuth, reauthenticateWithCredential } from "firebase/auth";
 
 const Password = () => {
     const handleUpdate = () =>{

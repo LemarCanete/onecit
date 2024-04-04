@@ -19,16 +19,22 @@ const PersonalDetails = ({userData}) => {
 
 
     const handleUpdate = async() =>{
-        const q = doc(db, "users", userData.uid);
+        try{
+            const q = doc(db, "users", userData.uid);
 
-        await updateDoc(q, {
-            firstname: firstname,
-            lastname: lastname,
-            email: email,
-            program: program,
-            schoolid: schoolid,
-            bio: bio,
-        });
+            await updateDoc(q, {
+                firstname: firstname,
+                lastname: lastname,
+                email: email,
+                program: program,
+                schoolid: schoolid,
+                bio: bio,
+            });
+
+            alert("Successfull Update")
+        }catch(err){
+            alert(err.message)
+        }
     }
 
     return (
@@ -83,7 +89,7 @@ const PersonalDetails = ({userData}) => {
                     
                 </div>
                 <hr />
-                <div className="flex w-full justify-between my-5">
+                <div className="flex w-full justify-between my-5 gap-10">
                     <p className="">Bio</p>
                     <textarea name="" id="" cols="120" rows="4" className='border resize-none p-2 rounded-lg' value={bio} onChange={(e)=> setBio(e.target.value)}></textarea>
                 </div>

@@ -1,15 +1,17 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
-import { collection, query, where, onSnapshot, deleteDoc, doc } from "firebase/firestore";
+import { collection, query, where, onSnapshot, deleteDoc, doc, getDoc } from "firebase/firestore";
 import { db } from '@/firebase-config';
 import { DataGrid  } from '@mui/x-data-grid';
 import Modal from 'react-modal'
-import { BsGrid, BsList, BsPen, BsPlus, BsTrash } from 'react-icons/bs';
+import { BsFileLock, BsGrid, BsList, BsLock, BsPen, BsPlus, BsTable, BsTrash, BsShieldLock } from 'react-icons/bs';
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 import { useRouter } from 'next/navigation';
 import Form from './Form';
-import { deleteUser, getAuth } from "firebase/auth";
+import axios from 'axios'
+import PersonalDetails from '../Settings/PersonalDetails';
+import Password from '../Settings/Password';
 
 const customStyles = {
     content: {
@@ -17,7 +19,7 @@ const customStyles = {
       left: '50%',
       right: 'auto',
       bottom: 'auto',
-      marginRight: '-50%',
+      marginRight: '-30%',
       transform: 'translate(-50%, -50%)',
     },
     overlay:{
@@ -32,52 +34,16 @@ const page = () => {
     const [users, setUsers] = useState([])
     const [selectedRows, setSelectedRows] = useState([])
     const [isDeleteModal, setIsDeleteModal] = useState(false)
-    const [isEdit, setIsEdit] = useState(false)
     const [isAdd, setIsAdd] = useState(false)
-    
+    const [isOpenUserDetails, setIsOpenUserDetails] = useState(false)
+    const [userData, setUserData] = useState(undefined);
+    const [isOpenChangePassword, setIsOpenChangePassword] = useState(false)
+
+
     const router = useRouter();
 
     const columns = [
         { field: 'id', headerName: 'ID', width: '300' },
-        {
-            field: "schoolid",
-            headerName: 'School ID',
-            width: 120,
-            editable: true,
-        },
-        {
-            field: "firstname",
-            headerName: 'First Name',
-            width: 200,
-            editable: true,
-        },
-        {
-            field: "lastname",
-            headerName: 'Last Name',
-            width: 120,
-            editable: true,
-        },
-        {
-            field: "birthdate",
-            headerName: 'Last Name',
-            width: 120,
-            editable: true,
-        },
-        {
-            field: 'program',
-            headerName: 'Program',
-            width: 110,
-            editable: true,
-            valueGetter: (value) => value.row.program,
-
-        },
-        {
-            field: 'role',
-            headerName: 'Role',
-            width: 110,
-            editable: true,
-            valueGetter: (value) => value.row.role,
-        },
         {
             field: 'email',
             headerName: 'Email',
@@ -85,25 +51,57 @@ const page = () => {
             editable: true,
             valueGetter: (value) => value.row.email,
         },
+        {
+            field: 'lastSignInTime',
+            headerName: 'Last SignIn Time',
+            width: 230,
+            editable: true,
+            valueGetter: (value) => value.row.metadata.lastSignInTime,
+        },
+        {
+            field: 'creationTime',
+            headerName: 'Creation Time',
+            width: 230,
+            editable: true,
+            valueGetter: (value) => value.row.metadata.creationTime,
+        },
+        {
+            field: 'view',
+            headerName: 'View',
+            width: 50,
+            renderCell: (params) => {
+                return <button className="text-center hover:text-teal-500 mx-auto" onClick={()=> getUserData(params.id, "view")}>
+                    <BsTable />
+                </button>
+            }
+        },
+        {
+            field: 'password',
+            headerName: 'Password',
+            width: 90,
+            renderCell: (params) => {
+                return <button className="text-center hover:text-teal-500 mx-auto" onClick={()=> getUserData(params.id, "password")}>
+                    <BsShieldLock />
+                </button>
+            }
+        },
     ];
 
-    useEffect(()=>{
-        const fetchData = () =>{
-            try{
-                const q = query(collection(db, "users"));
-                const unsubscribe = onSnapshot(q, (querySnapshot) => {
-                    const usersData = [];
-                    querySnapshot.forEach((doc) => {
-                        usersData.push({ ...doc.data(), id: doc.id});
-                    });
-                    setUsers(usersData)
-                });
-            }catch(err){
 
+    useEffect(()=>{
+        const fetchData = async() =>{
+            try{
+                const listAllUsers = await axios.get('http://localhost:4000/listAllUsers')
+                console.log(listAllUsers.data)
+                setUsers(listAllUsers.data)
+            }catch(err){
+                console.log(err)
             }
         }
-        fetchData()
+
+        fetchData();
     }, [])
+
     const handleAdd = () =>{
         setIsAdd(true)
     }
@@ -138,7 +136,25 @@ const page = () => {
         setIsDeleteModal(false)
     }
 
+    const getUserData = async(uid, component) =>{
+        try {
+            // Construct the correct path to the document
+            const userRef = doc(db, 'users', uid);
+            const q = await getDoc(userRef);
 
+            if (q.exists()) {
+                setUserData(q.data());
+            }
+        } catch (error) {
+            console.error('Error fetching document:', error);
+        }
+
+        if(component === "view"){
+            setIsOpenUserDetails(true)
+        }else if(component === "password"){
+            setIsOpenChangePassword(true)
+        }
+    }
 
     console.log(selectedRows)
     return (
@@ -153,11 +169,10 @@ const page = () => {
                     <div className="flex gap-3">
                         <p className="inline cursor-pointer bg-teal-500 rounded p-2 text-white" onClick={handleAdd}><BsPlus className='inline' /> Add</p>
                         <p className="inline cursor-pointer bg-red-500 rounded p-2 text-white" onClick={()=>setIsDeleteModal(true)}><BsTrash className='inline' /> Delete</p>
-                        <p className="inline cursor-pointer bg-yellow-500 rounded p-2 text-white" onClick={handleUpdate}><BsPen className='inline'/> Edit</p>
                     </div>
                 </div>
 
-                <div className="h-5/6">
+                <div className="h-5/6 bg-white">
                     <DataGrid
                             rows={users}
                             columns={columns}
@@ -175,20 +190,30 @@ const page = () => {
                 </div>
 
                 {/* Modals */}
-                <Modal isOpen={isDeleteModal} onRequestClose={()=>setIsDeleteModal(false) } style={customStyles}>
+                {/* <Modal isOpen={isDeleteModal} onRequestClose={()=>setIsDeleteModal(false) } style={customStyles}>
                     <h1 className="">Are you sure to delete these rows? </h1>
                     <p className="">[{selectedRows.join(', ')}] {selectedRows.length < 1 && <span className='text-red-500 italic'>No selected row</span>}</p>
                     <div className="flex justify-end mt-4 gap-3">
                         <button className="bg-neutral-100  p-3 text-sm" onClick={()=>setIsDeleteModal(false)}>Cancel</button>
                         <button className="bg-red-500 text-white p-3 inline text-sm" onClick={handleDelete}><BsTrash className='inline'/> Delete</button>
                     </div>
-                </Modal>
-                <Modal isOpen={isEdit} onRequestClose={()=>setIsEdit(false) } style={customStyles}>
-                    {<Form user={users.filter((user)=> user.id === selectedRows[0])} title="Edit" />}
-                </Modal>
-                <Modal isOpen={isAdd} onRequestClose={()=>setIsAdd(false) } style={customStyles} >
+                </Modal> */}
+                {/*<Modal isOpen={isAdd} onRequestClose={()=>setIsAdd(false) } style={customStyles} >
                     <Form title="Add"/>
+                </Modal> */}
+                
+                <Modal isOpen={isOpenUserDetails} onRequestClose={()=>setIsOpenUserDetails(false) } style={customStyles} >
+                    {userData && <div className=''>
+                        <PersonalDetails userData={userData}/>    
+                    </div>}
                 </Modal>
+
+                <Modal isOpen={isOpenChangePassword} onRequestClose={()=>setIsOpenChangePassword(false) } style={customStyles} >
+                    {userData && <div className=''>
+                        <Password userData={userData}/>    
+                    </div>}
+                </Modal>
+                    
             </div>
         </div>
   )
