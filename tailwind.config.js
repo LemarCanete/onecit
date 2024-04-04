@@ -56,7 +56,11 @@ module.exports = {
         rotate: {
             '330': '330deg'
         },
-        
+        'goldColor' : '#FFD700',
+        'greyIsh' : '#2f1f4f8',
+        'cardShadow' : '#2f7f8f9',
+        'textColor' : '#252b36',
+
       },
       borderRadius: {
         // lg: "var(--radius)",

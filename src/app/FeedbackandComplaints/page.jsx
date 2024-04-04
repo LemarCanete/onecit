@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 import { RiEmotionSadLine } from "react-icons/ri";
@@ -12,17 +12,70 @@ import { RiEmotionUnhappyFill } from "react-icons/ri";
 import { RiEmotionNormalFill } from "react-icons/ri";
 import { RiEmotionFill } from "react-icons/ri";
 import { RiEmotionLaughFill } from "react-icons/ri";
-import { Timestamp, addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { QuerySnapshot, Timestamp, addDoc, collection, getDocs, onSnapshot, query, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/firebase-config';
+import { DataGrid, GridRowsProp, GridColDef } from '@mui/x-data-grid';
+import { AuthContext } from '@/context/AuthContext';
+import Modal from 'react-modal'
+import Message from './Message';
 
 const page = () => {
+  const {currentUser} = useContext(AuthContext);
+  const [rows, setRows] = useState([]);
+
+  const columns = [
+    { field: 'category', headerClassName: 'header', headerName: 'Category', flex: 0.2},
+    { field: 'rate', headerClassName: 'header', headerName: 'Rate', flex: 0.1},
+    { field: 'feedback', headerClassName: 'header', headerName: 'Feedback', flex: 0.3},
+    { field: 'date', headerClassName: 'header', headerName: 'Date', flex: 0.2},
+    { field: 'time', headerClassName: 'header', headerName: 'Time', flex: 0.2},
+  ]
+
+
+  useEffect(() => {
+    const q = query(collection(db, 'feedback'));
+    
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const retrievedrows = [];
+  
+      querySnapshot.forEach((doc) => {
+        retrievedrows.push({
+          id: doc.id,
+          category: doc.data().category,
+          date: doc.data().date,
+          time: doc.data().time,
+          feedback: doc.data().feedback,
+          rate: doc.data().rate,
+        });
+      });
+  
+      retrievedrows.sort((b, a) => a.date.localeCompare(b.date));
+      retrievedrows.sort((b, a) => a.time.localeCompare(b.time));
+  
+      setRows(retrievedrows);
+      console.log(retrievedrows)
+    });
+    
+    return () => unsubscribe();
+  }, []);
+
   const handlegoback = () => {
     window.history.back();
   }
 
+  Modal.setAppElement("body")
+  const [isOpen, setIsOpen] = useState(false)
+  const [parameters, setParameters] = useState([])
+  const rowclickhandler = (params) => {
+    const rowdata = params.row;
+    setIsOpen(true)
+    setParameters(rowdata)
+    console.log("Row is clicked. Params.row value: ", rowdata)
+  }
+
   const [rate, setRate] = useState('')
   const [feedback, setFeedback] = useState('');
-  const [category, setCategory] = useState('general feedback')
+  const [category, setCategory] = useState('General Feedback')
   const [errors, setErrors] = useState({
     rating: '',
     feedback: '',
@@ -71,8 +124,9 @@ const page = () => {
       rate: rate,
       feedback: feedback,
       category: category,
-      date: Timestamp.now()
-    }
+      date: Timestamp.now().toDate().toLocaleDateString(),
+      time: Timestamp.now().toDate().toLocaleTimeString(),
+  }
 
     await addDoc(collection(db, "feedback"), feedbackinformation)
 
@@ -90,6 +144,7 @@ const page = () => {
   return (
     <div className='w-full h-screen flex bg-neutral-100'>
       <NavbarIconsOnly/>
+      <Messagebox params={parameters} isOpen={isOpen} setIsOpen={setIsOpen}/>
       <div className='flex flex-grow px-5 py-5 w-full h-full flex-col'>
 
         <div className='flex flex-row w-full h-[45px] py-10 items-center px-2'>
@@ -130,10 +185,10 @@ const page = () => {
               <div className='my-[10px]'>
                 <label className='text-lg my-[10px]'>Categorize your feedback so we can get back to you faster!</label>
                 <div className='my-[10px]'>
-                  <label onClick={() => HandleCategoryChange('general feedback')} className={`${category==='general feedback' ? 'bg-[#00687B] text-white' : 'bg-gray-200'} hover:bg-[#701216] hover:text-white rounded-[10px] cursor-pointer p-[5px] mx-[5px]`}>General Feedback</label>
-                  <label onClick={() => HandleCategoryChange('complaint')} className={`${category==='complaint' ? 'bg-[#00687B] text-white' : 'bg-gray-200'} hover:bg-[#701216] hover:text-white rounded-[10px] cursor-pointer p-[5px] mx-[5px]`}>Complaint</label>
-                  <label onClick={() => HandleCategoryChange('bug issue')} className={`${category==='bug issue' ? 'bg-[#00687B] text-white' : 'bg-gray-200'} hover:bg-[#701216] hover:text-white rounded-[10px] cursor-pointer p-[5px] mx-[5px]`}>Bug Issue</label>
-                  <label onClick={() => HandleCategoryChange('suggestion')} className={`${category==='suggestion' ? 'bg-[#00687B] text-white' : 'bg-gray-200'} hover:bg-[#701216] hover:text-white rounded-[10px] cursor-pointer p-[5px] mx-[5px]`}>Suggestion</label>
+                  <label onClick={() => HandleCategoryChange('General Feedback')} className={`${category==='General Feedback' ? 'bg-[#00687B] text-white' : 'bg-gray-200'} hover:bg-[#701216] hover:text-white rounded-[10px] cursor-pointer p-[5px] mx-[5px]`}>General Feedback</label>
+                  <label onClick={() => HandleCategoryChange('Complaint')} className={`${category==='Complaint' ? 'bg-[#00687B] text-white' : 'bg-gray-200'} hover:bg-[#701216] hover:text-white rounded-[10px] cursor-pointer p-[5px] mx-[5px]`}>Complaint</label>
+                  <label onClick={() => HandleCategoryChange('Bug Issue')} className={`${category==='Bug Issue' ? 'bg-[#00687B] text-white' : 'bg-gray-200'} hover:bg-[#701216] hover:text-white rounded-[10px] cursor-pointer p-[5px] mx-[5px]`}>Bug Issue</label>
+                  <label onClick={() => HandleCategoryChange('Suggestion')} className={`${category==='Suggestion' ? 'bg-[#00687B] text-white' : 'bg-gray-200'} hover:bg-[#701216] hover:text-white rounded-[10px] cursor-pointer p-[5px] mx-[5px]`}>Suggestion</label>
                 </div>
               </div>
               <div className='flex justify-end my-[30px]'>
@@ -149,7 +204,29 @@ const page = () => {
             </div>
 
             <div className='flex w-full'>
-              {/*Second half*/}
+              {currentUser.role === 'admin' && <div className='w-full flex flex-col justify-start h-full'>
+                <DataGrid
+                  rows={rows}
+                  columns={columns}
+                  onRowClick={rowclickhandler}
+                  sx={{
+                    '& .header' : {
+                      fontWeight: 'bold',
+                    },
+                    '& .rows' : {
+                      '&:hover' : { backgroundColor: '#115E59', color: 'white', cursor: 'pointer'}
+                    }
+                  }}
+                  getRowClassName={(params) => 'rows'}
+                  initialState={{
+                    pagination: {
+                      paginationModel: { page: 0, pageSize: 5 },
+                    },
+                  }}
+                  pageSizeOptions={[5, 10]}
+                  disableRowSelectionOnClick
+                />
+              </div>}
             </div>
 
           </div>
@@ -157,6 +234,35 @@ const page = () => {
       </div>
     </div>
   )
+}
+
+const Messagebox = ({params, isOpen, setIsOpen}) => {
+  const customStyles = {
+    content: {
+      borderRadius: '10px', 
+      width: '50%',
+      height: 'auto',
+      maxHeight: '50%',
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+      backgroundColor: '#FFFFFF',
+    },
+    overlay:{
+      backgroundColor: "rgba(0, 0, 0, 0.5)"
+
+    }
+  };
+
+
+  return (
+    <Modal isOpen={isOpen} onRequestClose={()=>setIsOpen(false)} style={customStyles}>
+      <Message setIsOpen={setIsOpen} parameters={params}/>
+    </Modal>
+  ) 
 }
 
 export default page

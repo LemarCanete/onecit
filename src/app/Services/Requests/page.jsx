@@ -1,6 +1,9 @@
 "use client";
 import React from "react";
 import NavbarIconsOnly from "@/components/NavbarIconsOnly";
+// import { db } from "@/firebase-config";
+// import { addDoc, collection } from 'firebase/firestore';
+// import React, { useState } from 'react';
 
 const page = () => {
   return (
