@@ -12,14 +12,15 @@ import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 import RadioButton from './RadioButton';
 import GuideData from './GuideData';
 import './inquiry.css';
-import { Timestamp, addDoc, arrayUnion, collection, doc, limit, onSnapshot, or, orderBy, query, setDoc, where } from 'firebase/firestore';
+import { Timestamp, addDoc, arrayUnion, collection, doc, limit, onSnapshot, or, orderBy, query, setDoc, where, deleteDoc, getDocs } from 'firebase/firestore';
 import { db, storage } from '@/firebase-config';
 import {v4 as uuid} from "uuid"
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import Modal from 'react-modal'
 import Message from './Message';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const page = () => {
   const { currentUser } = useContext(AuthContext);
@@ -124,23 +125,65 @@ const page = () => {
     setSubject(event.target.value);
   }
 
+  const handleDeleteClick = async (id) => {
+    console.log('Delete clicked for id:', id);
+
+    try {
+      /*const docRef = doc(db, 'inquiries', id)
+
+      const q = query(collection(db, 'inquiries'), where('inquiryid', '==', id))
+      const querySnapshot = await getDocs(q)
+
+      await deleteDoc(docRef);
+      querySnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref)
+      })*/
+    } catch (error) {
+      console.log("Error captured while trying to delete: ", error)
+    }
+  };
+
   const columns = [
     { field: 'recipient', headerClassName: 'header', headerName: 'Recipient', flex: 0.2},
-    { field: 'subject', headerClassName: 'header', headerName: 'Subject', flex: 0.4},
+    { field: 'subject', headerClassName: 'header', headerName: 'Subject', flex: 0.3},
     { field: 'date', headerClassName: 'header', headerName: 'Date', flex: 0.2},
     { field: 'time', headerClassName: 'header', headerName: 'Time', flex: 0.2},
+    {
+      field: 'actions',
+      type: 'actions',
+      headerName: '',
+      flex: 0.1,
+      getActions: ({ id }) => {
+        return [
+          <GridActionsCellItem
+            icon={<DeleteIcon />}
+            label="Delete"
+            onClick={() => handleDeleteClick(id)}
+            //color="black"
+          />
+        ]
+      },
+    },
   ]
   
 // SAMPLE HERE
   useEffect(() => {
     if (currentUser && currentUser.uid) {
-      const q = query(
-        collection(db, "inquiries"), 
-        or(
-          where('senderId', '==', currentUser.uid),
-          where('recipient', '==', currentUser.email)
+      let q = '';
+      if (currentUser.role === 'admin'){
+        q = query(
+          collection(db, "inquiries")
         )
-      );
+      }
+      else {
+        q = query(
+          collection(db, "inquiries"), 
+          or(
+            where('senderId', '==', currentUser.uid),
+            where('recipient', '==', currentUser.email)
+          )
+        )
+      }
 
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const retrievedrows = [];
@@ -443,4 +486,6 @@ const Messagebox = ({params, isOpen, setIsOpen}) => {
   ) 
 }
 
+
 export default page
+
