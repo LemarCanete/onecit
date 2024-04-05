@@ -1,6 +1,9 @@
-import { doc, updateDoc } from "firebase/firestore";
+import { arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase-config";
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
+import { BsUpload } from "react-icons/bs";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { getAuth, updateProfile } from "firebase/auth";
 
 const formatDate = (dateString) => {
     const parts = dateString.split('/');
@@ -16,7 +19,8 @@ const PersonalDetails = ({userData}) => {
     const [program, setProgram] = useState(userData.program)
     const [schoolid, setSchoolid] = useState(userData.schoolid)
     const [bio, setBio] = useState(userData.bio)
-
+    const [file, setFile] = useState(null)
+    const fileInputRef = useRef(null);
 
     const handleUpdate = async() =>{
         try{
@@ -37,23 +41,123 @@ const PersonalDetails = ({userData}) => {
         }
     }
 
+    const handleImageClick = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleUploadImage = () =>{
+        if (!file || !file.type.startsWith('image/')) {
+            setFile(null)            
+            alert("Please select an image file.");
+            return;
+        }
+
+        const storage = getStorage();
+
+        const metadata = {
+            contentType: 'image/jpeg'
+        };
+
+        const storageRef = ref(storage, 'profileImages/' + file.name);
+        const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log('Upload is ' + progress + '% done');
+                switch (snapshot.state) {
+                case 'paused':
+                    console.log('Upload is paused');
+                    break;
+                case 'running':
+                    console.log('Upload is running');
+                    break;
+                }
+            }, 
+        (error) => {
+            switch (error.code) {
+            case 'storage/unauthorized':
+                alert("User doesn't have permission to access the object")
+                break;
+            case 'storage/canceled':
+                alert("User canceled the upload")
+                break;
+
+            case 'storage/unknown':
+                alert("Unknown error occurred, inspect error.serverResponse")
+                break;
+            }
+        }, 
+        () => {
+                // Upload completed successfully, now we can get the download URL
+                getDownloadURL(uploadTask.snapshot.ref).then(async(downloadURL) => {
+                    console.log('File available at', downloadURL);
+
+                    const usersRef = doc(db, "users", userData.uid);
+
+                    await updateDoc(usersRef, {
+                        profileImagesUrl: arrayUnion(downloadURL)
+                    });
+                });
+                setFile(null)
+            }
+        );
+    }
+    
+    const changeUserProfile = (url) =>{
+        const auth = getAuth();
+        const userRef = doc(db, "users", userData.uid);
+
+        updateProfile(auth.currentUser, {
+            displayName: `${userData.firstname} ${userData.lastname}`, photoURL: `${url}`
+          }).then(async() => {
+            console.log(auth.currentUser)
+
+            await updateDoc(userRef, {
+                photoURL: url,
+            });
+
+            alert("Successful Profile Update!");
+          }).catch((error) => {
+            alert(error.message)
+          });
+    }
+
+    console.log(userData)
+
     return (
         <div className='my-4 text-sm flex h-5/6'>
-            <div className="w-4/12 border-e h-full pe-4">
+            <div className="w-96 border-e h-full pe-4">
                 <h1 className="font-semibold text-base">Profile Picture</h1>
-                <img src='./schoolLogo.png' className='w-3/6 mx-auto'/>
+                <div className="flex flex-col justify-center">
+                    <label htmlFor="profile"  className="cursor-pointer w-full mx-auto hover:brightness-75">
+                        {/* <BsUpload className="cursor-pointer absolute text-4xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white hover:brightness-150"/> */}
+                        <img src={userData.photoURL ? userData.photoURL : './schoolLogo.png'} className='w-48 h-48 mx-auto rounded-full' id="profile" alt="Profile"  onClick={handleImageClick}/>
+                    </label>
+                    <input type="file" id="profile" className="hidden" ref={fileInputRef} onChange={(e)=>setFile(e.target.files[0])}/>
+                    {file && (
+                        <div className="justify-self-end">
+                            <span className="underline px-3">{file.name}</span> 
+                            <button className="border bg-teal-500 text-white px-4 py-2 rounded-lg" onClick={handleUploadImage}>Upload</button>
+                        </div>
+                    )}
+                </div>
 
                 <div className="mt-10">
                     <p className="py-3">Saved Pictures</p>
                     <div className="grid grid-cols-6 gap-1">
+                        {/* <img src='./schoolLogo.png' className='cursor-pointer border'/>
                         <img src='./schoolLogo.png' className='cursor-pointer border'/>
                         <img src='./schoolLogo.png' className='cursor-pointer border'/>
                         <img src='./schoolLogo.png' className='cursor-pointer border'/>
                         <img src='./schoolLogo.png' className='cursor-pointer border'/>
                         <img src='./schoolLogo.png' className='cursor-pointer border'/>
                         <img src='./schoolLogo.png' className='cursor-pointer border'/>
-                        <img src='./schoolLogo.png' className='cursor-pointer border'/>
-                        <img src='./schoolLogo.png' className='cursor-pointer border'/>
+                        <img src='./schoolLogo.png' className='cursor-pointer border'/> */}
+                        {userData.profileImagesUrl && userData.profileImagesUrl.map((url, id)=>{
+                            return <img key={id} src={url} className='cursor-pointer border' onClick={()=>changeUserProfile(url)}/>
+                        })}
                     </div>
                 </div>
             </div>

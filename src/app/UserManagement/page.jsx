@@ -12,6 +12,7 @@ import Form from './Form';
 import axios from 'axios'
 import PersonalDetails from '../Settings/PersonalDetails';
 import Password from '../Settings/Password';
+import SignupForm from './SignupForm'
 
 const customStyles = {
     content: {
@@ -19,7 +20,7 @@ const customStyles = {
       left: '50%',
       right: 'auto',
       bottom: 'auto',
-      marginRight: '-30%',
+    //   marginRight: '-30%',
       transform: 'translate(-50%, -50%)',
     },
     overlay:{
@@ -39,10 +40,18 @@ const page = () => {
     const [userData, setUserData] = useState(undefined);
     const [isOpenChangePassword, setIsOpenChangePassword] = useState(false)
 
-
     const router = useRouter();
 
     const columns = [
+        {
+            field: 'photoUrl',
+            headerName: 'Img',
+            width: 80,
+            renderCell: (params) => {
+                console.log(params)
+                return <img className="rounded-full h-10 w-10" src={params.row.photoURL ? params.row.photoURL : './schoolLogo.png'}/>
+            }
+        },
         { field: 'id', headerName: 'ID', width: '300' },
         {
             field: 'email',
@@ -169,10 +178,11 @@ const page = () => {
                     <div className="flex gap-3">
                         <p className="inline cursor-pointer bg-teal-500 rounded p-2 text-white" onClick={handleAdd}><BsPlus className='inline' /> Add</p>
                         <p className="inline cursor-pointer bg-red-500 rounded p-2 text-white" onClick={()=>setIsDeleteModal(true)}><BsTrash className='inline' /> Delete</p>
+                        <input type="search" className='rounded-lg px-3 w-96' placeholder='Search Email'/>
                     </div>
                 </div>
-
-                <div className="h-5/6 bg-white">
+                
+                <div className="h-fit bg-white">
                     <DataGrid
                             rows={users}
                             columns={columns}
@@ -198,9 +208,9 @@ const page = () => {
                         <button className="bg-red-500 text-white p-3 inline text-sm" onClick={handleDelete}><BsTrash className='inline'/> Delete</button>
                     </div>
                 </Modal> */}
-                {/*<Modal isOpen={isAdd} onRequestClose={()=>setIsAdd(false) } style={customStyles} >
-                    <Form title="Add"/>
-                </Modal> */}
+                <Modal isOpen={isAdd} onRequestClose={()=>setIsAdd(false) } style={customStyles} >
+                    <SignupForm title="Add"/>
+                </Modal>
                 
                 <Modal isOpen={isOpenUserDetails} onRequestClose={()=>setIsOpenUserDetails(false) } style={customStyles} >
                     {userData && <div className=''>

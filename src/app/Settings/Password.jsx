@@ -1,10 +1,32 @@
-import React from 'react'
-// import { getAuth, reauthenticateWithCredential } from "firebase/auth";
+import React, { useContext } from 'react'
+import { getAuth, reauthenticateWithCredential } from "firebase/auth";
+import { AuthContext } from '@/context/AuthContext';
 
 const Password = () => {
+    const {curreentUser} = useContext(AuthContext);
+    
     const handleUpdate = () =>{
+        try{
+            const auth = getAuth();
+            const user = auth.currentUser;
+
+            const credential = promptForCredentials();
+
+            reauthenticateWithCredential(user, credential).then(() => {
+                // User re-authenticated.
+              }).catch((error) => {
+                
+              });
+        }catch(err){
+            alert(err.message)
+        }
 
     }
+
+    const promptForCredentials = () =>{
+        
+    }
+
     return (
         <div className='text-sm my-5 grid grid-cols-2 gap-10'>
             <div className="">

@@ -20,20 +20,6 @@ const Form = ({user, title}) => {
     const [message, setMessage] = useState("")
     const [errors, setErrors] = useState("")
 
-    const editUser = async() =>{
-        const frankDocRef = doc(db, "users", initialUserData.uid);
-
-        await updateDoc(frankDocRef, {
-            schoolid: schoolid,
-            program: program,
-            firstname: firstname, 
-            lastname: lastname, 
-            email: email, 
-            birthdate: birthdate, 
-        });
-
-        alert("Successful Update!")
-    }  
 
     const addUser = async() =>{
         if (!schoolid || !program || !firstname || !lastname || !email || !birthdate || !password) {
@@ -144,7 +130,7 @@ const Form = ({user, title}) => {
 
     return (
         <div className="text-sm">
-            <h1 className="text-center tracking-wide font-bold text-base">{title} a User</h1>
+            <h1 className="text-center tracking-wide font-bold text-base">Add a User</h1>
 
             <div className="grid grid-cols-2 gap-5 my-5 ">
                 <div className="">
@@ -191,7 +177,7 @@ const Form = ({user, title}) => {
                 
                 {message}
                 {errors}
-                <button className="bg-teal-500 px-5 rounded-lg text-white py-2 col-span-2" onClick={title === "Add" ? addUser : editUser}>Save</button>
+                <button className="bg-teal-500 px-5 rounded-lg text-white py-2 col-span-2" onClick={addUser}>Save</button>
             </div>
         </div>
     )

@@ -50,7 +50,7 @@ const userApps = [
     },
     {
         name: "Careers",
-        isDone: false,
+        isDone: true,
     },
     {
         name: "Grade Calculator",

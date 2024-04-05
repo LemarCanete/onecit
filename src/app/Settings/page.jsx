@@ -3,7 +3,7 @@ import React, { useEffect, useState, useContext } from 'react'
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
 import PersonalDetails from './PersonalDetails'
 import { AuthContext } from '@/context/AuthContext'
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, onSnapshot } from "firebase/firestore";
 import { db } from '@/firebase-config'
 import Password from './Password'
 import DeleteAccount from './DeleteAccount'
@@ -31,13 +31,15 @@ const page = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Construct the correct path to the document
-                const userRef = doc(db, 'users', currentUser.uid);
-                const q = await getDoc(userRef);
-    
-                if (q.exists()) {
-                    setUserData(q.data());
-                }
+                const q = query(collection(db, "users"), where("uid", "==", currentUser.uid));
+                const unsubscribe = onSnapshot(q, (querySnapshot) => {
+                    const user = [];
+                    querySnapshot.forEach((doc) => {
+                        user.push(doc.data());
+                    });
+
+                    setUserData(user[0])
+                });
             } catch (error) {
                 console.error('Error fetching document:', error);
             }
