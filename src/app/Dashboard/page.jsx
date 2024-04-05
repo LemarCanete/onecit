@@ -9,7 +9,7 @@ const page = () => {
     const mode = useSelector(state => state.darkMode.value)
     const profile = useSelector(state => state.profile.value)
     return (
-        <div className={`w-full h-screen flex ${mode ? 'bg-slate-800' : 'bg-neutral-100'}`}>
+        <div className={`w-full h-screen flex overflow-hidden ${mode ? 'bg-slate-800' : 'bg-neutral-100'}`}>
             <Navbar active="Dashboard"/>
             <div className="grow px-10 py-5">
                 <Top />

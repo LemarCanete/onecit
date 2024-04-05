@@ -7,6 +7,7 @@ import { doc, getDoc, collection, query, where, onSnapshot } from "firebase/fire
 import { db } from '@/firebase-config'
 import Password from './Password'
 import DeleteAccount from './DeleteAccount'
+import Socials from './Socials'
 
 const header = [
     {
@@ -16,11 +17,15 @@ const header = [
         name: "Password",
     },
     {
+        name: "Socials"
+    },
+    {
         name: "Security",
     },
     {
         name: "Delete Account"
-    }
+    },
+    
 ]
 
 const page = () => {
@@ -56,6 +61,8 @@ const page = () => {
             return <Password />
         }else if(selected === "Delete Account"){
             return <DeleteAccount />
+        }else if(selected === "Socials"){
+            return <Socials />
         }
     }
 

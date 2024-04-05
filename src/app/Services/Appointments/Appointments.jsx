@@ -117,13 +117,13 @@ const Appointments = ({email}) => {
                     <div className='flex'>
                         <button className="text-teal-500 pe-2" onClick={() => handleStatus("Accepted", id)} >Accept<BsCheck className='text-center'/></button>
                         <button className='text-red-500' onClick={() => handleStatus("Declined", id)} >Decline<BsX className='text-center'/></button>
-                        <BsChat className='ms-3 text-lg cursor-pointer' onClick={() => handleChat(row.to.email)}/>
+                        {/* <BsChat className='ms-3 text-lg cursor-pointer' onClick={() => handleChat(row.to.email)}/> */}
                     </div>
                   );
                 } else {
                   return <div className="flex w-28 justify-items-end justify-between">
                     <span>{row.status}</span>
-                    <BsChat className='cursor-pointer text-lg' onClick={() => handleChat(row.to.email)}/>
+                    {/* <BsChat className='cursor-pointer text-lg' onClick={() => handleChat(row.to.email)}/> */}
                   </div>
                 }
               },

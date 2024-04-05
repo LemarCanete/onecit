@@ -29,11 +29,13 @@ const Profile = () => {
     const dispatch = useDispatch();
     const {currentUser} = useContext(AuthContext)
     return (
-        <div className={`h-screen w-3/12 relative p-4 shadow-xl ${mode ? 'bg-slate-600 text-white' : 'bg-white'}`}>
+        <div className={`h-screen w-3/12 relative p-4 shadow-xl overflow-y-scroll ${mode ? 'bg-slate-600 text-white' : 'bg-white'}`}>
             <BiX className='absolute right-0 top-0 text-5xl cursor-pointer ' onClick={()=>dispatch(profileToggle())}/>
             <div className="flex flex-col justify-center items-center py-5">
                 <h1 className='text-3xl font-bold tracking-widest'>Profile</h1>
-                <div className=""><BiSolidUserCircle className='text-9xl'/></div>
+                <div className="">
+                    <img src={currentUser.photoURL ? currentUser.photoURL : './schoolLogo.png'} alt="" className='h-72 w-72 rounded-full'/>
+                </div>
                 <p className=''>{currentUser.schoolid}</p>
             </div>
             <hr />
@@ -73,7 +75,7 @@ const Profile = () => {
                 <h1 className="text-xl">Work Experience</h1>
             </div>
 
-            <div className="absolute bottom-0 left-0 flex justify-around w-full mb-2 text-2xl">
+            <div className="flex justify-around w-full mb-2 text-2xl">
                 <button className="text-blue-600"><SiFacebook /></button>
                 <button className="text-red-500"><SiGmail /></button>
                 <button className="text-blue-500"><SiLinkedin /></button>

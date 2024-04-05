@@ -84,7 +84,8 @@ const page = () => {
                 await updateDoc(doc(db, "userChats", userId), {
                     [combinedId + ".userInfo"] : {
                         uid: item.uid,
-                        displayName: `${item.firstname} ${item.lastname}`
+                        displayName: `${item.firstname} ${item.lastname}`,
+                        photoURL: item.photoURL
                     },
                     [combinedId+".date"]:serverTimestamp()
                 })
@@ -138,7 +139,7 @@ const page = () => {
                     <div className="">
                         {Object.entries(chats)?.sort((a, b)=> b[1].date - a[1].date).map((chat, id) => (
                             <div className="grid grid-flow-col grid-rows-2 px-3 py-2 hover:bg-neutral-50 cursor-pointer" key={chats[0]} onClick={()=>handleSelect(chat[1].userInfo)}>
-                                <img src="schoolLogo.png" alt="" className='row-span-2 h-12 w-12'/>
+                                <img src={chat[1].userInfo.photoURL ? chat[1].userInfo.photoURL : 'schoolLogo.png'} alt="" className='row-span-2 h-12 w-12'/>
                                 <p className="font-bold text-sm">{chat[1].userInfo.displayName}</p>
                                 <p className="col-span-6 text-sm">{chat[1].lastMessage?.message ? chat[1].lastMessage.message : <span className='italic'>New message..</span>}</p>
                             </div>
