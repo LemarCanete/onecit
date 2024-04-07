@@ -62,7 +62,7 @@ const page = () => {
         }else if(selected === "Delete Account"){
             return <DeleteAccount />
         }else if(selected === "Socials"){
-            return <Socials />
+            return <Socials userData={userData}/>
         }
     }
 
@@ -72,7 +72,7 @@ const page = () => {
             <div className='grow px-10 py-5 text-sm bg-white rounded-xl m-10'>
                 <h1 className="text-2xl font-bold tracking-wide">Account Settings</h1>
                 
-                <div className="w-full flex gap-3 border-b ">
+                <div className="w-full flex gap-5 border-b ">
                     {selected && header.map((head, key)=>{
                         return <button className={`${(selected === head.name) ? 'border-b text-teal-500' : ''} py-3`} key={key} onClick={()=>setSelected(head.name)}>{head.name}</button>
                     })}
