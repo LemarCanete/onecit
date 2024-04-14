@@ -3,7 +3,9 @@ import NavbarIconsOnly from '@/components/NavbarIconsOnly'
 import React, {useCallback, useState} from 'react'
 import dynamic from 'next/dynamic';
 import { BiChat } from 'react-icons/bi';
-import data from './org';
+import data from '../org';
+import { useRouter } from 'next/navigation'
+import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 
 const DynamicTree = dynamic(() => import('react-d3-tree'), { ssr: false });
 
@@ -20,88 +22,21 @@ const renderRectSvgNode = ({ nodeDatum, toggleNode }) => (
             {nodeDatum.position}
             </text>
         )}
-        {nodeDatum.position && <BiChat className='text-teal-500' y={30} x={40}/>}
+        {/* {nodeDatum.position && <BiChat className='text-teal-500' y={30} x={40}/>} */}
     </g>
-  );
-
+);
 
 const page = () => {
-    // const data = {
-    //     "name": "CEO",
-    //     "attributes": {
-    //         "department": "President"
-    //     },
-    //     "children": [
-    //       {
-    //         "name": "Manager",
-    //         "attributes": {
-    //           "department": "Production"
-    //         },
-    //         "children": [
-    //           {
-    //             "name": "Foreman",
-    //             "attributes": {
-    //               "department": "Fabrication"
-    //             },
-    //             "children": [
-    //               {
-    //                 "name": "Workers"
-    //               }
-    //             ]
-    //           },
-    //           {
-    //             "name": "Foreman",
-    //             "attributes": {
-    //               "department": "Assembly"
-    //             },
-    //             "children": [
-    //               {
-    //                 "name": "Workers"
-    //               }
-    //             ]
-    //           }
-    //         ]
-    //       },
-    //       {
-    //         "name": "Manager",
-    //         "attributes": {
-    //           "department": "Marketing"
-    //         },
-    //         "children": [
-    //           {
-    //             "name": "Sales Officer",
-    //             "attributes": {
-    //               "department": "A"
-    //             },
-    //             "children": [
-    //               {
-    //                 "name": "Salespeople"
-    //               }
-    //             ]
-    //           },
-    //           {
-    //             "name": "Sales Officer",
-    //             "attributes": {
-    //               "department": "B"
-    //             },
-    //             "children": [
-    //               {
-    //                 "name": "Salespeople"
-    //               }
-    //             ]
-    //           }
-    //         ]
-    //       }
-    //     ]
-    // }
-  const [translate, setTranslate] = useState({ x: 0, y: 0 });
-    const [dimensions, setDimensions] = useState();
-    const containerRef = useCallback((containerElem) => {
-      if (containerElem !== null) {
-        const { width, height } = containerElem.getBoundingClientRect();
-        setDimensions({ width, height });
-        setTranslate({ x: width / 2, y: height / 12 });
-      }
+    const router = useRouter();
+    
+    const [translate, setTranslate] = useState({ x: 0, y: 0 });
+        const [dimensions, setDimensions] = useState();
+        const containerRef = useCallback((containerElem) => {
+        if (containerElem !== null) {
+            const { width, height } = containerElem.getBoundingClientRect();
+            setDimensions({ width, height });
+            setTranslate({ x: width / 2, y: height / 12 });
+        }
     }, []);
 
 
@@ -111,10 +46,15 @@ const page = () => {
             <NavbarIconsOnly/>
 
             <div className="px-10 py-5 grow flex-col justify-center items-center">
-                <h1 className="text-3xl">Directory</h1>
-                <input type="search" placeholder='Search' className='w-full rounded-lg p-2 my-3'/>
+                <div className="flex gap-20 items-center mb-5">
+                    <button onClick={()=>router.back()}>
+                        <ArrowBackIosNewRoundedIcon sx={{ fontSize: 35}} className='bg-[#115E59] text-[#F5F5F5] rounded-full p-2 m-2 '/>Go back
+                    </button>
+                    <h1 className="text-2xl">Directory</h1>
+                </div>
+                {/* <input type="search" placeholder='Search' className='w-full p-2 my-3 text-sm border-b outline-none'/> */}
 
-                <div id="treeWrapper" className='w-full h-5/6' ref={containerRef}>
+                <div id="treeWrapper" className='w-full h-5/6 bg-white/50 shadow-lg' ref={containerRef}>
                     <DynamicTree  
                         data={data} 
                         orientation='vertical' 
@@ -123,13 +63,18 @@ const page = () => {
                         draggable="true"
                         translate={translate}
                         enableLegacyTransitions
-                        nodeSize={{x: 500, y: 150}}
+                        nodeSize={{x: 400, y: 150}}
                         // dimensions={dimensions}
                         svgClassName=' '
                         // leafNodeClassName='border'
                         // branchNodeClassName='border'
                         renderCustomNodeElement={renderRectSvgNode}
-                        />
+                        depthFactor={0}
+                        initialDepth={2}
+                        dimensions={dimensions}
+                        shouldCollapseNeighborNodes="true"
+                        separation={{nonSiblings: 3, siblings: 1.6}}
+                    />
                 </div>
             </div>
 

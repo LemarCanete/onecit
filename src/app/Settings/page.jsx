@@ -8,6 +8,7 @@ import { db } from '@/firebase-config'
 import Password from './Password'
 import DeleteAccount from './DeleteAccount'
 import Socials from './Socials'
+import Security from './Security'
 
 const header = [
     {
@@ -63,6 +64,8 @@ const page = () => {
             return <DeleteAccount />
         }else if(selected === "Socials"){
             return <Socials userData={userData}/>
+        }else if(selected === "Security"){
+            return <Security />
         }
     }
 

@@ -1,9 +1,10 @@
 import { arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase-config";
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useContext } from "react"
 import { BsUpload } from "react-icons/bs";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { getAuth, updateProfile } from "firebase/auth";
+import { AuthContext } from "@/context/AuthContext";
 
 const formatDate = (dateString) => {
     const parts = dateString.split('/');
@@ -14,14 +15,16 @@ const PersonalDetails = ({userData}) => {
     const [firstname, setFirstname] = useState(userData.firstname)
     const [lastname, setLastname] = useState(userData.lastname)
     const [email, setEmail] = useState(userData.email)
+    const [year, setYear] = useState(userData?.year || '')
     const [birthdate, setBirthdate] = useState(formatDate(userData.birthdate));
     const [role, setRole] = useState(userData.role)
     const [program, setProgram] = useState(userData.program)
     const [schoolid, setSchoolid] = useState(userData.schoolid)
-    const [bio, setBio] = useState(userData.bio)
+    const [bio, setBio] = useState(userData?.bio || '')
     const [file, setFile] = useState(null)
     const fileInputRef = useRef(null);
-
+    const {currentUser} = useContext(AuthContext)
+    console.log(year)
     const handleUpdate = async() =>{
         try{
             const q = doc(db, "users", userData.uid);
@@ -33,6 +36,8 @@ const PersonalDetails = ({userData}) => {
                 program: program,
                 schoolid: schoolid,
                 bio: bio,
+                role: role,
+                year: year === "" ? '' : Number(year)
             });
 
             alert("Successfull Update")
@@ -124,7 +129,7 @@ const PersonalDetails = ({userData}) => {
           });
     }
 
-    console.log(userData)
+    
 
     return (
         <div className='my-4 text-sm flex h-5/6'>
@@ -147,14 +152,6 @@ const PersonalDetails = ({userData}) => {
                 <div className="mt-10">
                     <p className="py-3">Saved Pictures</p>
                     <div className="grid grid-cols-6 gap-1">
-                        {/* <img src='./schoolLogo.png' className='cursor-pointer border'/>
-                        <img src='./schoolLogo.png' className='cursor-pointer border'/>
-                        <img src='./schoolLogo.png' className='cursor-pointer border'/>
-                        <img src='./schoolLogo.png' className='cursor-pointer border'/>
-                        <img src='./schoolLogo.png' className='cursor-pointer border'/>
-                        <img src='./schoolLogo.png' className='cursor-pointer border'/>
-                        <img src='./schoolLogo.png' className='cursor-pointer border'/>
-                        <img src='./schoolLogo.png' className='cursor-pointer border'/> */}
                         {userData.profileImagesUrl && userData.profileImagesUrl.map((url, id)=>{
                             return <img key={id} src={url} className='cursor-pointer border' onClick={()=>changeUserProfile(url)}/>
                         })}
@@ -175,19 +172,21 @@ const PersonalDetails = ({userData}) => {
                 <hr />
                 <div className="grid grid-cols-4 gap-10 my-5">
                     <p className="">School ID</p>
-                    <input type="text" className="border p-2 rounded-lg"  value={schoolid} disabled/>
+                    <input type="text" className="border p-2 rounded-lg"  value={schoolid} onChange={e=>setSchoolid(e.target.value)} disabled={currentUser.role === "admin" ? false : true}/>
                     <p className="">Role</p>
-                    <input type="text" className="border p-2 rounded-lg"  value={role} disabled/>
+                    <input type="text" className="border p-2 rounded-lg"  value={role} onChange={e=>setRole(e.target.value)} disabled={currentUser.role === "admin" ? false : true}/>
                 </div>
                 <hr />
-                <div className="grid grid-cols-3 my-5">
-                    <p className="">Email Address</p>
-                    <input type="email" className="border p-2 rounded-lg" placeholder='Email Address' value={email} onChange={(e)=> setEmail(e.target.value)}/>
+                <div className="grid grid-cols-4 my-5 gap-10">
+                    <p className="">Program</p>
+                    <input type="text" className="border p-2 rounded-lg"  value={program} onChange={(e)=> setProgram(e.target.value)} disabled={currentUser.role === "admin" ? false : true}/>
+                    <p className="">Year</p>
+                    <input type="text" className="border p-2 rounded-lg" value={year} onChange={(e)=> setYear(e.target.value)} disabled={currentUser.role === "admin" ? false : true}/>
                 </div>
                 <hr />
                 <div className="grid grid-cols-4 gap-10 my-5">
-                    <p className="">Program</p>
-                    <input type="text" className="border p-2 rounded-lg"  value={program} onChange={(e)=> setProgram(e.target.value)}/>
+                    <p className="">Email Address</p>
+                    <input type="email" className="border p-2 rounded-lg" placeholder='Email Address' value={email} onChange={(e)=> setEmail(e.target.value)}/>
                     <p className="">Birth Date</p>
                     <input type="date" className="border p-2 rounded-lg"  value={birthdate} onChange={(e)=> setBirthdate(e.target.value)}/>
                     
