@@ -1,11 +1,10 @@
 import React, { useContext, useState } from 'react'
 import { EmailAuthProvider, getAuth, reauthenticateWithCredential, signInWithEmailAndPassword, updatePassword } from "firebase/auth";
 import { AuthContext } from '@/context/AuthContext';
+import axios from 'axios';
 
-const Password = () => {
+const Password = ({userData}) => {
     const {currentUser} = useContext(AuthContext)
-    // const auth = getAuth();
-    // const user = auth.currentUser;
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmNewPassword, setConfirmNewPassword] = useState("");
@@ -39,27 +38,32 @@ const Password = () => {
         }
 
         try {
-            const auth = getAuth();
+            if(currentUser.role === "admin"){
+                const updateUser = await axios.put(`http://localhost:4000/updateUserPassword/${userData.uid}`, {newPassword})
+                alert("Successfull password update!")
+            }else{
+                const auth = getAuth();
 
-            const credential = EmailAuthProvider.credential(currentUser.email, currentPassword);
-            await reauthenticateWithCredential(auth.currentUser, credential);
-            alert("Re-authenticated successfully!");
-            handleUpdate(newPassword, auth)
+                const credential = EmailAuthProvider.credential(currentUser.email, currentPassword);
+                await reauthenticateWithCredential(auth.currentUser, credential);
+                alert("Re-authenticated successfully!");
+                
+                handleUpdate(newPassword, auth)
+            }
         } catch (err) {
             alert("Invalid Credential! Error: " + err.message);
         }
     }
     
-
     return (
         <div className='text-sm my-5 grid grid-cols-2 gap-10'>
             <div className="">
                 <h1 className="text-base font-semibold">Change Password</h1>
                 <p className="">Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, quisquam!</p>
-                <div className="grid grid-cols-2 gap-10 my-5">
+                {currentUser && currentUser.role !== "admin" && (<div className="grid grid-cols-2 gap-10 my-5">
                     <label className="">Current Password</label>
                     <input type="text" className="border p-2 rounded-lg" placeholder='Current Password' value={currentPassword} onChange={e=>setCurrentPassword(e.target.value)}/>
-                </div>
+                </div>)}
 
                 <div className="grid grid-cols-2 gap-10 my-5">
                     <label className="">New Password</label>
@@ -72,7 +76,7 @@ const Password = () => {
                 </div>
 
                 <div className="flex justify-end gap-5">
-                    <button className="bg-neutral-500 px-5 rounded-lg text-white py-2 " onClick={checkNewPassword}>Forgot Password?</button>
+                    {currentUser && currentUser.role !== "admin" && <button className="bg-neutral-500 px-5 rounded-lg text-white py-2 " onClick={checkNewPassword}>Forgot Password?</button>}
                     <button className="bg-teal-500 px-5 rounded-lg text-white py-2 " onClick={checkNewPassword}>Save</button>
                 </div>
             </div>

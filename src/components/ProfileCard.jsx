@@ -1,14 +1,17 @@
-import React, { useState, useRef, useContext } from "react"
-import { AuthContext } from "@/context/AuthContext";
+import React from "react"
 
-const formatDate = (dateString) => {
-    const parts = dateString.split('/');
-    return `${parts[2]}-${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}`;
-};
 
 const PersonalDetails = ({userData}) => {
     const {firstname, lastname, email, birthdate, role, program,  schoolid, bio} = userData;
- 
+    
+    if(userData?.profileView === 'private'){
+        return (
+            <div className="">
+                <h1 className="text-center">Profile is in private mode</h1>
+            </div>
+        )
+    }
+
     return (
         <div className='my-4 text-sm flex h-5/6'>
             <div className="w-96 border-e h-full pe-4">
@@ -20,11 +23,17 @@ const PersonalDetails = ({userData}) => {
                 </div>
 
                 <div className="mt-10">
-                    <p className="py-3">Saved Pictures</p>
+                    <p className="py-3">Socials</p>
                     <div className="grid grid-cols-6 gap-1">
-                        {userData.profileImagesUrl && userData.profileImagesUrl.map((url, id)=>{
-                            return <img key={id} src={url} className='cursor-pointer border' />
-                        })}
+                        {userData.socials && (
+                            <div className="">
+                                <p className="cursor-pointer text-blue-500 hover:underline">{userData.socials.Facebook}</p>
+                                <p className="cursor-pointer text-blue-500 hover:underline">{userData.socials.Github}</p>
+                                <p className="cursor-pointer text-blue-500 hover:underline">{userData.socials.Gmail}</p>
+                                <p className="cursor-pointer text-blue-500 hover:underline">{userData.socials.Instagram}</p>
+                                <p className="cursor-pointer text-blue-500 hover:underline">{userData.socials.Microsoft}</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -63,7 +72,7 @@ const PersonalDetails = ({userData}) => {
                 <hr />
                 <div className="flex w-full mt-5 gap-5 py-2">
                     <p className="">Bio:</p>
-                    <textarea name="" id="" cols="115" rows="4" className='resize-none rounded-lg' value={bio} disabled></textarea>
+                    <textarea name="" id="" cols="125" rows="4" className='resize-none rounded-lg' value={bio} disabled></textarea>
                 </div>
 
             </div>

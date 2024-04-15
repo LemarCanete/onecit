@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import { styled } from '@mui/material/styles';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import { AuthContext } from '@/context/AuthContext';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '@/firebase-config';
 
 const IOSSwitch = styled((props) => (
     <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -56,7 +59,22 @@ const IOSSwitch = styled((props) => (
   }));
 
 const Security = () => {
+    const {currentUser} = useContext(AuthContext)
+    const profileView = currentUser.profileView  === "private" ? true : false
+    const [checked, setChecked] = useState(profileView)
 
+    const handleChange = async() =>{
+        const newChecked = !checked;
+        setChecked(newChecked)
+
+        const profileViewRef = doc(db, "users", currentUser.uid);
+
+        await updateDoc(profileViewRef, {
+            profileView: newChecked ? "private" : "public"
+        });
+
+        alert(newChecked ? "Private mode activated" : "Public mode activated")
+    }
 
     return (
         <div className=''>
@@ -66,7 +84,9 @@ const Security = () => {
                     <p className="">Make your account private</p>
                 </div>
                 <FormGroup>
-                    <FormControlLabel control={<IOSSwitch sx={{ m: 1 }} defaultChecked />} label="" />
+                    <FormControlLabel 
+                        control={<IOSSwitch sx={{ m: 1 }} checked={checked} onChange={handleChange}/>} 
+                        label={checked} />
                 </FormGroup>
             </div>
         </div>

@@ -1,6 +1,6 @@
 import { AuthContext } from '@/context/AuthContext';
 import { db } from '@/firebase-config';
-import { collection, doc, documentId, getDoc, getDocs, or, query, where, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, doc, documentId, getDoc, getDocs, or, query, where, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 import React, { useContext, useDebugValue, useEffect, useState } from 'react'
 import { BsChat, BsCheck, BsGrid, BsList, BsPen, BsThreeDots, BsTrash, BsX } from 'react-icons/bs'
 import Box from '@mui/material/Box';
@@ -143,18 +143,14 @@ const Appointments = ({email}) => {
                     querydata = query(collection(db, "appointments"),
                         or(where("from.email", "==", currentUser.email), where("to.email", "==", currentUser.email)))
                 }
-                
 
-                const querySnapshot = await getDocs(querydata)
-                
-                let appointmentData = [];
-
-                querySnapshot.forEach((doc)=>{
-                    appointmentData.push({ ...doc.data(), id: doc.id}); 
-                    
-                })
-
-                setAppointments(appointmentData);
+                const unsubscribe = onSnapshot(querydata, (querySnapshot) => {
+                    const appointmentData = [];
+                    querySnapshot.forEach((doc) => {
+                        appointmentData.push({ ...doc.data(), id: doc.id}); 
+                    });
+                    setAppointments(appointmentData);
+                });
                 
             } catch (err) {
                 console.error(err);

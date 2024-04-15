@@ -39,6 +39,7 @@ const page = () => {
     const [isOpenUserDetails, setIsOpenUserDetails] = useState(false)
     const [userData, setUserData] = useState(undefined);
     const [isOpenChangePassword, setIsOpenChangePassword] = useState(false)
+    const [email, setEmail] = useState('')
 
     const router = useRouter();
 
@@ -96,7 +97,6 @@ const page = () => {
         },
     ];
 
-
     useEffect(()=>{
         const fetchData = async() =>{
             try{
@@ -114,33 +114,23 @@ const page = () => {
     const handleAdd = () =>{
         setIsAdd(true)
     }
-    const handleUpdate = () =>{
-        if(selectedRows.length > 1 || selectedRows.length < 1) return;
 
-        setIsEdit(true)
-    }
-
-    const handleDelete = () =>{
+    const handleDelete = async() =>{
         if(selectedRows.length < 1) {
             setIsDeleteModal(false)
             return;
         }
 
-        // const usersToDelete = users.filter(user => selectedRows.includes(user.uid));
+        try{
+            for(const id of selectedRows){
+                const deleteUser = await axios.delete(`http://localhost:4000/deleteUser/${id}`)
+                await deleteDoc(doc(db, "users", id));
+                alert(deleteUser.data);
+            }
 
-        // console.log(usersToDelete);
-        // usersToDelete.forEach(async(user) => {
-        //     await deleteUser(user).then(() => {
-        //         alert("Successfully deleted")
-        //       }).catch((error) => {
-        //         console.log(error.message)
-        //       });
-              
-        // })
-        
-        const auth = getAuth();
-        const user = auth.currentUser;
-        console.log(auth)
+        }catch(err){
+            alert('Error: ' + err.message)
+        }
 
         setIsDeleteModal(false)
     }
@@ -165,7 +155,10 @@ const page = () => {
         }
     }
 
-    console.log(selectedRows)
+    const filteredUsers = users.filter(user => 
+        user.email.toLowerCase().includes(email.toLowerCase())
+    );
+
     return (
         <div className='w-full h-screen flex bg-neutral-100'>
             <NavbarIconsOnly/>
@@ -178,13 +171,13 @@ const page = () => {
                     <div className="flex gap-3">
                         <p className="inline cursor-pointer bg-teal-500 rounded p-2 text-white" onClick={handleAdd}><BsPlus className='inline' /> Add</p>
                         <p className="inline cursor-pointer bg-red-500 rounded p-2 text-white" onClick={()=>setIsDeleteModal(true)}><BsTrash className='inline' /> Delete</p>
-                        <input type="search" className='rounded-lg px-3 w-96' placeholder='Search Email'/>
+                        <input type="search" className='rounded-lg px-3 w-96' placeholder='Search Email' value={email} onChange={e=>setEmail(e.target.value)}/>
                     </div>
                 </div>
                 
                 <div className="h-fit bg-white">
                     <DataGrid
-                            rows={users}
+                            rows={filteredUsers}
                             columns={columns}
                             initialState={{
                             pagination: {
@@ -200,14 +193,14 @@ const page = () => {
                 </div>
 
                 {/* Modals */}
-                {/* <Modal isOpen={isDeleteModal} onRequestClose={()=>setIsDeleteModal(false) } style={customStyles}>
+                <Modal isOpen={isDeleteModal} onRequestClose={()=>setIsDeleteModal(false) } style={customStyles}>
                     <h1 className="">Are you sure to delete these rows? </h1>
                     <p className="">[{selectedRows.join(', ')}] {selectedRows.length < 1 && <span className='text-red-500 italic'>No selected row</span>}</p>
                     <div className="flex justify-end mt-4 gap-3">
                         <button className="bg-neutral-100  p-3 text-sm" onClick={()=>setIsDeleteModal(false)}>Cancel</button>
                         <button className="bg-red-500 text-white p-3 inline text-sm" onClick={handleDelete}><BsTrash className='inline'/> Delete</button>
                     </div>
-                </Modal> */}
+                </Modal>
                 <Modal isOpen={isAdd} onRequestClose={()=>setIsAdd(false) } style={customStyles} >
                     <SignupForm title="Add"/>
                 </Modal>

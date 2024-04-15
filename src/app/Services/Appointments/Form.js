@@ -1,6 +1,6 @@
 import { AuthContext } from '@/context/AuthContext';
 import { db } from '@/firebase-config';
-import { addDoc, collection, doc, setDoc, query, where, getDocs } from 'firebase/firestore';
+import { addDoc, collection, doc, setDoc, query, where, getDocs, Timestamp } from 'firebase/firestore';
 import React, { useContext, useRef, useState } from 'react'
 
 const Form = ({setIsOpen, name, emailTo}) => {
@@ -15,17 +15,28 @@ const Form = ({setIsOpen, name, emailTo}) => {
     const [searchExist, setSearchExist] = useState(false)
     const [people, setPeople] = useState("")
     const [err, setErr] = useState("")
+    const [peopleData, setPeopleData] = useState({});
 
     const handleSubmit = async(e) =>{
         e.preventDefault()
         try{
-            const {firstname, lastname, email, program, role, schoolid} = currentUser;
+            const {firstname, lastname, email, program, role, schoolid, uid} = currentUser;
             const appointment = await addDoc(collection(db, "appointments"), 
                 {phonenumber, date, reason, status: "pending", 
                     to: {email: emailTo || people, position: name}, 
                     from:{firstname, lastname, email, program, role, schoolid}})
-                setIsOpen(false)
-            console.log(appointment)
+            const notification = await addDoc(collection(db, "notifications"), 
+                {
+                    senderName: `${firstname} ${lastname}`,
+                    senderUid: uid,
+                    receivedByUid: peopleData.uid,
+                    senderMessage: "has scheduled an appointment with you. Please confirm.",
+                    date: Timestamp.now(),
+                    link: '/Services/Appointments',
+                    isRead: false,
+                }
+            )
+            setIsOpen(false)
         }catch(err){
             console.log(err)
         }
@@ -36,6 +47,10 @@ const Form = ({setIsOpen, name, emailTo}) => {
 
         const querySnapShot = await getDocs(q);
         if(!querySnapShot.empty){
+            querySnapShot.forEach(doc => {
+                console.log(doc.data());
+                setPeopleData(doc.data());
+            })
             setSearchExist(true)
             setPeople(search)
             setErr("")
