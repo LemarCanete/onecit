@@ -106,6 +106,39 @@ const page = () => {
         }
     }, [currentUser, isOpenAdmin]);
 
+    //add this to dashboard
+    // useState(()=>{
+    //     const addNotification = async() =>{
+    //         const {firstname, lastname, uid} = currentUser
+    //         const notification = await addDoc(collection(db, "notifications"), 
+    //             {
+    //                 senderName: `${firstname} ${lastname}`,
+    //                 senderUid: '3hXvrnGaeMOE98ZRmrh7BzIfw3E2',
+    //                 receivedByUid: uid,
+    //                 senderMessage: "Reminder that you have an event today",
+    //                 date: Timestamp.now(),
+    //                 link: '/CalendarofEvents',
+    //                 isRead: false,
+    //             }
+    //         )
+            
+    //     }
+
+    //     const date = new Date();
+    //     const day = date.getDate();
+    //     const year = date.getFullYear();
+    //     const month = date.getMonth() + 1;
+    //     const today = `${year}-${month}-${day}`
+
+    //     events.forEach(event => {
+    //         const d = event.value.startDate.split('T')[0];
+    //         alert(d)
+    //         if(d === today){
+    //             addNotification();
+    //         }
+    //     })
+    // }, [events])
+
     return (
         <div className='w-full h-screen flex bg-neutral-100 overflow-hidden'>
             <NavbarIconsOnly />

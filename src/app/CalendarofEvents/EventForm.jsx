@@ -90,7 +90,7 @@ const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setE
         try{
             const role = currentUser.role
             const user = currentUser.uid;
-            const addMainEvent = await addDoc(collection(db, "calendarEvents"),
+            const addSubEvent = await addDoc(collection(db, "calendarEvents"),
                 {value: {startDate: `${dateText}T${startTime}`, endDate: `${dateText}T${endTime}`}, title: subTitle, user, role}
             )
             setStatus("Successfully Added!")

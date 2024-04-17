@@ -1,13 +1,14 @@
 import React from "react"
+import { BsLockFill } from "react-icons/bs";
 
 
 const PersonalDetails = ({userData}) => {
     const {firstname, lastname, email, birthdate, role, program,  schoolid, bio} = userData;
-    
     if(userData?.profileView === 'private'){
         return (
-            <div className="">
-                <h1 className="text-center">Profile is in private mode</h1>
+            <div className="w-56 h-36 flex flex-col items-center justify-around">
+                <h1 className="text-xl tracking-wide text-center">Profile is in private mode</h1>
+                <BsLockFill className="text-6xl " color="gray"/>
             </div>
         )
     }
@@ -18,7 +19,7 @@ const PersonalDetails = ({userData}) => {
                 <h1 className="font-semibold text-base">Profile Picture</h1>
                 <div className="flex flex-col justify-center">
                     <label htmlFor="profile"  className="cursor-pointer w-full mx-auto">
-                        <img src={userData.photoURL ? userData.photoURL : './schoolLogo.png'} className='w-48 h-48 mx-auto rounded-full' id="profile" alt="Profile" />
+                        <img src={userData.photoURL ? userData.photoURL : '/schoolLogo.png'} className='w-48 h-48 mx-auto rounded-full' id="profile" alt="Profile" />
                     </label>
                 </div>
 

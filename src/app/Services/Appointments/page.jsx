@@ -41,13 +41,13 @@ const page = () => {
                     <h1 className="text-2xl tracking-widest	">Appointments</h1>
                 </div>
                 {currentUser.role && currentUser.role !== "admin" && <div className="w-full grid grid-cols-8">
-                        <Box name="Library" emailTo="citlibrary@gmail.com"/>
+                        {/* <Box name="Library" emailTo="citlibrary@gmail.com"/>
                         <Box name="Research Labs" emailTo="citresearch@gmail.com"/>
                         <Box name="Orgs" emailTo="citorgs@gmail.com"/>
                         <Box name="Tutoring Centers" emailTo="cittutoring@gmail.com"/>
                         <Box name="FAO" emailTo="citfao@gmail.com"/>
                         <Box name="Clinic" emailTo="citclinic@gmail.com"/>
-                        <Box name="Couselling" emailTo="citcouncelling@gmail.com"/>
+                        <Box name="Couselling" emailTo="citcouncelling@gmail.com"/> */}
                         <Box name="People" />
                 </div>}
 
