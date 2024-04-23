@@ -144,7 +144,7 @@ const MainDashboard = () => {
     <div className=''>
       <ViewTaskComponent isOpen={VTisOpen} setIsOpen={setVTIsOpen} task={selectedTask}/>
       <AddTask isOpen={ANTisOpen} setIsOpen={setANTIsOpen} initialStatus={initialStatus}/>
-      <div className='w-full bg-white py-2 px-4 rounded-[10px] border-2'>
+      <div className='w-full bg-white py-2 px-4 rounded-[10px] border-2 hidden'>
         <button className={`${board==='list' ? 'text-[#115E59] font-bold p-2 rounded-[10px]' : 'p-2'} text-l mr-6`} onClick={() => setBoard('list')}> <ChecklistRoundedIcon/> List</button>
         <button className={`${board==='board' ? 'text-[#115E59] font-bold p-2 rounded-[10px]' : 'p-2'} text-l mr-6`} onClick={() => setBoard('board')}> <DashboardRoundedIcon/> Board</button>
       </div>
