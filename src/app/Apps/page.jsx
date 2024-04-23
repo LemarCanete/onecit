@@ -17,7 +17,7 @@ const userApps = [
         isDone: true,
     },
     {
-        name: "Chat",
+        name: "Chats",
         isDone: true,
     },
     {
@@ -81,7 +81,7 @@ const adminApps = [
         isDone: true,
     },
     {
-        name: "Chat",
+        name: "Chats",
         isDone: true,
     },
     {
@@ -90,7 +90,7 @@ const adminApps = [
     },
     {
         name: "User Management",
-        isDone: false,
+        isDone: true,
     },
     {
         name: "Directory",

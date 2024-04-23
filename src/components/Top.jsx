@@ -29,50 +29,6 @@ const customStyles = {
     }
 };
 
-const dummyNotifications = [
-    {
-        senderName: 'Lemaru',
-        senderMessage: "booked an appointment with you. Click to confirm",
-        senderPic: "/schoolLogo.png",
-        time: "9 days ago",
-        link: '/Services/Appointments',
-        isRead: false,
-    },
-    {
-        senderName: 'Lemaru',
-        senderMessage: "b",
-        senderPic: "/schoolLogo.png",
-        time: "9 days ago",
-        link: '/Services/Inquiry',
-        isRead: false,
-    },
-    {
-        senderName: 'Lemaru',
-        senderMessage: "c",
-        senderPic: "/schoolLogo.png",
-        time: "9 days ago",
-        link: '/CalendarOfEvents',
-        isRead: true,
-    },
-    {
-        senderName: 'Lemaru',
-        senderMessage: "d",
-        senderPic: "/schoolLogo.png",
-        time: "9 days ago",
-        link: '/Directory',
-        isRead: false,
-    },
-    {
-        senderName: 'Lemaru',
-        senderMessage: "e",
-        senderPic: "/schoolLogo.png",
-        time: "9 days ago",
-        link: '/Library',
-        isRead: true,
-    },
-    
-]
-
 const Top = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [notifications, setNotifications] = useState([])
@@ -98,14 +54,20 @@ const Top = () => {
     }, [currentUser])
     return (
         <div className="w-full flex justify-between items-center">
-            <input type="search" className='grow rounded-lg p-2 ps-5' placeholder='Search'/>
+            {/* <input type="search" className='grow rounded-lg p-2 ps-5' placeholder='Search'/> */}
+            <div className=""></div>
             <div className="">
                 <div className="inline bg-white rounded-lg p-2 mx-5 cursor-pointer" onClick={()=>dispatch(toggle())}>
                     {mode ? <BiSolidSun className='inline text-teal-800 text-2xl'/> : <BiSolidMoon className='inline text-teal-800 text-2xl'/>}
                 </div>
                 <div className={`relative inline bg-white rounded-lg p-2 cursor-pointer ${!profile && 'me-44'}`}>
                     <BiSolidBell className='inline text-teal-800 text-2xl' onClick={()=>setIsOpen(prev => !prev)}/>
-                    <span className="bg-red-500 text-white rounded-full absolute text-sm h-5 w-5 text-center my-auto top-0 mb-10">{notifications.filter(notification => !notification.isRead).length}</span>
+                    {notifications.filter(notification => !notification.isRead).length > 0 && (
+                        <span className="bg-red-500 text-white rounded-full absolute text-sm h-5 w-5 text-center my-auto top-0 mb-10">
+                            {notifications.filter(notification => !notification.isRead).length}
+                        </span>
+                    )}
+
                 </div>
                 {!profile && <div className="inline bg-white rounded-lg p-2 cursor-pointer" onClick={()=> dispatch(profileToggle())}>
                     <BiSolidUserCircle className='inline text-teal-800 text-3xl'/>

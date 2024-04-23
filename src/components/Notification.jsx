@@ -46,7 +46,7 @@ const Notification = ({notifications}) => {
             </div>
             <hr className='mt-3 mb-2 mx-4'/>
             <div className="">
-                {notificationLists.length > 0 && notificationLists.map((notification, key) =>{
+                {notificationLists.length > 0 && notificationLists.sort((a, b) => b.date - a.date).map((notification, key) =>{
                     return <NotificationBox details={notification} key={key}/>
                 })}
             </div>

@@ -11,6 +11,7 @@ import UpdateForm from './UpdateForm'
 import { useRouter } from 'next/navigation';
 import ProfileCard from '@/components/ProfileCard';
 
+
 const customStyles = {
     content: {
       top: '50%',
@@ -139,13 +140,13 @@ const Appointments = ({email}) => {
                 const { row, id } = params;
                 const {participants, to, createdBy, reason, date} = row;
                 const participant = participants.filter(participant => participant.uid === currentUser.uid)[0];
-                console.log(to);
-                if(createdBy.uid === currentUser.uid && participants){
+
+                if(createdBy.uid === currentUser.uid && participants || currentUser.role === "admin"){
                     return <div className="">
                         <button className='text-2xl text-center' onClick={()=>viewAppointmentsParticipantsStatus(participants, to)}><CiViewList /></button>
                     </div>
                 }else{
-                    const status = to.filter(t => t.uid === participant.uid)[0]
+                    const status = to.filter(t => t.uid === participant?.uid)[0]
 
                     if (status.status === "Pending") {
                     console.log(date, reason)
@@ -223,7 +224,7 @@ const Appointments = ({email}) => {
     
     }, [currentUser]);
     
-
+    console.log(appointments)
     const handleStatus = async(to, stat, id, participantId, reason, role, date) =>{
         for(const participant of to){
             if(participant.uid === participantId){
