@@ -1,6 +1,6 @@
 import { AuthContext } from '@/context/AuthContext';
 import { db } from '@/firebase-config';
-import { collection, doc, documentId, getDoc, getDocs, or, query, where, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, documentId, getDoc, getDocs, or, query, where, updateDoc, deleteDoc, onSnapshot, addDoc, Timestamp } from 'firebase/firestore';
 import React, { useContext, useDebugValue, useEffect, useState } from 'react'
 import { BsChat, BsCheck, BsGrid, BsList, BsPen, BsThreeDots, BsTrash, BsX } from 'react-icons/bs'
 import { CiViewList, CiCalendarDate  } from "react-icons/ci";
@@ -10,6 +10,7 @@ import Modal from 'react-modal'
 import UpdateForm from './UpdateForm'
 import { useRouter } from 'next/navigation';
 import ProfileCard from '@/components/ProfileCard';
+
 
 const customStyles = {
     content: {
@@ -137,27 +138,28 @@ const Appointments = ({email}) => {
             editable: true,
             renderCell: (params) => {
                 const { row, id } = params;
-                const {participants, to, createdBy} = row;
+                const {participants, to, createdBy, reason, date} = row;
                 const participant = participants.filter(participant => participant.uid === currentUser.uid)[0];
-                console.log(to);
-                if(createdBy.uid === currentUser.uid && participants){
+
+                if(createdBy.uid === currentUser.uid && participants || currentUser.role === "admin"){
                     return <div className="">
                         <button className='text-2xl text-center' onClick={()=>viewAppointmentsParticipantsStatus(participants, to)}><CiViewList /></button>
                     </div>
                 }else{
-                    const status = to.filter(t => t.uid === participant.uid)[0]
+                    const status = to.filter(t => t.uid === participant?.uid)[0]
 
                     if (status.status === "Pending") {
+                    console.log(date, reason)
                     return (
-                        <div className='flex'>
-                            <button className="text-teal-500 pe-2" onClick={() => handleStatus(to, "Accepted", id, participant.uid)} >Accept<BsCheck className='text-center'/></button>
-                            <button className='text-red-500' onClick={() => handleStatus(to, "Declined", id, participant.uid)} >Decline<BsX className='text-center'/></button>
+                        <div className='flex gap-2'>
+                            <button className='text-teal-500' onClick={() => handleStatus(to, "Accepted", id, participant.uid, reason, participant.role, date)} >Accept<BsCheck className='text-center'/></button>
+                            <button className='text-red-500' onClick={() => handleStatus(to, "Declined", id, participant.uid, reason, participant.role, date)} >Decline<BsX className='text-center'/></button>
                             {/* <BsChat className='ms-3 text-lg cursor-pointer' onClick={() => handleChat(row.to.email)}/> */}
                         </div>
                     );
                     } else {
                     return <div className="flex w-28 justify-items-end justify-between">
-                        <select name="" id="" value={status.status} className='bg-transparent cursor-pointer border-b py-1 px-2 outline-none' onChange={e => handleStatus(to, e.target.value, id, participant.uid)}>
+                        <select name="" id="" value={status.status} className='bg-transparent cursor-pointer border-b py-1 px-2 outline-none' onChange={e => handleStatus(to, e.target.value, id, participant.uid, reason, participant.role, date)}>
                             <option value="Declined">Declined</option>
                             <option value="Accepted">Accepted</option>
                             <option value="Pending">Pending</option>
@@ -222,8 +224,8 @@ const Appointments = ({email}) => {
     
     }, [currentUser]);
     
-
-    const handleStatus = async(to, stat, id, participantId) =>{
+    console.log(appointments)
+    const handleStatus = async(to, stat, id, participantId, reason, role, date) =>{
         for(const participant of to){
             if(participant.uid === participantId){
                 participant.status = stat
@@ -231,9 +233,23 @@ const Appointments = ({email}) => {
             }
         }
         const res = await updateDoc(doc(db, "appointments", id), {to: to})
-        // const addSubEvent = await addDoc(collection(db, "calendarEvents"),
-        //     {value: {startDate: date, endDate: date}, title: reason, user: uid, role}
-        // )
+
+        console.log(date, reason, participantId)
+        if(stat === "Accepted"){
+            const addSubEvent = await addDoc(collection(db, "calendarEvents"),
+                {value: {startDate: date, endDate: date}, title: reason, user: participantId, role, appointmentId: id}
+            )
+        }else{
+            const eventToDelete = await getDocs(query(collection(db, "calendarEvents"),
+                where("appointmentId", "==", id),
+                where("user", '==', participantId)
+            ));
+            
+            if (eventToDelete.docs.length > 0) {
+                await deleteDoc(eventToDelete.docs[0].ref);
+            }
+        }
+       
     }
 
     const handleUpdate = () =>{
@@ -242,15 +258,70 @@ const Appointments = ({email}) => {
         setIsEdit(true)
     }
 
-    const handleDelete = () =>{
-        if(selectedRows.length < 1) {
-            setIsDeleteModal(false)
+    const handleDelete = async () => {
+        if (selectedRows.length < 1) {
+            setIsDeleteModal(false);
             return;
         }
-        selectedRows.forEach(async(id) => {
-            await deleteDoc(doc(db, 'appointments', id))
-        })
-    }
+    
+        for (const id of selectedRows) {
+            //add notification when deleted
+            const deleteNotification = await getDocs(query(collection(db, "notifications"),
+                where("appointmentId", "==", id),
+            ));
+            
+            //copy notification and change the date(make it Timestamp.now()) and change senderMessage
+            if (deleteNotification.docs.length > 0) {
+                for (const doc of deleteNotification.docs) {
+                    const notificationData = doc.data();
+    
+                    // Create a new notification with modified details
+                    await addDoc(collection(db, "notifications"), {
+                        senderName: notificationData.senderName,
+                        senderUid: notificationData.senderUid,
+                        receivedByUid: notificationData.receivedByUid,
+                        senderMessage: "Appointment has been deleted.",
+                        date: Timestamp.now(),
+                        link: notificationData.link,
+                        isRead: false,
+                        appointmentId: id,
+                    });
+                }
+            }
+
+            // Delete from appointments
+            await deleteDoc(doc(db, 'appointments', id));
+    
+            // Delete from calendarEvents
+            const eventToDelete = await getDocs(query(collection(db, "calendarEvents"),
+                where("appointmentId", "==", id),
+            ));
+    
+            if (eventToDelete.docs.length > 0) {
+                for (const docRef of eventToDelete.docs) {
+                    await deleteDoc(docRef.ref);
+                }
+            }
+        }
+
+        // add notification
+            // participants.map(async(participant) => {
+            //     const notification = await addDoc(collection(db, "notifications"), 
+            //         {
+            //             senderName: `${firstname} ${lastname}`,
+            //             senderUid: uid,
+            //             receivedByUid: participant.uid,
+            //             senderMessage: "has scheduled an appointment with you. Please confirm.",
+            //             date: Timestamp.now(),
+            //             link: '/Services/Appointments',
+            //             isRead: false,
+            //             appointmentId: appointment.id
+            //         }
+            //     )
+            // })
+
+        setIsDeleteModal(false);
+    };
 
     const viewAppointmentsParticipantsStatus = (participants, to) => {
         const arr = participants.map((participant, i) => {

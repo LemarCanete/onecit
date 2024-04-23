@@ -390,8 +390,6 @@ const SignupForm = () => {
             console.log("Registration Successful", userCredential)
             const userid = user.uid;
             
-            await setDoc(doc(db, "userChats", user.uid), {})
-
             // Clear existing cookies
             Object.keys(cookie).forEach((cookieName) => {
                 setCookie(cookieName, '', { expires: new Date(0), path: '/' });
