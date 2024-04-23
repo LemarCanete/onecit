@@ -91,7 +91,7 @@ const LoginForm = () => {
     });
   }
 
-  const handleSignIn = (e) => {
+  /*const handleSignIn = (e) => {
     e.preventDefault()
 
     signInWithEmailAndPassword(auth, email, password)
@@ -144,8 +144,63 @@ const LoginForm = () => {
     }  
     })
 
-  }
+  }*/
 
+  const handleSignIn = (e) => {
+    e.preventDefault();
+  
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log("Login Successful", userCredential);
+        const userid = user.uid;
+  
+        // Clear existing cookies
+        Object.keys(cookie).forEach((cookieName) => {
+          setCookie(cookieName, '', { expires: new Date(0), path: '/' });
+        });
+  
+        // Set new cookies
+        setCookie('id', userid, { expires: date, path: '/' });
+        console.log(user);
+  
+        user.getIdToken().then((token) => {
+          localStorage.setItem('token', token);
+          console.log("Session token:" + token);
+          router.push('/Dashboard');
+        });
+      })
+      .catch((error) => {
+        // Handle authentication errors
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        if (errorCode === "auth/invalid-credential" || !email) {
+          setError('credentials');
+          setMessage('Invalid credentials.');
+          setTimeout(() => {
+            setError('');
+            setMessage('');
+          }, 6000);
+        } else if (errorCode === "auth/invalid-email") {
+          setError('email');
+          setMessage('Invalid Email.');
+          setTimeout(() => {
+            setError('');
+            setMessage('');
+          }, 6000);
+        } else if (errorCode === "auth/missing-password") {
+          setError('password');
+          setMessage('Missing Password.');
+          setTimeout(() => {
+            setError('');
+            setMessage('');
+          }, 6000);
+        } else {
+          console.log("Error code: " + errorCode + " Error Message: " + errorMessage);
+        }
+      });
+  };
+  
 
  return (
     <div className='w-1/2'>
