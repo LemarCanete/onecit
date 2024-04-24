@@ -3,13 +3,29 @@ import { IoCall, IoVideocam, IoInformationCircle } from "react-icons/io5";
 import { TfiGallery } from "react-icons/tfi";
 import { RiEmojiStickerFill, RiEmojiStickerLine } from "react-icons/ri";
 import searchUserInput from '@/components/SearchUserInput';
-import { BsX } from 'react-icons/bs';
+import { BsThreeDots, BsThreeDotsVertical, BsX } from 'react-icons/bs';
 import { Timestamp, addDoc, collection, doc, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { db } from '@/firebase-config';
 import ChatSettings from './ChatSettings';
 import EmojiPicker from 'emoji-picker-react'
 import { PiGif } from "react-icons/pi";
+import 'react-tooltip/dist/react-tooltip.css'
+import { Tooltip } from 'react-tooltip'
+
+
+const formatTimestamp = (timestamp) => {
+    const date = timestamp.toDate(); // Convert Firebase Timestamp to JavaScript Date object
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const amOrPm = hours >= 12 ? 'PM' : 'AM';
+
+    // Convert to 12-hour format
+    hours = hours % 12 || 12;
+
+    return `${days[date.getDay()]} ${hours}:${minutes < 10 ? '0' + minutes : minutes} ${amOrPm}`;
+}
 
 const Messages = ({addChat, currentUser, selectedChat, setAddChat}) => {
     const [members, setMembers] = useState([])
@@ -56,7 +72,7 @@ const Messages = ({addChat, currentUser, selectedChat, setAddChat}) => {
             const unsubscribe = onSnapshot(q, (querySnapshot) => {
                 const messageListArr = [];
                 querySnapshot.forEach((doc) => {
-                    messageListArr.push(doc.data());
+                    messageListArr.push({id: doc.id, ...doc.data()});
                 });
                 setMessageList(messageListArr)
             });
@@ -300,12 +316,11 @@ const Messages = ({addChat, currentUser, selectedChat, setAddChat}) => {
                         const member = selectedChat.membersData.find(member => member.uid === message.senderId)
                         const getSenderData = () =>{
                             if(currentUser.uid !== message.senderId){
-                                return <img src={member?.photoURL || `/schoolLogo.png`} alt="" className='w-6 h-6 cursor-pointer'/>
+                                return <img src={member?.photoURL || `/schoolLogo.png`} alt="" className={`w-6 h-6 cursor-pointer profile-sender-${message.id}`}/>
                             } else {
                                 return null
                             }
                         }
-
                         let messageContent;
                         if(message.type.includes('image')){
                             messageContent = <img src={message.url} alt={message.content} className='max-h-20 cursor-pointer'/>
@@ -319,7 +334,7 @@ const Messages = ({addChat, currentUser, selectedChat, setAddChat}) => {
                             </video>
                         }else{
                             messageContent = <div className={`rounded-full ${currentUser.uid === message.senderId ? 'bg-teal-500 text-white' : 'bg-neutral-100 text-black'} py-1 px-4`}>
-                                <p className="">{message.content}</p>
+                                <p className={`message-sender-${message.id}`}>{message.content}</p>
                             </div>
                         }
 
@@ -329,8 +344,13 @@ const Messages = ({addChat, currentUser, selectedChat, setAddChat}) => {
                                 key={index}
                             >
                                 {getSenderData()}
-                                
+                                {currentUser.uid === message.senderId && <BsThreeDotsVertical className='hidden'/>}
                                 {messageContent}
+                                {currentUser.uid !== message.senderId && <BsThreeDotsVertical className='hidden'/>}
+
+                                <Tooltip anchorSelect={`.message-sender-${message.id}`} content={formatTimestamp(message?.timestamp)} />
+                                <Tooltip anchorSelect={`.profile-sender-${message.id}`} content={`${member?.firstname} ${member?.lastname}`} />
+                                
                             </div>
                         )
                     })}
@@ -346,7 +366,7 @@ const Messages = ({addChat, currentUser, selectedChat, setAddChat}) => {
                         <TfiGallery className='p-2 hover:bg-neutral-100 rounded-full cursor-pointer text-teal-900 text-4xl'/>
                     </label>
                     <RiEmojiStickerFill className='p-2 hover:bg-neutral-100 rounded-full cursor-pointer text-teal-900 text-4xl' onClick={()=> setOpenEmojiPicker(prev => !prev)}/>
-                    <PiGif className='p-2 hover:bg-neutral-100 rounded-full cursor-pointer text-teal-900 text-4xl'/>
+                    {/* <PiGif className='p-2 hover:bg-neutral-100 rounded-full cursor-pointer text-teal-900 text-4xl'/> */}
                     <div className="w-5/6 relative">
                         <input type="text" 
                             className='w-full border rounded-full p-2 outline-none text-sm ps-3' 
@@ -360,6 +380,7 @@ const Messages = ({addChat, currentUser, selectedChat, setAddChat}) => {
                                     return <p className='bg-neutral-100 text-sm rounded-full px-4 me-1 mt-2' key={key}>
                                         {fileName}
                                         <span className="ms-4 cursor-pointer" onClick={()=>setFiles(files.filter(f => f.lastModifiedDate !== file.lastModifiedDate && f.name !== file.name))}>x</span>
+                                        
                                     </p>
                                 }
                                 })

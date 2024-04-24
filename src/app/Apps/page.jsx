@@ -5,6 +5,7 @@ import Profile from '@/components/Profile'
 import { useSelector } from 'react-redux'
 import { useRouter } from 'next/navigation'
 import { AuthContext } from '@/context/AuthContext'
+import Top from '@/components/Top'
 
 
 const userApps = [
@@ -46,7 +47,7 @@ const userApps = [
     },
     {
         name: "Task Management",
-        isDone: false,
+        isDone: true,
     },
     {
         name: "Careers",
@@ -112,22 +113,22 @@ const page = () => {
     const renderDoneApps = () =>{
         if(isAdmin){
             return adminApps.map((app)=>{
-                return app.isDone && <Box name={app.name} />
+                return app.isDone && <Box name={app.name} mode={mode}/>
             })
         }else{
             return userApps.map((app)=>{
-                return app.isDone && <Box name={app.name} />
+                return app.isDone && <Box name={app.name} mode={mode}/>
             })
         }
     }
     const renderNotStartedApps = () =>{
         if(isAdmin){
             return adminApps.map((app)=>{
-                return !app.isDone && <Box name={app.name} />
+                return !app.isDone && <Box name={app.name} mode={mode}/>
             })
         }else{
             return userApps.map((app)=>{
-                return !app.isDone && <Box name={app.name} />
+                return !app.isDone && <Box name={app.name} mode={mode}/>
             })
         }
     }
@@ -136,24 +137,25 @@ const page = () => {
         <div className={`w-full  h-screen flex ${mode ? 'bg-slate-800' : 'bg-neutral-50'}`}>
             <Navbar active="Apps"/>
             <div className="grow px-10 py-5">
-                <h1 className="text-2xl my-5">Apps</h1>
+                <Top />
+                <h1 className="text-2xl my-3">Apps</h1>
                 {/* Content */}
                 <div className="flex">
-                    <div className="w-5/6">
-                        <p className="text-sm italic text-black/25">Done or Working</p>
-                        <div className="w-full grid grid-cols-6 ">
+                    <div className="w-full">
+                        {/* <p className="text-sm italic text-black/25">Done or Working</p> */}
+                        <div className={`w-full grid grid-cols-${profile ? '4' : '6'}`}>
                             {currentUser.role && renderDoneApps()}
                         </div>
-                        <p className="text-sm italic text-black/25">Not started</p>
-                        <div className="w-full grid grid-cols-6">
+                        <p className="text-sm italic text-black/25">Not Started</p>
+                        <div className={`w-full grid grid-cols-${profile ? '4' : '6'}`}>
                             {currentUser.role && renderNotStartedApps()}
                         </div>
                     </div>
 
-                    <div class="quicklink-background">
-                        <div class="quick-container">
+                    <div className={`quicklink-background ${mode ? 'bg-slate-600 text-white border-none' : 'bg-white'}`}>
+                        <div className="quick-container">
                             <ul>
-                                <p class="quick-links">Quick Links:</p>
+                                <p className="quick-links">Quick Links:</p>
                                 <li><a href="https://cit.edu/">CIT-U Official Website</a></li><hr/>
                                 <li><a href="https://www.facebook.com/CITUniversity">CIT-U Facebook Page</a></li><hr/>
                                 <li><a href="https://cituweb.pinnacle.com.ph/aims/students/">Student Access Module &#40;AIMS&#41;</a></li><hr/>
@@ -171,11 +173,11 @@ const page = () => {
     )
 }
 
-const Box = ({image, name}) =>{
+const Box = ({image, name, mode}) =>{
     const router = useRouter()
 
     return (
-        <div className="flex justify-center flex-col border rounded-lg w-40 h-36 items-center m-2 bg-white cursor-pointer text-center" onClick={() => router.push(`/${name.replaceAll(/\s+/g, '')}`)}>
+        <div className={`flex justify-center flex-col rounded-lg w-40 h-36 items-center m-2 cursor-pointer text-center ${mode ? 'bg-slate-600 text-white border-none': 'bg-white border'}`} onClick={() => router.push(`/${name.replaceAll(/\s+/g, '')}`)}>
             <img src="./schoolLogo.png" alt="" className='w-20 h-20'/>
             <p className='text-sm m-1'>{name}</p>
         </div>

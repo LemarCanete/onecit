@@ -14,7 +14,7 @@ const customStyles = {
     content: {
       top: '8%',
       left: 'auto',
-      right: '2%',
+      right: '5%',
       bottom: 'auto',
     //   marginRight: '-30%',
     //   transform: 'translate(-50%, -50%)',
@@ -54,7 +54,7 @@ const Top = () => {
     }, [currentUser])
     return (
         <div className="w-full flex justify-between items-center">
-            {/* <input type="search" className='grow rounded-lg p-2 ps-5' placeholder='Search'/> */}
+            <input type="search" className='grow rounded-lg p-2 ps-5' placeholder='Search'/>
             <div className=""></div>
             <div className="">
                 <div className="inline bg-white rounded-lg p-2 mx-5 cursor-pointer" onClick={()=>dispatch(toggle())}>

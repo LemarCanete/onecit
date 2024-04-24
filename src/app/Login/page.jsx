@@ -167,7 +167,7 @@ const LoginForm = () => {
         user.getIdToken().then((token) => {
           localStorage.setItem('token', token);
           console.log("Session token:" + token);
-          router.push('/Dashboard');
+          router.push('/Apps');
         });
       })
       .catch((error) => {
@@ -398,7 +398,7 @@ const SignupForm = () => {
             // Set new cookies
             setCookie('id', userid, { expires: date, path: '/' });
             console.log(user);
-            router.push('/Dashboard');
+            router.push('/Apps');
         }).catch((error) => {
             console.error("Error setting document: ", error);
         });

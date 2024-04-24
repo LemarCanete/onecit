@@ -20,7 +20,7 @@ const formatDate = (timestamp) => {
     } else {
       return `${minutes} minutes ago`;
     }
-  }
+}
   
 
 const Notification = ({notifications}) => {
