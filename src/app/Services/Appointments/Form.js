@@ -41,13 +41,14 @@ const Form = ({setIsOpen, name, emailTo}) => {
                         date: Timestamp.now(),
                         link: '/Services/Appointments',
                         isRead: false,
+                        appointmentId: appointment.id
                     }
                 )
             })
 
-        
+            //add to calendar
             const addSubEvent = await addDoc(collection(db, "calendarEvents"),
-                {value: {startDate: date, endDate: date}, title: reason, user: uid, role}
+                {value: {startDate: date, endDate: date}, title: reason, user: uid, role, appointmentId: appointment.id}
             )
             
             setIsOpen(false)

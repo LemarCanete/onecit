@@ -1,0 +1,16 @@
+/* Custom scrollbar styles */
+
+.tasks-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .tasks-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 5px;
+    
+    }
+  
+  .tasks-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #575757;
+}
+  
