@@ -11,7 +11,7 @@ const Navbar = ({active}) => {
     const iconClassName = `inline text-teal-800 text-3xl me-4 ${mode ? 'text-white' : 'text-teal-800'}`
 
     return (
-        <div className={`h-full w-48 flex flex-col justify-between shadow-2xl ${mode ? 'bg-slate-600 text-white': 'bg-white'}`}>
+        <div className={`h-full w-48 flex flex-col justify-between shadow-xl ${mode ? 'bg-slate-600 text-white': 'bg-white'}`}>
             <div className="flex-col flex ">
                 <a href="/" className='w-16 flex items-center mb-7 m-4'><img src="schoolLogo.png" alt="" /><span className=' ms-3 font-bold'>OneCIT</span></a>
                 {/* <Icon name="Dashboard" icon={<AiFillHome className={iconClassName} />} active={active}/> */}

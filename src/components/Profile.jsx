@@ -34,9 +34,9 @@ const Profile = () => {
             <div className="flex flex-col justify-center items-center py-5">
                 <h1 className='text-3xl font-bold tracking-widest'>Profile</h1>
                 <div className="">
-                    <img src={currentUser.photoURL ? currentUser.photoURL : './schoolLogo.png'} alt="" className='h-72 w-72 rounded-full'/>
+                    <img src={currentUser.photoURL ? currentUser.photoURL : './schoolLogo.png'} alt="" className='h-60 w-60 rounded-full'/>
                 </div>
-                <p className=''>{currentUser.schoolid}</p>
+                <p className='mt-4'>{currentUser.schoolid}</p>
             </div>
             <hr />
             <div className="grid grid-cols-3 text-sm text-center py-2">
@@ -58,13 +58,13 @@ const Profile = () => {
             </div>
             <p className="my-2 text-center italic text-sm">{currentUser.bio}</p>
             <div className="text-sm leading-loose tracking-wider mt-6">
-                <h2 className="text-lg">Basic Info</h2>
-                <p>Name: {currentUser.firstname} {currentUser.lastname}</p>
-                <p>Age: {calculateAge(currentUser.birthdate)}</p>
-                <p>Email: {currentUser.email}</p>
-                <p>Birth Date: {currentUser.birthdate}</p>
-                <p>Role: {currentUser.role}</p>
-                <p>Program: {currentUser.program}</p>
+                {/* <h2 className="text-lg font-n">Basic Info</h2> */}
+                <p><span className="font-bold">Name:</span> {currentUser.firstname} {currentUser.lastname}</p>
+                <p><span className="font-bold">Age:</span> {calculateAge(currentUser.birthdate)}</p>
+                <p><span className="font-bold">Email:</span> {currentUser.email}</p>
+                <p><span className="font-bold">Birth Date:</span> {currentUser.birthdate}</p>
+                <p><span className="font-bold">Role:</span> {currentUser.role}</p>
+                <p><span className="font-bold">Program:</span> {currentUser.program}</p>
             </div>
 
             {/* <div className="text-sm tracking-wider leading-loose mt-5">

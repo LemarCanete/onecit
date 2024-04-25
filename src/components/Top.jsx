@@ -54,7 +54,7 @@ const Top = () => {
     }, [currentUser])
     return (
         <div className="w-full flex justify-between items-center">
-            <input type="search" className='grow rounded-lg p-2 ps-5' placeholder='Search'/>
+            <input type="search" className='grow rounded-lg p-2 ps-5 border-b outline-none' placeholder='Search'/>
             <div className=""></div>
             <div className="">
                 <div className="inline bg-white rounded-lg p-2 mx-5 cursor-pointer" onClick={()=>dispatch(toggle())}>
