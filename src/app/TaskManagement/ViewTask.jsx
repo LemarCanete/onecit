@@ -13,13 +13,15 @@ import FlagRoundedIcon from '@mui/icons-material/FlagRounded';
 
 
 const ViewTask = ({setIsOpen, task}) => {
-  console.log("task value: ",task)
+  //console.log("task value: ",task)
   const [data, setData] = useState(task)
   const [newData, setNewData] = useState(data)
   const [isEditing, setIsEditing] = useState(false)
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState(task.status)
   const [priority, setPriority] = useState('Low')
+  const [prevStatus, setPrevStatus] = useState(null)
+  const [prevPriority, setPrevPriority] = useState(null)
 
   const statusOptions = [
         { label: 'To Do', value: 'To Do', specialClass: 'bg-[#9A9C9E]', icon: <PanoramaFishEyeRoundedIcon/>, iconColor: 'text-[#9A9C9E]' },
@@ -36,7 +38,6 @@ const ViewTask = ({setIsOpen, task}) => {
 
   const handleEdit = () => {
     setIsEditing((prev) => !prev);
-    console.log("isEditing? ", isEditing)
   };
 
   const handleSave = async () => {
@@ -72,10 +73,23 @@ const ViewTask = ({setIsOpen, task}) => {
 
 
   const handleCancel = () => {
-    console.log("Cancel button clicked.")
-    setNewData(data)
-    setIsEditing(false)
-  }
+    // Restore the newData and data back to their original values
+    setNewData(data); // Set `newData` back to `data`
+    setIsEditing(false); // Exit edit mode
+    // Reset the status to its original value
+    handleStatusChange(data.status);
+    handlePriorityChange(data.priority); // Reset the priority
+    setIsOpen(false)
+  };
+  
+
+  const handleStatusChange = (newStatus) => {
+    setData((prevData) => ({
+      ...prevData,
+      status: newStatus,
+    }));
+    //console.log("newStatusValue in handleStatusChange", newStatus)
+  };
   
   const handleTitleChange = (event) => {
     setNewData((prevData) => ({
@@ -91,12 +105,7 @@ const ViewTask = ({setIsOpen, task}) => {
     }));
   };
 
-  const handleStatusChange = (newStatus) => {
-    setNewData((prevData) => ({
-      ...prevData,
-      status: newStatus,
-    }));
-  };
+
 
   const handlePriorityChange = (newPriority) => {
     setNewData((prevData) => ({
@@ -120,7 +129,7 @@ const ViewTask = ({setIsOpen, task}) => {
   }, [task.id]);
 
   useEffect(() => {
-    console.log("data object in ViewTask:", newData);
+    //console.log("data object in ViewTask:", newData);
   })
 
   
@@ -160,9 +169,10 @@ const ViewTask = ({setIsOpen, task}) => {
           <label className='p-2 font-bold'> Status: </label>
           <StatusBox
             options={statusOptions} 
-            initialStatus={newData.status} 
+            initialStatus={data.status} 
             setStatus={handleStatusChange}
             isDisabled={!isEditing} 
+            isEditing={isEditing}
           />
         </div>
         <div className='flex flex-row'>
@@ -195,6 +205,7 @@ const ViewTask = ({setIsOpen, task}) => {
             setStatus={handlePriorityChange} 
             initialStatus={newData.priority}
             isDisabled={!isEditing} 
+            isEditing={isEditing}
           />
         </div>
       </div>

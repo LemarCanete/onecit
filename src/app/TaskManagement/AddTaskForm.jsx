@@ -44,6 +44,10 @@ const AddTaskForm = ({setIsOpen, initialStatus}) => {
       const [priority, setPriority] = useState('Low')
       const [errors, setErrors] = useState({})
 
+      const handleChangeStatus = (value) => {
+        setStatus(value)
+      }
+
       const handleAddTask = async () => {
         if (!currentUser || !currentUser.uid) {
           console.log("User not logged in. Cannot create task.");
@@ -133,7 +137,7 @@ const AddTaskForm = ({setIsOpen, initialStatus}) => {
         <div className='flex flex-row items-center w-full justify-center px-4 mt-2'>
             <div className='flex flex-row'>
               <label className='p-2 font-bold'> Status: </label>
-              <StatusBox options={statusOptions} initialStatus={initialStatus} setStatus={setStatus}/>
+              <StatusBox options={statusOptions} initialStatus={initialStatus} setStatus={handleChangeStatus} isDisabled={false} isEditing={true}/>
             </div>
             <div className='flex flex-row'>
               <label className='p-2 font-bold whitespace-nowrap'> Due Date: </label>

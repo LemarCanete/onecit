@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 
-const StatusBox = ({ options, initialStatus, setStatus, isDisabled = false }) => {
+const StatusBox = ({ options, initialStatus, setStatus, isDisabled = false}) => {
   const initialOption = options.find((option) => option.value === initialStatus);
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(initialOption || options[0]);
+  const [selectedOption, setSelectedOption] = useState(initialOption);
 
   const handleOptionClick = (option) => {
     if (isDisabled) return; // Don't allow changing if disabled
     setSelectedOption(option);
     setIsOpen(false);
     setStatus(option.value); // Inform parent of the status change
+    //console.log("Chosen status: ", option)
+    //console.log("Supposed to be shown status: ", option.label)
   };
 
   const handleToggleDropdown = () => {
@@ -18,8 +20,12 @@ const StatusBox = ({ options, initialStatus, setStatus, isDisabled = false }) =>
   };
 
   useEffect(() => {
-    const newInitialOption = options.find((option) => option.value === initialStatus);
-    setSelectedOption(newInitialOption || options[0]); // Update the selected option if initialStatus changes
+    //const newInitialOption = options.find((option) => option.value === initialStatus);
+    //setSelectedOption(initialStatus); // Update the selected option if initialStatus changes
+    //console.log("Find thing:", options.find((option) => option.value === initialStatus), initialStatus)
+    //console.log("Initial Status: ", initialStatus)
+    //console.log("Selected Option: ", selectedOption)
+    //console.log("Actual shown label: ", newInitialOption)
   }, [initialStatus, options]); // Listen for changes in initialStatus and options
 
   return (
