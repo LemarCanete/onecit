@@ -28,8 +28,7 @@ const ViewTask = ({setIsOpen, task}) => {
         { label: 'In Progress', value: 'In Progress', specialClass: 'bg-[#1090E0]', icon: <AutoModeRoundedIcon/>, iconColor: 'text-[#1090E0]' },
         { label: 'Completed', value: 'Completed', specialClass: 'bg-[#349F6A]', icon: <CheckCircleRoundedIcon/>, iconColor: 'text-[#349F6A]' },
       ];
-
-      const priorityOptions = [
+  const priorityOptions = [
         { label: 'Urgent', value: 'Urgent', specialClass: 'bg-[#B13A41]', icon: <FlagRoundedIcon/>, iconColor: 'text-[#B13A41]' },
         { label: 'High', value: 'High', specialClass: 'bg-[#CF940A]', icon: <FlagRoundedIcon/>, iconColor: 'text-[#CF940A]' },
         { label: 'Normal', value: 'Normal', specialClass: 'bg-[#4466FF]', icon: <FlagRoundedIcon/>, iconColor: 'text-[#4466FF]' },
@@ -41,6 +40,7 @@ const ViewTask = ({setIsOpen, task}) => {
   };
 
   const handleSave = async () => {
+    console.log("newData values:", newData)
     // Before saving, validate your data (if needed)
     if (newData.title.trim() === '') {
       setErrors({ title: 'Title cannot be empty' });
@@ -67,30 +67,25 @@ const ViewTask = ({setIsOpen, task}) => {
       // Exit edit mode
       setIsEditing(false);
     } catch (error) {
+      console.log('Document retrieved:', newData)
       console.error('Error updating document:', error);
     }
   };
 
 
   const handleCancel = () => {
-    // Restore the newData and data back to their original values
-    setNewData(data); // Set `newData` back to `data`
     setIsEditing(false); // Exit edit mode
-    // Reset the status to its original value
-    handleStatusChange(data.status);
-    handlePriorityChange(data.priority); // Reset the priority
     setIsOpen(false)
   };
   
 
   const handleStatusChange = (newStatus) => {
-    setData((prevData) => ({
-      ...prevData,
-      status: newStatus,
+    setNewData((prevData) => ({
+      ...prevData, // Keep all existing fields
+      status: newStatus, // Update only the status field
     }));
-    //console.log("newStatusValue in handleStatusChange", newStatus)
   };
-  
+    
   const handleTitleChange = (event) => {
     setNewData((prevData) => ({
       ...prevData,
@@ -182,7 +177,10 @@ const ViewTask = ({setIsOpen, task}) => {
             type="date"
             value={newData.duedate}
             min={new Date().toISOString().split("T")[0]} // Set min attribute to today's date
-            onChange={(event) => setNewData({duedate: event.target.value})}
+            onChange={(event) => setNewData((prevData) => ({
+              ...prevData,
+              duedate: event.target.value,
+            }))}
             disabled={isEditing? false: true}
           />
 
@@ -192,7 +190,10 @@ const ViewTask = ({setIsOpen, task}) => {
               type="time"
               value={newData.duetime}
               min={new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} // Set min attribute to current time
-              onChange={(event) => setNewData({duetime: event.target.value})}
+              onChange={(event) => setNewData((prevData) => ({
+                ...prevData,
+                duetime: event.target.value,
+              }))}
               disabled={isEditing? false: true}
             />
           )}
