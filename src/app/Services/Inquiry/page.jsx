@@ -321,7 +321,8 @@ const page = () => {
         <div className='flex flex-1 w-full'>
 
           {/*child 1 */}
-          <div className='flex h-full flex-col w-full justify-center items-center mx-10'>
+          <div className='flex h-full flex-col w-full mx-10'>
+            <label className='text-2xl font-weight-900 w-full flex justify-center py-4'>INQUIRY FORM</label>
             <div className='flex flex-col w-full py-1'>
               <label>Recipient</label>
               <input
@@ -393,10 +394,11 @@ const page = () => {
           </div>
 
           {/*child2*/}
-          <div className='p-[30px] flex w-full justify-center items-center'>
+          <div className='px-[30px] flex w-full'>
 
             {!showInbox &&
               <div className='w-full flex flex-col'>
+                <label className='flex justify-center w-full text-2xl font-weight-900 py-4'>CATEGORY</label>
                 {GuideData.map((data, index) => (
                   <div key={index}>
                     <div
@@ -425,7 +427,8 @@ const page = () => {
             }
 
             {showInbox &&
-              <div className='w-full flex flex-col justify-start h-full'>
+              <div className='w-full flex flex-col h-full'>
+                <label className='flex justify-center w-full text-2xl font-weight-900 py-4'>INBOX</label>
                 <DataGrid
                   rows={rows}
                   onRowClick={rowclickhandler}

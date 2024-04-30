@@ -14,9 +14,9 @@ const NavbarIconsOnly = ({active}) => {
         <div className={`h-full w-fit flex flex-col justify-between shadow-xl ${mode ? 'bg-slate-600 text-white': 'bg-white'}`}>
             <div className="flex-col flex items-center">
                 <a href="/" className='w-16 flex items-center mb-7 mt-4'><img src="/schoolLogo.png" alt="" /></a>
-                <Icon name="Dashboard" icon={<AiFillHome className={iconClassName} />} active={active}/>
+                {/* <Icon name="Dashboard" icon={<AiFillHome className={iconClassName} />} active={active}/> */}
                 <Icon name="Apps" icon={<AiFillAppstore className={iconClassName} />} active={active}/>
-                {/* <Icon name="Chat" icon={<BiSolidChat className={iconClassName}/>} active={active}/> */}
+                <Icon name="Chats" icon={<BiSolidChat className={iconClassName}/>} active={active}/>
                 {/* <Icon name="Help" icon={<BiSolidHelpCircle className={iconClassName} />} active={active}/> */}
                 {/* <Icon name="Settings" icon={<AiFillSetting className={iconClassName}/>} active={active}/> */}
                 {/* <Icon name="Directory" icon={<VscTypeHierarchySub className={iconClassName}/>} active={active}/> */}

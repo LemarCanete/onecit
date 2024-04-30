@@ -147,11 +147,11 @@ const page = () => {
       <Messagebox params={parameters} isOpen={isOpen} setIsOpen={setIsOpen}/>
       <div className='flex flex-grow px-5 py-5 w-full h-full flex-col'>
 
-        <div className='flex flex-row w-full h-[45px] py-10 items-center px-2'>
+        <div className='flex flex-row w-full h-[45px] py-10 items-center'>
 
           <div className=''>
             <button onClick={handlegoback}>
-              <ArrowBackIosNewRoundedIcon sx={{ fontSize: 35}} className='bg-[#115E59] hover:bg-[#883138] text-[#F5F5F5] rounded-full p-2 m-2 '/>
+              <ArrowBackIosNewRoundedIcon sx={{ fontSize: 35}} className='bg-[#115E59] hover:bg-[#883138] text-[#F5F5F5] rounded-full p-2 mr-2 '/>
             </button>
             Go back
           </div>

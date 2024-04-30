@@ -50,7 +50,7 @@ const page = () => {
                     <button onClick={()=>router.back()}>
                         <ArrowBackIosNewRoundedIcon sx={{ fontSize: 35}} className='bg-[#115E59] text-[#F5F5F5] rounded-full p-2 m-2 '/>Go back
                     </button>
-                    <h1 className="text-2xl">Directory</h1>
+                    <h1 className="text-2xl">Interactive Directory</h1>
                 </div>
                 {/* <input type="search" placeholder='Search' className='w-full p-2 my-3 text-sm border-b outline-none'/> */}
 
