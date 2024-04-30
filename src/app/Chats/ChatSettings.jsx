@@ -171,7 +171,7 @@ const ChatSettings = ({selectedChat, currentUser, messageMediaFiles}) => {
                     {selectedChat.membersData.map((member, key) => {
                         return (
                             <div className="flex gap-2 text-sm p-2 hover:bg-neutral-100 cursor-pointer rounded-lg" key={key}>
-                                <img src={member?.photoURL || '/schoolLogo.png'} alt="" className='w-10' 
+                                <img src={member?.photoURL || '/schoolLogo.png'} alt="" className='w-10 rounded-full' 
                                 onClick={() =>{
                                     setSelectedProfile(member);
                                     setViewProfile(true);
@@ -198,26 +198,28 @@ const ChatSettings = ({selectedChat, currentUser, messageMediaFiles}) => {
                 </div>
                 
                 <div className="flex gap-8 py-4 mx-4">
-                    {content.map(c => {
+                    {content.map((c, key) => {
                         return (
-                            <p className={`${isMediaFiles.clicked === c && 'text-teal-500 border-b'} py-4 cursor-pointer`} onClick={()=>setIsMediaFiles({clicked: c, isOpen: true})}>{c}</p>
+                            <div className="" key={key}>
+                                <p className={`${isMediaFiles.clicked === c && 'text-teal-500 border-b'} py-4 cursor-pointer`} onClick={()=>setIsMediaFiles({clicked: c, isOpen: true})}>{c}</p>
+                            </div>
                         )
                     })}
                 </div>
 
                 <div className="grid grid-cols-4 gap-1">
-                    {isMediaFiles.clicked === "Media" && viewMediaFiles.filter(image => image.type.includes('image') || image.type.includes('video')).map(img => (
+                    {isMediaFiles.clicked === "Media" && viewMediaFiles.filter(image => image.type.includes('image') || image.type.includes('video')).map((img, key) => (
                         img.type.includes('image') ? 
-                            <img src={img.url} alt={img.content} className="border w-20" />
-                        : <video className='h-20 w-20' controls muted>
+                            <img src={img.url} alt={img.content} className="border w-20" key={key}/>
+                        : <video className='h-20 w-20' controls muted key={key}>
                             <source src={img.url} type="video/mp4" />
                         </video>
                     
                     ))}
                 </div>
                 <div className="text-sm gap-2 flex flex-col">
-                    {isMediaFiles.clicked === "Files" && viewMediaFiles.filter(file => file.type.includes('application')).map(f => (
-                        <div className="flex gap-4 cursor-pointer">
+                    {isMediaFiles.clicked === "Files" && viewMediaFiles.filter(file => file.type.includes('application')).map((f, key) => (
+                        <div className="flex gap-4 cursor-pointer" key={key}>
                             <p className="bg-neutral-100 p-5">
                                 <TfiFile className='bg-neutral-100 rounded text-lg'/>
                             </p>
@@ -263,7 +265,7 @@ const ChatSettings = ({selectedChat, currentUser, messageMediaFiles}) => {
                         onChange={e => setChatName(e.target.value)} value={chatName}/>
 
                     <div className="self-end">
-                        <button className="teal-teal-500 py-2 px-5 rounded-lg">Cancel</button>
+                        <button className="teal-teal-500 py-2 px-5 rounded-lg" onClick={()=> setIsCustomizeChat(false)}>Cancel</button>
                         <button className='bg-teal-500 text-white py-2 px-5 rounded-lg' 
                             disabled={chatName === selectedChat?.name}
                             onClick={customizeChat}>Save</button>

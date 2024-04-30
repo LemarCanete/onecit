@@ -1,10 +1,9 @@
-import { Inter, Poppins, Satisfy } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/GloabalRedux/provider";
 import NextBreadCrumb from "@/components/NextBreadCrumb";
 import { ChatContextProvider } from "@/context/ChatContext";
 import { AuthContextProvider } from "@/context/AuthContext";
-// const inter = Inter({ subsets: ["latin"] });
 const poppins = Poppins({ subsets: ["latin"], weight: ["300"] })
 
 export const metadata = {

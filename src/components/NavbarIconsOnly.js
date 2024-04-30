@@ -16,7 +16,7 @@ const NavbarIconsOnly = ({active}) => {
                 <a href="/" className='w-16 flex items-center mb-7 mt-4'><img src="/schoolLogo.png" alt="" /></a>
                 {/* <Icon name="Dashboard" icon={<AiFillHome className={iconClassName} />} active={active}/> */}
                 <Icon name="Apps" icon={<AiFillAppstore className={iconClassName} />} active={active}/>
-                <Icon name="Chats" icon={<BiSolidChat className={iconClassName}/>} active={active}/>
+                {/* <Icon name="Chats" icon={<BiSolidChat className={iconClassName}/>} active={active}/> */}
                 {/* <Icon name="Help" icon={<BiSolidHelpCircle className={iconClassName} />} active={active}/> */}
                 {/* <Icon name="Settings" icon={<AiFillSetting className={iconClassName}/>} active={active}/> */}
                 {/* <Icon name="Directory" icon={<VscTypeHierarchySub className={iconClassName}/>} active={active}/> */}

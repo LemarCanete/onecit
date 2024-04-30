@@ -10,7 +10,7 @@ import orgChart from './org'
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 
 
-const page = () => {
+const Directory = () => {
     const [allUsers, setAllUsers] = useState([]);
     const [siblings, setSiblings] = useState([]);
     const [parent, setParent] = useState(null);
@@ -202,4 +202,4 @@ const page = () => {
 
 
 
-export default page 
+export default Directory 

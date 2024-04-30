@@ -148,14 +148,16 @@ const UpdateForm = ({setIsEdit, appointment, currentUser}) => {
             </div>
             <input type="email" id='search' className='border p-2 text-sm' value={search} onChange={(e)=> setSearch(e.target.value)} onKeyDown={handleKey} placeholder='Enter Email Address...'/>
             <div className='flex gap-2 text-sm my-2'>
-                {participants.map(participant => {
+                {participants.map((participant, key) => {
                     const handleDelete = () => {
                         setParticipants(prevParticipants => prevParticipants.filter(p => p.email !== participant.email));
                         setTo(prev => prev.filter(p => p.uid !== participant.uid))
                     };
-                    return <p className='bg-neutral-200 rounded-full py-1 px-2 cursor-pointer text-black' onClick={handleDelete}>{participant.email}
+                    return <div className="" key={key}>
+                        <p className='bg-neutral-200 rounded-full py-1 px-2 cursor-pointer text-black' onClick={handleDelete}>{participant.email}
                             <BsX className='inline'/>
                         </p>
+                    </div>
                 })}
             </div>
             <label htmlFor="">Status</label>

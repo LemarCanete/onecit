@@ -3,7 +3,7 @@ import React, { useContext, useState } from 'react'
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
 import Modal from 'react-modal'
 import Form from './Form'
-import Appointments from './Appointments'
+import AppointmentsView from './AppointmentsView'
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 import { useRouter } from 'next/navigation';
 import { AuthContext } from '@/context/AuthContext'
@@ -25,7 +25,7 @@ const customStyles = {
 
 Modal.setAppElement("body")
 
-const page = () => {
+const Appointments = () => {
     const router = useRouter();
     const {currentUser} = useContext(AuthContext)
 
@@ -53,7 +53,7 @@ const page = () => {
 
                 <div className="">
                     <hr />
-                    <Appointments />
+                    <AppointmentsView />
                 </div>
             </div>
         </div>
@@ -77,4 +77,4 @@ const Box = ({image, name, emailTo}) =>{
     )
 }
 
-export default page
+export default Appointments

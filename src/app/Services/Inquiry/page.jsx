@@ -22,7 +22,7 @@ import Modal from 'react-modal'
 import Message from './Message';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const page = () => {
+const Inquiry = () => {
   const { currentUser } = useContext(AuthContext);
   const router = useRouter();
   const [errors, setErrors] = useState({});
@@ -155,7 +155,7 @@ const page = () => {
       flex: 0.1,
       getActions: ({ id }) => {
         return [
-          <GridActionsCellItem
+          <GridActionsCellItem key={id}
             icon={<DeleteIcon />}
             label="Delete"
             onClick={() => handleDeleteClick(id)}
@@ -490,5 +490,5 @@ const Messagebox = ({params, isOpen, setIsOpen}) => {
 }
 
 
-export default page
+export default Inquiry
 

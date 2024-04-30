@@ -12,7 +12,7 @@ const page = () => {
   return (
     <div className='w-full h-screen flex bg-neutral-100'>
       <NavbarIconsOnly/>
-      <div className='grow px-10 py-5 overflow-auto'>
+      <div className='grow px-10 py-5 overflow-auto overflow-hidden'>
         <div className='flex flex-row w-full h-[45px] py-10 items-center'>
           <div className=''>
             <button onClick={handlegoback}>

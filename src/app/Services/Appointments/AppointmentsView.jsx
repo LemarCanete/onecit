@@ -30,7 +30,7 @@ const customStyles = {
 
 Modal.setAppElement("body")
 
-const Appointments = ({email}) => {
+const AppointmentsView = ({email}) => {
     const [appointments, setAppointments] = useState([]);
     const {currentUser} = useContext(AuthContext);
     const [selectedRows, setSelectedRows] = useState([])
@@ -106,19 +106,21 @@ const Appointments = ({email}) => {
                 const {participants, to} = row;
                 return (
                     <div className='flex'>
-                        {participants.map((participant) => {
+                        {participants.map((participant, key) => {
                             const participantStatus = to.find((t) => t.uid === participant.uid)?.status || "Pending";
                             if (participantStatus !== "Accepted" ) {
                                 return null;
                             } else {
                                 return (
-                                    <img 
-                                        src={participant?.photoURL || '/schoolLogo.png'} alt="" className='w-6 cursor-pointer' 
-                                        onClick={() => {
-                                            setViewProfile(true); 
-                                            setSelectedProfile(participant);
-                                        }} 
-                                    />
+                                    <div className="" key={key}>
+                                        <img 
+                                            src={participant?.photoURL || '/schoolLogo.png'} alt="" className='w-6 cursor-pointer' 
+                                            onClick={() => {
+                                                setViewProfile(true); 
+                                                setSelectedProfile(participant);
+                                            }} 
+                                        />
+                                    </div>
                                 );
                             }
                         })}
@@ -395,11 +397,11 @@ const Appointments = ({email}) => {
                                 <option value="Pending">Pending</option>
                             </select>
                         </div>
-                        {selectedParticipants.map(participant=>{
+                        {selectedParticipants.map((participant, key)=>{
                             if(responseFilter === "All"){
-                                return <li className='list-decimal list-outside'>{participant.firstname} {participant.lastname}- {participant.status}</li>
+                                return <li className='list-decimal list-outside' key={key}>{participant.firstname} {participant.lastname}- {participant.status}</li>
                             }else {
-                                return participant.status === responseFilter && <li className='list-decimal list-outside'>{participant.firstname} {participant.lastname}- {participant.status}</li>
+                                return participant.status === responseFilter && <li className='list-decimal list-outside' key={key}>{participant.firstname} {participant.lastname}- {participant.status}</li>
                             }
                         })}
                     </div>
@@ -413,6 +415,6 @@ const Appointments = ({email}) => {
 
 
 
-export default Appointments
+export default AppointmentsView
 
 
