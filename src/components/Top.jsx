@@ -12,14 +12,14 @@ import { db } from '@/firebase-config'
 
 const customStyles = {
     content: {
-      top: '8%',
+      top: '9%',
       left: 'auto',
       right: '5%',
       bottom: 'auto',
     //   marginRight: '-30%',
     //   transform: 'translate(-50%, -50%)',
         width: '400px',
-        height: '720px',
+        height: '700px',
         boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
         border: "none",
         padding: '0px'
@@ -53,9 +53,8 @@ const Top = () => {
         currentUser.uid && fetchData();
     }, [currentUser])
     return (
-        <div className="w-full flex justify-between items-center">
-            <input type="search" className='grow rounded-lg p-2 ps-5 border-b outline-none' placeholder='Search'/>
-            <div className=""></div>
+        // <div className="w-full flex justify-between items-center">
+            // <input type="search" className='grow rounded-lg p-2 ps-5 border-b outline-none' placeholder='Search'/>
             <div className="">
                 <div className="inline bg-white rounded-lg p-2 mx-5 cursor-pointer" onClick={()=>dispatch(toggle())}>
                     {mode ? <BiSolidSun className='inline text-teal-800 text-2xl'/> : <BiSolidMoon className='inline text-teal-800 text-2xl'/>}
@@ -72,12 +71,13 @@ const Top = () => {
                 {!profile && <div className="inline bg-white rounded-lg p-2 cursor-pointer" onClick={()=> dispatch(profileToggle())}>
                     <BiSolidUserCircle className='inline text-teal-800 text-3xl'/>
                 </div>}
+
+                {notifications && <Modal isOpen={isOpen} onRequestClose={()=>setIsOpen(false) } style={customStyles} >
+                    <Notification notifications={notifications}/>                
+                </Modal>}
             </div>
             
-            {notifications && <Modal isOpen={isOpen} onRequestClose={()=>setIsOpen(false) } style={customStyles} >
-                <Notification notifications={notifications}/>                
-            </Modal>}
-        </div>
+        // </div>
     )
 }
 

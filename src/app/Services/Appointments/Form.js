@@ -114,12 +114,12 @@ const Form = ({setIsOpen, name, emailTo}) => {
                 <label htmlFor="search">Search People</label>
                 <input type="email" id='search' className='border p-2 text-sm' value={search} onChange={(e)=> setSearch(e.target.value)} onKeyDown={handleKey} required placeholder='Enter Email Address...'/>
                 <div className='flex gap-2 text-sm my-2 flex-wrap'>
-                {participants.map(participant => {
+                {participants.map((participant, key) => {
                     const handleDelete = () => {
                         setParticipants(prevParticipants => prevParticipants.filter(p => p.schoolid !== participant.schoolid));
                     };
                     return (
-                        <p className='bg-neutral-200 rounded-full py-1 px-2 cursor-pointer'>{participant.schoolid} 
+                        <p className='bg-neutral-200 rounded-full py-1 px-2 cursor-pointer' key={key}>{participant.schoolid} 
                             <BsX className='inline' onClick={handleDelete}/>
                         </p>
                     )

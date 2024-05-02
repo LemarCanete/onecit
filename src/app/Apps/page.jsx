@@ -10,6 +10,7 @@ import { IoLibrarySharp, IoCalendarSharp, IoChatboxSharp, IoSettings, IoMap, IoM
 import { VscTypeHierarchySub } from "react-icons/vsc";
 import { BiSolidHardHat } from 'react-icons/bi'
 import { MdManageAccounts } from "react-icons/md";
+import NavbarIconsOnly from '@/components/NavbarIconsOnly'
 
 const userApps = [
     {
@@ -86,7 +87,7 @@ const userApps = [
     },
     {
         name: "Class Tracker",
-        isDone: false,
+        isDone: true,
         image: './Icons/Apps-Class_Tracker.png',
         icon: <IoTimeSharp />
     },
@@ -150,7 +151,7 @@ const adminApps = [
     },
 ]
 
-const page = () => {
+const Apps = () => {
     const mode = useSelector(state => state.darkMode.value)
     const profile = useSelector(state => state.profile.value)
     const {currentUser} = useContext(AuthContext);
@@ -182,10 +183,15 @@ const page = () => {
 
     return (
         <div className={`w-full  h-screen flex ${mode ? 'bg-slate-800' : 'bg-neutral-50'}`}>
-            <Navbar active="Apps"/>
-            <div className={`grow py-5 ${profile ? 'px-4' : 'px-10'}`}>
-                <Top />
-                <h1 className={`text-2xl my-3 tracking-wider ${mode && 'text-white'}`}>Apps</h1>
+            
+            {profile ? <NavbarIconsOnly active="Apps"/> : <Navbar active="Apps"/>}
+
+            <div className={`grow py-5 ${profile ? 'px-16' : 'px-10'}`}>
+                <div className="w-full flex justify-between items-center">
+                    {/* <input type="search" className='grow rounded-lg p-2 ps-5 border-b outline-none' placeholder='Search'/> */}
+                    <h1 className={`text-xl font-bold my-3 tracking-wider ${mode && 'text-white'}`}>Apps</h1>
+                    <Top />
+                </div>
                 {/* Content */}
                 <div className="flex">
                     <div className="w-10/12">
@@ -232,4 +238,4 @@ const Box = ({image, name, mode, icon}) =>{
     )
 }
 
-export default page
+export default Apps

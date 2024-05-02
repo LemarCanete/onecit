@@ -29,7 +29,7 @@ const header = [
     
 ]
 
-const page = () => {
+const Settings = () => {
     const [selected, setSelected] = useState("Personal Details");
     const {currentUser} = useContext(AuthContext)
     const [userData, setUserData] = useState();
@@ -88,4 +88,4 @@ const page = () => {
     )
 }
 
-export default page
+export default Settings

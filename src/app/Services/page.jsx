@@ -21,61 +21,61 @@ const userServices = [
         description: "rent equipments and places",
         isDone: true
     },
-    {
-        name: "Lost and Found",
-        description: "rent equipments and places",
-        isDone: true
-    },
+    // {
+    //     name: "Lost and Found",
+    //     description: "rent equipments and places",
+    //     isDone: true
+    // },
     // {
     //     name: "Ask Advice",
     //     description: "rent equipments and places",
     //     isDone: true
     // },
-    {
-        name: "Campus Security",
-        description: "rent equipments and places",
-        isDone: false
-    },
-    {
-        name: "Sports",
-        description: "rent equipments and places",
-        isDone: false
-    },
-    {
-        name: "Trainings",
-        description: "rent equipments and places",
-        isDone: false
-    },
-    {
-        name: "Shift",
-        description: "rent equipments and places",
-        isDone: false
-    },
-    {
-        name: "Scholarships",
-        description: "rent equipments and places",
-        isDone: false
-    },
-    {
-        name: "Offices",
-        description: "rent equipments and places",
-        isDone: false
-    },
-    {
-        name: "Departments",
-        description: "rent equipments and places",
-        isDone: false
-    },
-    {
-        name: "Others",
-        description: "rent equipments and places",
-        isDone: false
-    },
-    {
-        name: "Student Organizations",
-        description: "rent equipments and places",
-        isDone: false
-    },
+    // {
+    //     name: "Campus Security",
+    //     description: "rent equipments and places",
+    //     isDone: false
+    // },
+    // {
+    //     name: "Sports",
+    //     description: "rent equipments and places",
+    //     isDone: false
+    // },
+    // {
+    //     name: "Trainings",
+    //     description: "rent equipments and places",
+    //     isDone: false
+    // },
+    // {
+    //     name: "Shift",
+    //     description: "rent equipments and places",
+    //     isDone: false
+    // },
+    // {
+    //     name: "Scholarships",
+    //     description: "rent equipments and places",
+    //     isDone: false
+    // },
+    // {
+    //     name: "Offices",
+    //     description: "rent equipments and places",
+    //     isDone: false
+    // },
+    // {
+    //     name: "Departments",
+    //     description: "rent equipments and places",
+    //     isDone: false
+    // },
+    // {
+    //     name: "Others",
+    //     description: "rent equipments and places",
+    //     isDone: false
+    // },
+    // {
+    //     name: "Student Organizations",
+    //     description: "rent equipments and places",
+    //     isDone: false
+    // },
         // {
     //     name: "Elementary",
     //     description: "rent equipments and places"
@@ -109,8 +109,13 @@ const adminServices = [
         description: "rent equipments and places",
         isDone: false
     },
+    {
+        name: "Inquiry",
+        description: "rent equipments and places",
+        isDone: true
+    },
 ]
-const page = () => {
+const Services = () => {
     const router = useRouter()
     const {currentUser} = useContext(AuthContext);
 
@@ -148,7 +153,7 @@ const page = () => {
                     </button>
                     <h1 className="text-2xl tracking-widest">Services</h1>
                 </div>
-                <input type="search" placeholder='Search' className='w-full rounded-lg p-2 my-3'/>
+                <input type="search" placeholder='Search' className='w-full rounded-lg p-2 my-3 border-b outline-none'/>
 
                 {/* Done Working */}
                 <p className="text-sm italic text-black/25">Done or Working</p>
@@ -176,14 +181,16 @@ const Box = ({name, icon, description}) =>{
 
     return(
         <div className="" onClick={() => router.push(`${paths}/${formattedName}`)}>
-            <div className="grid grid-rows-2 grid-flow-col border bg-white m-2 p-2 cursor-pointer shadow">
+            <div className="flex gap-4 border bg-white m-2 p-2 cursor-pointer shadow">
                 <img src="schoolLogo.png" alt="" className='w-12 h-12 row-span-2'/>
-                <p className=''>{name}</p>
-                <p className="text-sm">{description}</p>
+                <div className="">
+                    <p className='hover:underline'>{name}</p>
+                    <p className="text-sm">{description}</p>
+                </div>
             </div>
         </div>
     )
 }
 
-export default page
+export default Services
 

@@ -38,7 +38,7 @@ const customStyles = {
 Modal.setAppElement("body")
 
 
-const page = () => {
+const CalendarofEvents = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState('');
     const [dateText, setDateText] = useState(null);
@@ -218,4 +218,4 @@ function renderEventContent(eventInfo) {
 }
 
 
-export default page
+export default CalendarofEvents

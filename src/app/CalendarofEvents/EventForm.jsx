@@ -175,7 +175,7 @@ const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setE
 
                     
                     <div className="my-2" >
-                        <p className="font-bold text-base">Today's Event</p>
+                        <p className="font-bold text-base">{`Today's Event`}</p>
                         <ul className="">
                             {subTasks.length > 0 ? subTasks.map((task, i)=>{
                                 const startTime = new Date(task.start);
@@ -228,7 +228,7 @@ const EventForm = ({selectedDate, setIsOpen, dateText, currentUser, events, setE
                         <span className={`absolute bottom-0 mb-8 ${(status === 'Successfully Added!') ? 'text-teal-500' : 'text-red-500'}`}>{status}</span>
                     </form>
                     <form className='border-s ps-3 '>
-                        <h2 className="font-bold text-center text-base">Today's Event</h2>
+                        <h2 className="font-bold text-center text-base">{`Today's Event`}</h2>
                         
                         <div className="flex flex-col mb-2">
                             <label htmlFor="taskTitle">Task Title: </label>

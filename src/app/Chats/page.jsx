@@ -1,15 +1,15 @@
 'use client'
 import React from 'react'
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
-import Chats from './Chats';
+import ChatsSection from './ChatsSection';
 
-const page = () => {
+const Chats = () => {
     return (
         <div className='w-full h-screen flex bg-neutral-100 gap-1'>
             <NavbarIconsOnly/>
-            <Chats />
+            <ChatsSection />
         </div>
     )
 }
 
-export default page
+export default Chats

@@ -2,7 +2,7 @@
 import React from 'react'
 import Navbar from '@/components/Navbar'
 
-const page = () => {
+const Template = () => {
     return (
         <div className='w-full h-screen flex bg-neutral-100'>
             <Navbar/>
@@ -14,4 +14,4 @@ const page = () => {
     )
 }
 
-export default page
+export default Template

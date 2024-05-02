@@ -141,7 +141,7 @@ const sites = [
     },
 ]
 
-const page = () => {
+const Library = () => {
     const [details, setDetails] = useState(
         {
             title: "No site selected", origin: "", 
@@ -197,4 +197,4 @@ const Lib = ({title, description}) =>{
     )
 }
 
-export default page
+export default Library

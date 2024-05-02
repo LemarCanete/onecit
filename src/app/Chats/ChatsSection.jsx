@@ -5,7 +5,7 @@ import { AuthContext } from '@/context/AuthContext';
 import { Timestamp, collection, doc, getDoc, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '@/firebase-config';
 
-const Chats = () => {
+const ChatsSection = () => {
     const [addChat, setAddChat] = useState(false)
     const {currentUser} = useContext(AuthContext)
     const [chats, setChats] = useState([])
@@ -32,9 +32,24 @@ const Chats = () => {
 
                     return { ...chat, membersData };
                 }));
-
-                setChats(chatsComplete);
-                setFilteredChat(chatsComplete)
+                
+                if(chatsComplete.length < 1){
+                    setChats(prev => [
+                        {
+                            lastMessage: "New message...",
+                            lastUpdated: Timestamp.now(),
+                            members: [],
+                            membersData: [],
+                            type: 'newMessage',
+                            name: 'New message'
+                        }, ...prev
+                    ])
+                    setAddChat(prev => true); 
+                } else{
+                    addChat && setChats(prev => prev.filter(chat => chat.type !== 'newMessage'))
+                    setChats(chatsComplete);
+                    setFilteredChat(chatsComplete)
+                }
             });
 
             return () => unsubscribe();
@@ -111,7 +126,7 @@ const Chats = () => {
                         return (
                             <div className="" key={key}>
                                 <div className={`flex gap-5 text-sm hover:bg-neutral-100 cursor-pointer p-2 rounded-lg ${selected && 'bg-neutral-200'}`} onClick={()=>setSelectedChat(chat)}>
-                                    <img src={chat.type === "User" ? chat.membersData.find(member => member.uid !== currentUser.uid)?.photoURL || '/schoolLogo.png': chat?.photoURL || '/schoolLogo.png'} alt="" className='w-10'/>
+                                    <img src={chat.type === "User" ? chat.membersData.find(member => member.uid !== currentUser.uid)?.photoURL || '/schoolLogo.png': chat?.photoURL || '/schoolLogo.png'} alt="" className='w-10 rounded-full'/>
                                     <div className="">
                                         {chat?.name ? <p className="font-bold">{chat.name}</p> : <p className="font-bold">{membersNames}</p>}
                                         <h1 className="">{chat?.lastMessage}</h1>
@@ -132,4 +147,4 @@ const Chats = () => {
     )
 }
 
-export default Chats
+export default ChatsSection

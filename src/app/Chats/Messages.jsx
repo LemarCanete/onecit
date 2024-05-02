@@ -86,6 +86,7 @@ const Messages = ({addChat, currentUser, selectedChat, setAddChat}) => {
     }, [messageList])
 
     const addMessage = async(e) =>{
+        if(message === "") return
         try{
             if (e.key === 'Enter' && selectedChat.type === 'newMessage') {
                 const memberIds = new Set([currentUser.uid, ...members.map(member => member.uid)]);
@@ -261,7 +262,6 @@ const Messages = ({addChat, currentUser, selectedChat, setAddChat}) => {
         }
         return membersNames
     }
-    console.log(files)
 
     return (
         <div className="col-span-9 bg-white h-screen flex">
@@ -297,12 +297,14 @@ const Messages = ({addChat, currentUser, selectedChat, setAddChat}) => {
 
                     {searchTo && 
                         <div className="col-start-2 col-end-4 h-48 overflow-visible absolute z-50 bg-neutral-50 w-2/6 h-auto">
-                        {filteredUsers.map(user => {
+                        {filteredUsers.map((user, key) => {
                             return (
-                            <div className="grid grid-rows-3 grid-flow-col p-1 cursor-pointer hover:bg-neutral-100 w-full" onClick={()=> {setMembers(prev => [...prev, user]); setFilteredUsers([]); setSearchTo("")}}>
-                                <img src={`${user.photoURL || './schoolLogo.png'}`} alt="" className='row-span-3 w-12'/>
-                                <span className="p-0 m-0">{user.firstname} {user.lastname} {user.schoolid}</span>
-                                <span className="p-0 m-0">{user.email}</span>
+                            <div className="" key={key}>
+                                <div className="grid grid-rows-3 grid-flow-col p-1 cursor-pointer hover:bg-neutral-100 w-full" onClick={()=> {setMembers(prev => [...prev, user]); setFilteredUsers([]); setSearchTo("")}}>
+                                    <img src={`${user.photoURL || './schoolLogo.png'}`} alt="" className='row-span-3 w-12'/>
+                                    <span className="p-0 m-0">{user.firstname} {user.lastname} {user.schoolid}</span>
+                                    <span className="p-0 m-0">{user.email}</span>
+                                </div>
                             </div>
                         )})}
                         </div>}
@@ -313,10 +315,11 @@ const Messages = ({addChat, currentUser, selectedChat, setAddChat}) => {
                 {/* list messages */}
                 <div className="w-full px-4 h-5/6 overflow-y-scroll mt-2" >
                     {messageList.sort((a, b) => a.timestamp - b.timestamp).map((message, index) => {
+                        console.log(message)
                         const member = selectedChat.membersData.find(member => member.uid === message.senderId)
                         const getSenderData = () =>{
                             if(currentUser.uid !== message.senderId){
-                                return <img src={member?.photoURL || `/schoolLogo.png`} alt="" className={`w-6 h-6 cursor-pointer profile-sender-${message.id}`}/>
+                                return <img src={member?.photoURL || `/schoolLogo.png`} alt="" className={`w-6 h-6 cursor-pointer rounded-full profile-sender-${message.id}`}/>
                             } else {
                                 return null
                             }

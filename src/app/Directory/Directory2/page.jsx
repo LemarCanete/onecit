@@ -26,7 +26,7 @@ const renderRectSvgNode = ({ nodeDatum, toggleNode }) => (
     </g>
 );
 
-const page = () => {
+const Directory2 = () => {
     const router = useRouter();
     
     const [translate, setTranslate] = useState({ x: 0, y: 0 });
@@ -82,5 +82,5 @@ const page = () => {
     )
 }
 
-export default page
+export default Directory2
 

@@ -31,7 +31,7 @@ const customStyles = {
 
 Modal.setAppElement("body")
 
-const page = () => {
+const UserManagement = () => {
     const [users, setUsers] = useState([])
     const [selectedRows, setSelectedRows] = useState([])
     const [isDeleteModal, setIsDeleteModal] = useState(false)
@@ -222,4 +222,4 @@ const page = () => {
   )
 }
 
-export default page
+export default UserManagement

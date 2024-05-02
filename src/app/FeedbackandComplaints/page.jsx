@@ -19,7 +19,7 @@ import { AuthContext } from '@/context/AuthContext';
 import Modal from 'react-modal'
 import Message from './Message';
 
-const page = () => {
+const FeedbackandComplaints = () => {
   const {currentUser} = useContext(AuthContext);
   const [rows, setRows] = useState([]);
 
@@ -180,7 +180,7 @@ const page = () => {
                   <RiEmotionLaughFill onClick={() => HandleRateChange(5)} className='text-[#46D750] text-[150px]'/> :
                   <RiEmotionLaughLine onClick={() => HandleRateChange(5)} className='hover:text-[#46D750] text-[150px] cursor-pointer'/>}
               </div>
-              <label className='text-lg my-[10px]'>Do you have any thoughts you'd like to share?</label>
+              <label className='text-lg my-[10px]'>{`Do you have any thoughts you'd like to share?`}</label>
               <textarea className='rounded-[20px] p-[15px] shadow-lg border-2 border-black-100 resize-none my-[10px]' name="feedback" value={feedback} onChange={HandleFeedbackInput} rows="5"/>
               <div className='my-[10px]'>
                 <label className='text-lg my-[10px]'>Categorize your feedback so we can get back to you faster!</label>
@@ -265,4 +265,4 @@ const Messagebox = ({params, isOpen, setIsOpen}) => {
   ) 
 }
 
-export default page
+export default FeedbackandComplaints

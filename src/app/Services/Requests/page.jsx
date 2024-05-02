@@ -116,7 +116,7 @@ const page = () => {
                     id="year-level"
                     name="year-level"
                     autoComplete="year-level-name"
-                    className=" block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-lg sm:leading-6 w-max"
+                    className=" block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-lg sm:leading-6 w-max"
                   >
                     <option>First Year</option>
                     <option>Second Year</option>
