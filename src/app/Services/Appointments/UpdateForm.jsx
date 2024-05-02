@@ -123,7 +123,7 @@ const UpdateForm = ({setIsEdit, appointment, currentUser}) => {
         }
     }
 
-    if(currentUser.uid !== appointment.from.uid){
+    if(currentUser.uid !== appointment.from.uid && currentUser.role !== "admin"){
         setIsEdit(false)
         return null
     }

@@ -368,7 +368,7 @@ const AppointmentsView = ({email}) => {
                     />
                 </Box>)}
                 
-                {appointments.some(appointment => selectedRows.includes(appointment.id) && appointment.from.uid === currentUser.uid) && (
+                {appointments.some(appointment => selectedRows.includes(appointment.id) && (appointment.from.uid === currentUser.uid || currentUser.role === "admin")) && (
                     <Modal isOpen={isDeleteModal} onRequestClose={()=>setIsDeleteModal(false) } style={customStyles}>
                         <h1 className="">Are you sure to delete these rows? </h1>
                         <p className="">[{selectedRows.join(', ')}] {selectedRows.length < 1 && <span className='text-red-500 italic'>No selected row</span>}</p>
