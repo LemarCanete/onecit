@@ -109,6 +109,11 @@ const adminServices = [
         description: "rent equipments and places",
         isDone: false
     },
+    {
+        name: "Inquiry",
+        description: "rent equipments and places",
+        isDone: true
+    },
 ]
 const Services = () => {
     const router = useRouter()
