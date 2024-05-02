@@ -1,5 +1,5 @@
 import { db } from '@/firebase-config'
-import { collection, doc, onSnapshot, query, updateDoc } from 'firebase/firestore'
+import { collection, doc, onSnapshot, query, updateDoc, deleteDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import StatusBox from './StatusBox';
 import EventAvailableRoundedIcon from '@mui/icons-material/EventAvailableRounded';
@@ -77,6 +77,26 @@ const ViewTask = ({setIsOpen, task}) => {
     setIsEditing(false); // Exit edit mode
     setIsOpen(false)
   };
+
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this task?")) { // Confirmation dialog
+      try {
+        // Get a reference to the document in Firestore using the task ID
+        const docRef = doc(db, 'tasks', task.id);
+
+        // Delete the document
+        await deleteDoc(docRef);
+
+        // If successful, close the current view and notify the parent component
+        setIsOpen(false);
+
+        console.log("Task deleted successfully.");
+      } catch (error) {
+        console.error("Error deleting task:", error);
+      }
+    }
+  };
+
   
 
   const handleStatusChange = (newStatus) => {
@@ -186,7 +206,7 @@ const ViewTask = ({setIsOpen, task}) => {
 
           {data.duedate && (
             <input
-              className="p-2 mr-2 bg-transparent rounded-[10px] border-2"
+              className={`${!data.duetime && isEditing === false ? 'hidden' : ''} p-2 mr-2 bg-transparent rounded-[10px] border-2`}
               type="time"
               value={newData.duetime}
               min={new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} // Set min attribute to current time
@@ -217,6 +237,8 @@ const ViewTask = ({setIsOpen, task}) => {
         }
         {isEditing ? <button className='bg-[#9A9C9E] text-white px-4 py-2 rounded-[10px] mr-2' onClick={handleCancel}>Cancel</button> :
                       '' }
+        <button className='bg-[#B13A41] text-white px-4 py-2 rounded-[10px] mr-2' onClick={handleDelete}>Delete</button>
+        
       </div>
     </div>
   )

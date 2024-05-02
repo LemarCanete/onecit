@@ -6,7 +6,7 @@ import AutoModeRoundedIcon from '@mui/icons-material/AutoModeRounded';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
-import { addDoc, setDoc, doc, collection } from 'firebase/firestore';
+import { addDoc, setDoc, doc, collection, query, onSnapshot, where } from 'firebase/firestore';
 import { db } from '@/firebase-config';
 import { AuthContext } from '@/context/AuthContext';
 
@@ -26,11 +26,45 @@ const AddTaskForm = ({setIsOpen, initialStatus}) => {
         { label: 'Low', value: 'Low', specialClass: 'bg-[#87909E]', icon: <FlagRoundedIcon/>, iconColor: 'text-[#87909E]' },
       ];
 
+  const [todo, setTodo] = useState([])
+  const [inprogress, setInprogress] = useState([])
+  const [completed, setCompleted] = useState([])
+
+  useEffect(() => {
+
+    const q = query(collection(db, 'tasks'), where('uid', '==', currentUser.uid));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const retrievedTD = [];
+      const retrievedIP = [];
+      const retrievedCm = [];
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const dataid = doc.id; // Get the document ID using doc.id
+        if (data.status === 'To Do') {
+          retrievedTD.push({ ...data, id: dataid });
+        } else if (data.status === 'In Progress') {
+          retrievedIP.push({ ...data, id: dataid });
+        } else if (data.status === 'Completed') {
+          retrievedCm.push({ ...data, id: dataid });
+        }
+      });
+
+      setTodo(retrievedTD);
+      setInprogress(retrievedIP);
+      setCompleted(retrievedCm);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [currentUser]);
+
       const [title, setTitle] = useState('')
 
-      const handleTitleChange = (event) => {
-        setTitle(event.target.value);
-      }
+    const handleTitleChange = (event) => {
+      setTitle(event.target.value);
+    }
 
       const [description, setDescription] = useState('')
 
@@ -49,6 +83,28 @@ const AddTaskForm = ({setIsOpen, initialStatus}) => {
       }
 
       const handleAddTask = async () => {
+        const allTasks = [...todo, ...inprogress, ...completed];
+
+        const taskFound = allTasks.some(task => task.title.toLowerCase() === title.toLowerCase());
+        console.log(allTasks)
+        if (taskFound) {
+          console.log("A task with the given title was found in one of the arrays!");
+          setErrors({
+            title: 'This task already exists!',
+          });
+          setTimeout(() => {
+            setErrors({
+              title: '',
+              status: '',
+              priority: '',
+            });
+          }, 5000);
+          return
+        } else {
+          console.log("No task with the given title was found in any array.");
+        }
+
+
         if (!currentUser || !currentUser.uid) {
           console.log("User not logged in. Cannot create task.");
           return;
@@ -56,7 +112,7 @@ const AddTaskForm = ({setIsOpen, initialStatus}) => {
       
         if (!title || !status || !priority) {
           setErrors({
-            title: !title ? 'title' : '',
+            title: !title ? 'This field is required.' : '',
             status: !status ? 'description' : '',
             priority: !priority ? 'priority' : ''
           });
@@ -122,7 +178,7 @@ const AddTaskForm = ({setIsOpen, initialStatus}) => {
           <label 
             className={`absolute bottom-[-25px] right-0 text-red-500 transition-opacity duration-500 ${errors['title'] ? '' : 'opacity-0 duration-500'}`}
           >
-            {errors['title'] && 'This field is required.'}
+            {errors['title'] && errors.title}
           </label>
         </div>
       </div>

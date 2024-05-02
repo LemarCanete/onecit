@@ -151,7 +151,7 @@ const MainDashboard = () => {
       
       <div className='w-full h-full flex flex-row py-2 my-2'>
 
-        <div className='w-1/4 px-2'>
+        <div className='w-1/3 px-2'>
             <div className='flex flex-row items-center  px-4 justify-between py-4 rounded-[10px] bg-white border-2'>
                 <label className='text-xl font-bold mr-auto'>To Do:</label>
                 <AddCircleOutlineRoundedIcon className='cursor-pointer hover:text-[#115E59] transition-all' onClick={() => AddNewTask("To Do")}/>
@@ -174,7 +174,7 @@ const MainDashboard = () => {
             </div>
         </div>
 
-        <div className='w-1/4 px-2'>
+        <div className='w-1/3 px-2'>
             <div className='flex flex-row items-center  px-4 justify-between py-4 rounded-[10px] bg-white border-2'>
                 <label className='text-xl font-bold mr-auto'>In Progress:</label>
                 <AddCircleOutlineRoundedIcon className='cursor-pointer hover:text-[#115E59] transition-all' onClick={() => AddNewTask("In Progress")}/>
@@ -196,7 +196,7 @@ const MainDashboard = () => {
             
         </div>
 
-        <div className='w-1/4 px-2'>
+        <div className='w-1/3 px-2'>
             <div className='flex flex-row items-center  px-4 justify-between py-4 rounded-[10px] bg-white border-2'>
                 <label className='text-xl font-bold mr-auto'>Completed:</label>
                 <AddCircleOutlineRoundedIcon className='cursor-pointer hover:text-[#115E59] transition-all' onClick={() => AddNewTask("Completed")}/>
