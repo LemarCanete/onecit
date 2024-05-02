@@ -77,11 +77,11 @@ const Profile = () => {
             <hr className='mt-14'/>
             <div className="grid grid-cols-4 w-full mb-4 text-2xl absolute bottom-0 left-0 place-items-center">
                 <hr className='col-span-4'/>
-                <button className="text-blue-600 "><a href={currentUser.socials.Facebook} target='_blank'><SiFacebook /></a></button>
-                <button className="text-red-500 "><a href={`mailto: ${currentUser.socials.Gmail}`} target='_blank'><SiGmail /></a></button>
-                <button className="text-blue-500 "><a href={currentUser.socials.LinkedIn} target='_blank'><SiLinkedin /></a></button>
+                <button className="text-blue-600 "><a href={currentUser?.socials?.Facebook || ""} target='_blank'><SiFacebook /></a></button>
+                <button className="text-red-500 "><a href={`mailto: ${currentUser?.socials?.Gmail || ''}`} target='_blank'><SiGmail /></a></button>
+                <button className="text-blue-500 "><a href={currentUser?.socials?.LinkedIn || ''} target='_blank'><SiLinkedin /></a></button>
                 {/* {currentUser.socials.Phone && <button className="text-green-500"><a href={`mailto: ${currentUser.socials.Phone}`}><BiSolidPhone /></a></button>} */}
-                <button className="text-pink-700 "><a href={currentUser.socials.Instagram} target='_blank'><SiInstagram /></a></button>
+                <button className="text-pink-700 "><a href={currentUser?.socials?.Instagram || ''} target='_blank'><SiInstagram /></a></button>
                 {/* {currentUser.socials.Microsoft && <button className="text-pink-700"><a href={`mailto: ${currentUser.socials.Microsoft}`} target='_blank'><SiMicrosoft /></a></button>} */}
             </div>
 
