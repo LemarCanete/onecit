@@ -10,6 +10,7 @@ const ClassTrackerPage = () => {
     const [classes, setClasses] = useState([]);
     const [showAddForm, setShowAddForm] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+
     useEffect(() => {
         const fetchClasses = async () => {
             try {
@@ -25,6 +26,7 @@ const ClassTrackerPage = () => {
         };
         fetchClasses();
     }, []);
+
     const handleAddClass = async (classData) => {
         try {
             const docRef = await addDoc(collection(db, 'classes'), classData);
@@ -33,6 +35,7 @@ const ClassTrackerPage = () => {
             console.error('Error adding class: ', error);
         }
     };
+
     const handleDeleteClass = async (classId) => {
         try {
             await deleteDoc(doc(db, 'classes', classId));
@@ -41,15 +44,25 @@ const ClassTrackerPage = () => {
             console.error('Error deleting class: ', error);
         }
     };
+
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
     };
+
     const filteredClasses = classes.filter(classItem =>
         classItem.className.toLowerCase().includes(searchTerm.toLowerCase()) ||
         classItem.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
         classItem.instructor.toLowerCase().includes(searchTerm.toLowerCase()) ||
         classItem.schedule.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // Group classes by day
+    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const groupedClasses = daysOfWeek.map(day => ({
+        day,
+        classes: filteredClasses.filter(classItem => classItem.schedule.toLowerCase().includes(day.toLowerCase()))
+    }));
+
     return (
         <div className="w-full h-screen flex bg-neutral-50 overflow-hidden">
             <Navbar active="Classes" />
@@ -69,22 +82,27 @@ const ClassTrackerPage = () => {
                 </div>
                 {showAddForm && <AddClassForm onSubmit={handleAddClass} onCancel={() => setShowAddForm(false)} />}
                 <div className="grid grid-cols-2 gap-4 mt-4">
-                    {filteredClasses.map((classItem) => (
-                        <div key={classItem.id} className="bg-white shadow rounded-lg p-6 flex justify-between items-center">
-                            <div>
-                                <h2 className="text-lg font-semibold">{classItem.className}</h2>
-                                <p className="text-sm text-gray-500">{classItem.location}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500">{classItem.instructor}</p>
-                                <p className="text-sm text-gray-500">{classItem.schedule}</p>
-                            </div>
-                            <button
-                                onClick={() => handleDeleteClass(classItem.id)}
-                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-150"
-                            >
-                                Delete
-                            </button>
+                    {groupedClasses.map(({ day, classes }) => (
+                        <div key={day}>
+                            <h2 className="text-lg font-semibold mb-2">{day}</h2>
+                            {classes.map(classItem => (
+                                <div key={classItem.id} className="bg-white shadow rounded-lg p-6 flex justify-between items-center">
+                                    <div>
+                                        <h3 className="text-lg font-semibold">{classItem.className}</h3>
+                                        <p className="text-sm text-gray-500">{classItem.location}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-500">{classItem.instructor}</p>
+                                        <p className="text-sm text-gray-500">{classItem.schedule}</p>
+                                    </div>
+                                    <button
+                                        onClick={() => handleDeleteClass(classItem.id)}
+                                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-150"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            ))}
                         </div>
                     ))}
                 </div>

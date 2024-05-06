@@ -1,4 +1,5 @@
 'use client'
+
 import React, { useState } from 'react';
 
 const AddClassForm = ({ onSubmit, onCancel }) => {
@@ -6,28 +7,37 @@ const AddClassForm = ({ onSubmit, onCancel }) => {
     const [className, setClassName] = useState('');
     const [location, setLocation] = useState('');
     const [instructor, setInstructor] = useState('');
-    const [hour, setHour] = useState('12');
-    const [minute, setMinute] = useState('00');
-    const [period, setPeriod] = useState('AM');
+    const [startHour, setStartHour] = useState('12');
+    const [startMinute, setStartMinute] = useState('00');
+    const [startPeriod, setStartPeriod] = useState('AM');
+    const [endHour, setEndHour] = useState('12');
+    const [endMinute, setEndMinute] = useState('00');
+    const [endPeriod, setEndPeriod] = useState('AM');
+    const [day, setDay] = useState('Monday');
 
     const handleSubmit = (e) => {
         e.preventDefault();
         const classTitle = `${classNumber} ${className}`;
-        const time = `${hour}:${minute} ${period}`;
+        const startTime = `${startHour}:${startMinute} ${startPeriod}`;
+        const endTime = `${endHour}:${endMinute} ${endPeriod}`;
         const newClass = {
             className: classTitle,
             location: location,
             instructor: instructor,
-            schedule: time
+            schedule: `${day}, ${startTime} - ${endTime}`
         };
         onSubmit(newClass);
         setClassNumber('');
         setClassName('');
         setLocation('');
         setInstructor('');
-        setHour('12');
-        setMinute('00');
-        setPeriod('AM');
+        setStartHour('12');
+        setStartMinute('00');
+        setStartPeriod('AM');
+        setEndHour('12');
+        setEndMinute('00');
+        setEndPeriod('AM');
+        setDay('Monday');
     };
 
     return (
@@ -85,8 +95,8 @@ const AddClassForm = ({ onSubmit, onCancel }) => {
                 <label htmlFor="schedule" className="block text-sm font-medium text-gray-700">Schedule</label>
                 <div className="flex items-center">
                     <select 
-                        value={hour} 
-                        onChange={(e) => setHour(e.target.value)} 
+                        value={startHour} 
+                        onChange={(e) => setStartHour(e.target.value)} 
                         className="mr-2 p-2 border rounded focus:outline-none focus:border-blue-500"
                     >
                         {[...Array(12).keys()].map((hour) => (
@@ -95,8 +105,8 @@ const AddClassForm = ({ onSubmit, onCancel }) => {
                     </select>
                     <span className="mr-2">:</span>
                     <select 
-                        value={minute} 
-                        onChange={(e) => setMinute(e.target.value)} 
+                        value={startMinute} 
+                        onChange={(e) => setStartMinute(e.target.value)} 
                         className="mr-2 p-2 border rounded focus:outline-none focus:border-blue-500"
                     >
                         {[...Array(60).keys()].map((min) => (
@@ -104,14 +114,58 @@ const AddClassForm = ({ onSubmit, onCancel }) => {
                         ))}
                     </select>
                     <select 
-                        value={period} 
-                        onChange={(e) => setPeriod(e.target.value)} 
-                        className="p-2 border rounded focus:outline-none focus:border-blue-500"
+                        value={startPeriod} 
+                        onChange={(e) => setStartPeriod(e.target.value)} 
+                        className="mr-2 p-2 border rounded focus:outline-none focus:border-blue-500"
+                    >
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                    <span>-</span>
+                    <select 
+                        value={endHour} 
+                        onChange={(e) => setEndHour(e.target.value)} 
+                        className="mr-2 p-2 border rounded focus:outline-none focus:border-blue-500"
+                    >
+                        {[...Array(12).keys()].map((hour) => (
+                            <option key={hour + 1} value={hour + 1}>{hour + 1}</option>
+                        ))}
+                    </select>
+                    <span className="mr-2">:</span>
+                    <select 
+                        value={endMinute} 
+                        onChange={(e) => setEndMinute(e.target.value)} 
+                        className="mr-2 p-2 border rounded focus:outline-none focus:border-blue-500"
+                    >
+                        {[...Array(60).keys()].map((min) => (
+                            <option key={min} value={min < 10 ? `0${min}` : min}>{min < 10 ? `0${min}` : min}</option>
+                        ))}
+                    </select>
+                    <select 
+                        value={endPeriod} 
+                        onChange={(e) => setEndPeriod(e.target.value)} 
+                        className="mr-2 p-2 border rounded focus:outline-none focus:border-blue-500"
                     >
                         <option value="AM">AM</option>
                         <option value="PM">PM</option>
                     </select>
                 </div>
+            </div>
+            <div className="mb-4">
+                <label htmlFor="day" className="block text-sm font-medium text-gray-700">Day of the Week</label>
+                <select 
+                    value={day} 
+                    onChange={(e) => setDay(e.target.value)} 
+                    className="p-2 border rounded focus:outline-none focus:border-blue-500"
+                >
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>
             </div>
             <div className="flex justify-end">
                 <button 
