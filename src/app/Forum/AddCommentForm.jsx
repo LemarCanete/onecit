@@ -5,13 +5,17 @@ import { db } from '@/firebase-config';
 
 const AddCommentForm = ({ threadId }) => {
     const [comment, setComment] = useState('');
+    const {currentUser} = useContext (AuthContext);
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        const uid = currentUser.uid
         try {
             const commentData = {
                 content: comment,
                 threadId: threadId,
+                uid: uid,
                 createdAt: serverTimestamp()
             };
             await addDoc(collection(db, 'comments'), commentData);

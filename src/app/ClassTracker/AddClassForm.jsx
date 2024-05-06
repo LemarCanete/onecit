@@ -1,5 +1,7 @@
 'use client'
 
+import { useContext } from 'react';
+import { AuthContext } from '@/context/AuthContext';
 import React, { useState } from 'react';
 
 const AddClassForm = ({ onSubmit, onCancel }) => {
@@ -14,6 +16,7 @@ const AddClassForm = ({ onSubmit, onCancel }) => {
     const [endMinute, setEndMinute] = useState('00');
     const [endPeriod, setEndPeriod] = useState('AM');
     const [day, setDay] = useState('Monday');
+    const {currentUser} = useContext(AuthContext)
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -24,7 +27,8 @@ const AddClassForm = ({ onSubmit, onCancel }) => {
             className: classTitle,
             location: location,
             instructor: instructor,
-            schedule: `${day}, ${startTime} - ${endTime}`
+            schedule: `${day}, ${startTime} - ${endTime}`,
+            id: currentUser.uid
         };
         onSubmit(newClass);
         setClassNumber('');

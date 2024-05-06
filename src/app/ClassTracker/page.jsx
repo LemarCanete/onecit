@@ -1,21 +1,23 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Navbar from '@/components/Navbar';
 import AddClassForm from './AddClassForm'; 
 import { db } from '@/firebase-config'; 
 import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
 import NavbarIconsOnly from '@/components/NavbarIconsOnly';
+import { AuthContext } from '@/context/AuthContext';
 
 const ClassTrackerPage = () => {
     const [classes, setClasses] = useState([]);
     const [showAddForm, setShowAddForm] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const {currentUser} = useContext(AuthContext)
 
     useEffect(() => {
         const fetchClasses = async () => {
             try {
-                const querySnapshot = await getDocs(collection(db, 'classes'));
+                const querySnapshot = await getDocs(collection(db, 'classes'), where("id", "==", currentUser.uid));
                 const fetchedClasses = querySnapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data()
@@ -25,7 +27,7 @@ const ClassTrackerPage = () => {
                 console.error('Error fetching classes: ', error);
             }
         };
-        fetchClasses();
+        currentUser.uidfetchClasses();
     }, []);
 
     const handleAddClass = async (classData) => {
