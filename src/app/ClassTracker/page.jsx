@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import AddClassForm from './AddClassForm'; 
 import { db } from '@/firebase-config'; 
 import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
+import NavbarIconsOnly from '@/components/NavbarIconsOnly';
 
 const ClassTrackerPage = () => {
     const [classes, setClasses] = useState([]);
@@ -65,7 +66,7 @@ const ClassTrackerPage = () => {
 
     return (
         <div className="w-full h-screen flex bg-neutral-50 overflow-hidden">
-            <Navbar active="Classes" />
+            <NavbarIconsOnly active="Classes" />
             <div className="grow px-10 py-5 overflow-y-scroll">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">Class Tracker</h1>
