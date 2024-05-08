@@ -186,7 +186,7 @@ const PersonalDetails = ({userData}) => {
                 <hr />
                 <div className="grid grid-cols-4 gap-10 my-5">
                     <p className="">Email Address</p>
-                    <input type="email" className="border p-2 rounded-lg" placeholder='Email Address' value={email} onChange={(e)=> setEmail(e.target.value)}/>
+                    <input type="email" className="border p-2 rounded-lg" placeholder='Email Address' disabled={currentUser.role === "admin" ? false : true} value={email} onChange={(e)=> setEmail(e.target.value)}/>
                     <p className="">Birth Date</p>
                     <input type="date" className="border p-2 rounded-lg"  value={birthdate} onChange={(e)=> setBirthdate(e.target.value)}/>
                     

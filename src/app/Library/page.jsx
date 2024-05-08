@@ -1,7 +1,32 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Results from './Results'
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
+import { BsBookshelf, BsSave, BsSearch } from 'react-icons/bs'
+import { IoLibrarySharp } from 'react-icons/io5'
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+
+import Modal from 'react-modal'
+import Bookshelf from './Bookshelf'
+import { AuthContext } from '@/context/AuthContext'
+import { db } from '@/firebase-config'
+const customStyles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+      width: '90vw',
+      height: '90vh'
+    },
+    overlay:{
+      backgroundColor: "rgba(0, 0, 0, 0.5"
+
+    }
+};
+Modal.setAppElement("body")
 
 const sites = [
     // {
@@ -19,21 +44,7 @@ const sites = [
     //     descriptionElement: "",
     //     linkElement: ""
     // },
-    {
-        title: "Directory of Open Access Books (DOAB)",
-        description: "E-books",
-        username: "",
-        password: "",
-        origin: "https://directory.doabooks.org",
-        goto: "https://directory.doabooks.org/discover?locale-attribute=en",
-        searchElement: ".ds-text-field",
-        titleElement: ".artifact-description span a h4",
-        authorElement: ".artifact-info .author",
-        imageElement: ".img-thumbnail",
-        dateElement: ".artifact-info .publisher-date",
-        descriptionElement: ".artifact-info .abstract",
-        linkElement: ".artifact-description span a"
-    },
+    
     {
         title: "Philippine Ebook Hub",
         description: "E-book",
@@ -109,6 +120,7 @@ const sites = [
         descriptionElement: ".intent_item p:nth-child(4)",
         linkElement: ".intent_item h2 a"
     },
+    // dont work
     {
         title: "Taylor & Francis Online",
         description: "E-journal (Open Access) - not working",
@@ -139,6 +151,21 @@ const sites = [
         descriptionElement: "",
         linkElement: ".meta__title span a"
     },
+    {
+        title: "Directory of Open Access Books (DOAB)",
+        description: "E-books - not working",
+        username: "",
+        password: "",
+        origin: "https://directory.doabooks.org",
+        goto: "https://directory.doabooks.org/discover?query=",
+        searchElement: "#aspect_discovery_SimpleSearch_field_query",
+        titleElement: ".artifact-description span a h4",
+        authorElement: ".artifact-info .author",
+        imageElement: ".img-thumbnail",
+        dateElement: ".artifact-info .publisher-date",
+        descriptionElement: ".artifact-info .abstract",
+        linkElement: ".artifact-description span a"
+    },
 ]
 
 const Library = () => {
@@ -154,18 +181,40 @@ const Library = () => {
         }
     )
     const [searchQuery, setSearchQuery] = useState("");
-
+    const [isOpen, setIsOpen] = useState(false)
+    const {currentUser} = useContext(AuthContext)
+    const [savedBooks, setSavedBooks] = useState([]);
     // Filtered sites based on the search query
     const filteredSites = sites.filter(site =>
         site.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    useEffect(()=>{
+        const fetchBooks = async()=>{
+
+            const q = query(collection(db, "books"), where("id", "==", currentUser.uid));
+            const unsubscribe = onSnapshot(q, (querySnapshot) => {
+                const books = [];
+                querySnapshot.forEach((doc) => {
+                    books.push({uid: doc.id, ...doc.data()});
+                });
+                setSavedBooks(books)
+            });
+        }
+
+        currentUser.uid && fetchBooks();
+    }, [currentUser])
+
     return (
         <div className='w-full h-screen flex bg-neutral-100'>
             <NavbarIconsOnly/>
-            <Results details={details}/>
+            <Results details={details} books={savedBooks}/>
             <div className="w-3/12 h-full bg-white py-5 px-2 flex flex-col">
                 <div className="relative">
-                    <h3 className=''>Websites</h3>
+                    <div className="flex justify-between items-center">
+                        <h3 className=''>Websites</h3>
+                        <span className='flex items-center gap-2 hover:cursor-pointer hover:underline hover:bg-neutral-50 p-2 rounded' onClick={()=>setIsOpen(true)}><IoLibrarySharp className='text-teal-500' /> Books</span>
+                    </div>
                     <input type="search" name="" id="" className="border-b focus:outline-none w-full text-sm p-2" placeholder='Search' value={searchQuery}  // Controlled input
                         onChange={e => setSearchQuery(e.target.value)} />
                     {/* <span className="absolute right-0 mt-2 me-2"><BsSearch /></span> */}
@@ -180,6 +229,11 @@ const Library = () => {
                 </div>
 
             </div>
+
+            {/* Saved Books */}
+            <Modal isOpen={isOpen} onRequestClose={()=>setIsOpen(false) } style={customStyles}>
+                <Bookshelf books={savedBooks}/>
+            </Modal>
         </div>
     )
 }

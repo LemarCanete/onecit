@@ -13,13 +13,12 @@ export async function POST(request) {
 
     try {
         browser = await puppeteer.launch({
-            headless: false,
+            headless: true,
         });
         const page = await browser.newPage();
         await page.setViewport({width: 2560, height: 1953});
 
         await page.goto(goto);
-
         await page.type(searchElement, userSearch); // Assuming '.input' is the correct selector for the search input field
 
         await page.keyboard.press("Enter")
@@ -28,12 +27,10 @@ export async function POST(request) {
         await page.waitForNavigation();
 
         const html = await page.content();
-        // console.log(html)
         const $ = cheerio.load(html)
 
         const titles = $(titleElement).map((index, elem)=>{
             const title = $(elem).text();
-            console.log("uwu")
             return title
         }).get()
         const authors = $(authorElement).map((index, elem)=>{

@@ -1,14 +1,20 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import {FaExternalLinkAlt} from 'react-icons/fa'
 import LibraryInfo from './LibraryInfo';
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 import { useRouter } from 'next/navigation';
+import { BsBookmark, BsBookmarkFill, BsSave2 } from 'react-icons/bs';
+import { Timestamp, addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/firebase-config';
+import { AuthContext } from '@/context/AuthContext';
+import { doc, deleteDoc } from "firebase/firestore";
 
-const Results = ({details}) => {
+const Results = ({details, books}) => {
     const [search, setSearch] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState("")
     const router = useRouter()
+    const {currentUser} = useContext(AuthContext)
 
     const handleSubmit = async (e) => {
         let goto = details.goto;
@@ -49,6 +55,27 @@ const Results = ({details}) => {
         }
     };
 
+    const saveBook = async(title, origin, link, img, author) =>{
+        try{
+            const docRef = await addDoc(collection(db, "books"), {
+                site: details.title,
+                title: title,
+                link: origin + link,
+                img: img ? origin + img : null,
+                author: author,
+                id: currentUser.uid,
+                createdTime: Timestamp.now()
+            });
+            console.log("Successfully added!")
+        }catch(err){
+            console.log(err.message)
+        }
+    }
+    
+    const deleteBook = async(uid) =>{
+        await deleteDoc(doc(db, "books", uid));
+    }
+
     return (
         <div className='px-10 py-5 grow h-full overflow-y-auto h-screen w-11/12'>
            <div className="flex justify-between items-center mb-3">
@@ -87,10 +114,21 @@ const Results = ({details}) => {
                 <span className="cursor-pointer">Results</span>
                 <span className="cursor-pointer" onClick={()=>setSearchResults([])}>X Clear</span>
             </div>}
+            {/* search results */}
+            {searchResults && searchResults.map((res, i)=>{
+                const isBookExist = books.find((book)=> book.link === details.origin + res.link )
 
-            {searchResults && searchResults.map((res, i)=>(
-                <div className={`bg-white my-2 p-3 text-sm cursor-pointer shadow-lg flex gap-5 rounded ${res.title ? 'hover:scale-105' : 'hover:scale-100 shadow-sm animate-pulse'}`} key={i}>
+                return <div className={`bg-white my-2 p-3 text-sm cursor-pointer shadow-lg flex gap-5 rounded relative ${res.title ? 'hover:scale-105' : 'hover:scale-100 shadow-sm animate-pulse'}`} key={i}>
                     <img src={`${details.origin}${res.image}`} alt="" className='h-28'/>
+                    {res.title && <button 
+                        className={`absolute right-0 me-2 text-2xl ${isBookExist ? 'text-teal-500' : 'text-neutral-400 hover:text-teal-500'} p-2 rounded`} 
+                        onClick={()=>{
+                            if(isBookExist){
+                                deleteBook(isBookExist.uid)
+                            }else{
+                                saveBook(res.title, details.origin, res.link, res.image, res.author)
+                            }
+                        }}><BsBookmarkFill /></button>}
                     <div className="">
                         <a href={`${details.origin}${res.link}`} className="" target='__blank'><p className='font-bold hover:underline'>{res.title}</p></a>
                         <p className="">{res.author}</p>
@@ -98,8 +136,9 @@ const Results = ({details}) => {
                         <p className="">{res.description}</p>
                     </div>
                 </div>
-            ))}
-
+            })}
+            
+            
         </div>
     )
 }

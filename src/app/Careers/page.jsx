@@ -2,6 +2,7 @@
 import React from "react";
 import Navbar from "@/components/Navbar";
 import { BiTimeFive } from "react-icons/bi";
+import NavbarIconsOnly from "@/components/NavbarIconsOnly";
 
 const Data = [
   {
@@ -66,7 +67,7 @@ const Data = [
 const page = () => {
   return (
     <div className='w-full h-screen flex bg-neutral-100 '>
-      <Navbar />
+      <NavbarIconsOnly />
       <div className="grow px-10 py-5">
         <div>
           <h1 className=" font-bold text-2xl ">Open Job Position</h1>

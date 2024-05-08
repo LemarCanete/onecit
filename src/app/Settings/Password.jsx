@@ -59,7 +59,7 @@ const Password = ({userData}) => {
         <div className='text-sm my-5 grid grid-cols-2 gap-10'>
             <div className="">
                 <h1 className="text-base font-semibold">Change Password</h1>
-                <p className="">Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, quisquam!</p>
+                <p className="">Change your password by filling in the fields</p>
                 {currentUser && currentUser.role !== "admin" && (<div className="grid grid-cols-2 gap-10 my-5">
                     <label className="">Current Password</label>
                     <input type="text" className="border p-2 rounded-lg" placeholder='Current Password' value={currentPassword} onChange={e=>setCurrentPassword(e.target.value)}/>
@@ -76,18 +76,18 @@ const Password = ({userData}) => {
                 </div>
 
                 <div className="flex justify-end gap-5">
-                    {currentUser && currentUser.role !== "admin" && <button className="bg-neutral-500 px-5 rounded-lg text-white py-2 " onClick={checkNewPassword}>Forgot Password?</button>}
+                    {/* {currentUser && currentUser.role !== "admin" && <button className="bg-neutral-500 px-5 rounded-lg text-white py-2 " onClick={checkNewPassword}>Forgot Password?</button>} */}
                     <button className="bg-teal-500 px-5 rounded-lg text-white py-2 " onClick={checkNewPassword}>Save</button>
                 </div>
             </div>
-            <div className="border p-10 flex flex-col justify-center">
+            <div className="border p-10">
                 <p className="">To change yoour password , please fill in the fields. Your password must contain at least: </p>
                 <ul className='list-disc list-inside'>
                     <li>6 characters</li> 
-                    <li>at least one upper case letter</li>
+                    {/* <li>at least one upper case letter</li>
                     <li>one lowercase letter</li>
                     <li>one number</li>
-                    <li>one special character.</li>
+                    <li>one special character.</li> */}
                 </ul>
             </div>
         </div>
