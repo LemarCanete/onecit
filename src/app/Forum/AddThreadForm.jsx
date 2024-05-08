@@ -1,13 +1,16 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { db } from '@/firebase-config';
 import { collection, addDoc } from 'firebase/firestore';
+import { currentUser } from 'firebase/auth';
+import { AuthContext } from '@/context/AuthContext';
 
 const AddThreadForm = ({ onAddThread, onCancel }) => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [date, setDate] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const {currentUser} = useContext(AuthContext)
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -15,11 +18,12 @@ const AddThreadForm = ({ onAddThread, onCancel }) => {
         if (isSubmitting) return;
 
         setIsSubmitting(true);
-
+        const uid = currentUser.uid
         const newThread = {
             title,
             content,
-            date
+            date,
+            uid
         };
 
         try {

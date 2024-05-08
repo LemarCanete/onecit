@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import AddAnnouncementForm from './AddAnnouncementForm';
 import { db } from '@/firebase-config';
 import { doc, collection, getDocs, deleteDoc, setDoc } from 'firebase/firestore';
+import NavbarIconsOnly from '@/components/NavbarIconsOnly';
 
 const AnnouncementsPage = () => {
     const [announcements, setAnnouncements] = useState([]);
@@ -63,7 +64,7 @@ const AnnouncementsPage = () => {
 
     return (
         <div className="w-full h-screen flex bg-neutral-50 overflow-hidden">
-            <Navbar active="Announcements" />
+            <NavbarIconsOnly active="Announcements" />
             <div className="grow px-10 py-5 overflow-y-scroll">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">Announcements</h1>

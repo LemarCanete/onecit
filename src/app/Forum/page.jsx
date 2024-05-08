@@ -1,10 +1,11 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Navbar from '@/components/Navbar';
 import AddThreadForm from './AddThreadForm';
 import AddCommentForm from './AddCommentForm';
 import { db } from '@/firebase-config';
 import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
+import { AuthContext } from '@/context/AuthContext';
 
 const ForumPage = () => {
     const [threads, setThreads] = useState([]);
@@ -15,6 +16,7 @@ const ForumPage = () => {
     const [showCommentForm, setShowCommentForm] = useState({});
     const [comments, setComments] = useState({}); 
     const [commentInput, setCommentInput] = useState(''); 
+    const {currentUser} = useContext(AuthContext)
 
     useEffect(() => {
         const fetchThreads = async () => {
@@ -153,7 +155,7 @@ const ForumPage = () => {
                             </div>
                             <div className="mt-4 text-sm">
                                 <div className="flex justify-end">
-                                    <button onClick={() => handleDeleteThread(thread.id)} className="bg-red-500 text-white px-4 py-2 rounded-md mr-2">Delete Thread</button>
+                                    {currentUser.uid === thread.uid && <button onClick={() => handleDeleteThread(thread.id)} className="bg-red-500 text-white px-4 py-2 rounded-md mr-2">Delete Thread</button>}
                                     <button onClick={() => handleToggleCommentForm(thread.id)} className="bg-[#115E59] text-white px-4 py-2 rounded-md mr-2">{showCommentForm[thread.id] ? 'Cancel' : 'Add Comment'}</button>
                                 </div>
                                 {showCommentForm[thread.id] && (
@@ -171,7 +173,7 @@ const ForumPage = () => {
                                     {comments[thread.id] && comments[thread.id].map(comment => (
                                         <div key={comment.id} className="border border-gray-200 rounded-lg p-3 mt-2">
                                             <p>{comment.content}</p>
-                                            <button onClick={() => handleDeleteComment(comment.id, thread.id)} className="bg-red-500 text-white px-2 py-1 rounded-md mt-2">Delete Comment</button>
+                                            {(currentUser.uid === comment.uid || currentUser.uid === thread.uid) && <button onClick={() => handleDeleteComment(comment.id, thread.id)} className="bg-red-500 text-white px-2 py-1 rounded-md mt-2">Delete Comment</button>}
                                         </div>
                                     ))}
                                 </div>
