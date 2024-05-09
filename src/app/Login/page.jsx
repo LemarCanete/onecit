@@ -23,6 +23,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { useRouter } from 'next/navigation';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import ErrorRoundedIcon from '@mui/icons-material/ErrorRounded';
 
 const frameworks = [
   {
@@ -263,6 +265,9 @@ const SignupForm = () => {
     const [message, setMessage] = useState('')
     const router = useRouter();
     const [cookie, setCookie] = useCookies(['id']);
+    const [isPasswordValidationOpen, setIsPasswordValidationOpen] = useState(false);
+    const [isConfirmPasswordValidationOpen, setIsConfirmPasswordValidationOpen] = useState(false);
+
     const date = new Date();
     date.setDate(date.getDate() + 1)
 
@@ -322,7 +327,19 @@ const SignupForm = () => {
             setMessage('');
         }, 6000);
         return;
-        }    
+        }
+
+        if (!allValid) {
+          setErrors({
+              password: 'Problem with passwords',
+          });
+          setMessage('Please check your password input again for any errors.');
+          setTimeout(() => {
+              setErrors({});
+              setMessage('');
+          }, 6000);
+          return;
+          }    
 
         if(password!==confirmpassword) {
         setErrors((prevErrors) => ({
@@ -428,7 +445,28 @@ const SignupForm = () => {
         }
     };
 
+    const validatePassword = (password) => {
+      const validations = [
+        { id: 'length', message: 'At least 6 characters', valid: password.length >= 6 },
+        { id: 'uppercase', message: 'Contains uppercase letter', valid: /[A-Z]/.test(password) },
+        { id: 'lowercase', message: 'Contains lowercase letter', valid: /[a-z]/.test(password) },
+        { id: 'number', message: 'Contains a number', valid: /\d/.test(password) },
+        { id: 'special', message: 'Contains a special character', valid: /[!@#$%^&*]/.test(password) },
+      ];
+      return validations;
+    };
 
+    const validateConfirmPassword = (confirmpassword, password) => {
+      const validations = [
+        { id: 'matches', message: 'Passwords must match.', valid: confirmpassword === password },
+      ];
+      return validations;
+    };
+  
+    const passwordValidation = validatePassword(password);
+    const confirmPasswordValidation = validateConfirmPassword(confirmpassword, password)
+    const allValid = [...passwordValidation, ...confirmPasswordValidation].every((v) => v.valid);
+  
     return (
         <div>
         <div className='w-full'>
@@ -532,22 +570,54 @@ const SignupForm = () => {
                 </div>
             </div>
 
-            <div className='flex flex-row mt-5'>
+            <div className='relative flex flex-row mt-5'>
                 <div className='mx-2.5 w-1/2'>
-                <label className='font-semibold my-1'>Password</label> 
-                <input 
-                    type='password' value={password}
-                    placeholder='Password' 
-                    onChange={e=>setPassword(e.target.value)}
-                    className={`${errors['password'] || errors['credentials'] ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}/>
+                  <label className='font-semibold my-1'>Password</label> 
+                  <input 
+                      type='password' value={password}
+                      placeholder='Password' 
+                      onChange={e=>setPassword(e.target.value)}
+                      onFocus={() => setIsPasswordValidationOpen(true)}
+                      onBlur={() => setIsPasswordValidationOpen(false)}            
+                      className={`${errors['password'] || errors['credentials'] ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}/>
                 </div>
-                <div className='mx-2.5 w-1/2'>
-                <label className='font-semibold my-1'>Confirm Password</label> 
-                <input 
-                    type='password' value={confirmpassword} 
-                    placeholder='Password'
-                    onChange={e=>setConfirmpassword(e.target.value)}
-                    className={`${errors['password'] || errors['credentials'] ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}/>
+                {isPasswordValidationOpen && (
+                  <div className='absolute top-full left-0 mt-2 p-4 bg-white border rounded shadow-lg'>
+                    {passwordValidation.map((validation) => (
+                      <div key={validation.id} className='flex items-center'>
+                        {validation.valid ? (
+                          <CheckCircleRoundedIcon className='w-5 h-5 text-green-500' />
+                        ) : (
+                          <ErrorRoundedIcon className='w-5 h-5 text-red-500' />
+                        )}
+                        <span className='ml-2'>{validation.message}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className='relative mx-2.5 w-1/2'>
+                  <label className='font-semibold my-1'>Confirm Password</label> 
+                  <input 
+                      type='password' value={confirmpassword} 
+                      placeholder='Password'
+                      onChange={e=>setConfirmpassword(e.target.value)}
+                      onFocus={() => setIsConfirmPasswordValidationOpen(true)}
+                      onBlur={() => setIsConfirmPasswordValidationOpen(false)}            
+                      className={`${errors['password'] || errors['credentials'] ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}/>
+                                  {isConfirmPasswordValidationOpen && (
+                  <div className='absolute top-full left-0 mt-2 p-4 bg-white border rounded shadow-lg'>
+                    {confirmPasswordValidation.map((validation) => (
+                      <div key={validation.id} className='flex items-center'>
+                        {validation.valid ? (
+                          <CheckCircleRoundedIcon className='w-5 h-5 text-green-500' />
+                        ) : (
+                          <ErrorRoundedIcon className='w-5 h-5 text-red-500' />
+                        )}
+                        <span className='ml-2 whitespace-nowrap'>{validation.message}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 </div>
             </div>
 

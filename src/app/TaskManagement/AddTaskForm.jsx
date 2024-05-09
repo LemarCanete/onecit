@@ -6,7 +6,7 @@ import AutoModeRoundedIcon from '@mui/icons-material/AutoModeRounded';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
-import { addDoc, setDoc, doc, collection, query, onSnapshot, where } from 'firebase/firestore';
+import { addDoc, setDoc, doc, collection, query, onSnapshot, where, Timestamp } from 'firebase/firestore';
 import { db } from '@/firebase-config';
 import { AuthContext } from '@/context/AuthContext';
 
@@ -145,6 +145,21 @@ const AddTaskForm = ({setIsOpen, initialStatus}) => {
       
           // Step 3: Set the document with the created reference
           await setDoc(docRef, task); // Set the document with data including its ID
+
+          if (date) {
+            await addDoc(collection(db, "notifications"), 
+              {
+                  senderName: `The task ${title}`,
+                  senderUid: currentUser.uid,
+                  receivedByUid: currentUser.uid,
+                  senderMessage: `has been set with a deadline. Remember to finish it before ${date}.`,
+                  date: Timestamp.now(),
+                  link: '/TaskManagement',
+                  isRead: false,
+                  appointmentId: null
+              }
+            )
+          }
       
           console.log("Successfully added document:", task);
       

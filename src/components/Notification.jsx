@@ -21,7 +21,6 @@ const formatDate = (timestamp) => {
       return `${minutes} minutes ago`;
     }
 }
-  
 
 const Notification = ({notifications}) => {
     const [notificationLists, setNotificationLists] = useState(notifications)

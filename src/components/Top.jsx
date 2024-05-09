@@ -7,7 +7,7 @@ import { profileToggle } from './GloabalRedux/Features/showProfileSlice'
 import Modal from 'react-modal'
 import Notification from './Notification'
 import { AuthContext } from '@/context/AuthContext'
-import { collection, where, query, onSnapshot } from 'firebase/firestore'
+import { collection, where, query, onSnapshot, Timestamp, getDocs, addDoc } from 'firebase/firestore'
 import { db } from '@/firebase-config'
 
 const customStyles = {
@@ -48,10 +48,95 @@ const Top = () => {
                     list.push({id: doc.id, ...doc.data()});
                 });
                 setNotifications(list);
-            });
+            });            
         }
         currentUser.uid && fetchData();
     }, [currentUser])
+
+    useEffect(() => {
+        if (!currentUser || !currentUser.uid) {
+          return;
+        }
+      
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const oneWeekLater = new Date(today);
+        const oneDayLater = new Date(today);
+      
+        oneWeekLater.setDate(today.getDate() + 7);
+        oneDayLater.setDate(today.getDate() + 1);
+      
+        const qTasks = query(collection(db, "tasks"), where("uid", "==", currentUser.uid));
+      
+        const checkAndAddNotification = async (task, type, message) => {
+          const qNotification = query(
+            collection(db, "notifications"),
+            where("taskId", "==", task.id),
+            where("condition", "==", type)
+          );
+      
+          const snapshot = await getDocs(qNotification);
+      
+          if (snapshot.empty) {
+            await addDoc(collection(db, "notifications"), {
+              taskId: task.id,
+              senderName: currentUser.displayName || currentUser.email,
+              senderUid: currentUser.uid,
+              receivedByUid: currentUser.uid,
+              senderMessage: message,
+              date: Timestamp.now(),
+              link: '/TaskManagement',
+              isRead: false,
+              condition: type,
+            });
+          }
+        };
+      
+        const handleTaskSnapshot = async (querySnapshot) => {
+          for (const doc of querySnapshot.docs) {
+            const task = doc.data();
+            const duedate = new Date(task.duedate);
+            duedate.setHours(0, 0, 0, 0);
+      
+            // One Week Later Notification
+            if (task.status !== "Completed" && duedate === oneWeekLater) {
+              await checkAndAddNotification(
+                task,
+                'OneWeekLater',
+                `Your task "${task.title}" is due in a week on ${duedate.toISOString().split("T")[0]}.`
+              );
+            }
+      
+            // One Day Later Notification
+            if (task.status !== "Completed" && duedate === oneDayLater) {
+              await checkAndAddNotification(
+                task,
+                'OneDayLater',
+                `Your task "${task.title}" is due tomorrow on ${duedate.toISOString().split("T")[0]}.`
+              );
+            }
+      
+            // Past Due Notification
+            if (task.status !== "Completed" && duedate < today) {
+              await checkAndAddNotification(
+                task,
+                'PastDue',
+                `Your task "${task.title}" was due on ${duedate.toISOString().split("T")[0]}. Please complete it ASAP.`
+              );
+            }
+          }
+        };
+      
+        const unsubscribeTasks = onSnapshot(qTasks, handleTaskSnapshot);
+      
+        return () => {
+          unsubscribeTasks();
+        };
+      }, [currentUser]);
+      
+    
+    
+      
     return (
         // <div className="w-full flex justify-between items-center">
             // <input type="search" className='grow rounded-lg p-2 ps-5 border-b outline-none' placeholder='Search'/>

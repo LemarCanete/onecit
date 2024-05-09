@@ -191,7 +191,7 @@ const ViewTask = ({setIsOpen, task}) => {
           />
         </div>
         <div className='flex flex-row'>
-          {data.duedate || isEditing===true && <div><label className='p-2 font-bold whitespace-nowrap'> Due Date: </label>
+          {data.duedate && <div><label className='p-2 font-bold whitespace-nowrap'> Due Date: </label>
           <input
             className="p-2 mr-2 bg-transparent rounded-[10px] border-2"
             type="date"
