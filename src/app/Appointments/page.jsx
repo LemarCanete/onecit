@@ -46,9 +46,9 @@ const Appointments = () => {
                         <Box name="Orgs" emailTo="citorgs@gmail.com"/>
                         <Box name="Tutoring Centers" emailTo="cittutoring@gmail.com"/>
                         <Box name="FAO" emailTo="citfao@gmail.com"/>
-                        <Box name="Clinic" emailTo="citclinic@gmail.com"/>
                         <Box name="Couselling" emailTo="citcouncelling@gmail.com"/> */}
                         <Box name="People" />
+                        <Box name="Clinic" to="K55dsm2DzAPieZGAYe5OCKXvCam1"/>
                 </div>}
 
                 <div className="">
@@ -60,7 +60,7 @@ const Appointments = () => {
     )
 }
 
-const Box = ({image, name, emailTo}) =>{
+const Box = ({image, name, to}) =>{
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -71,7 +71,7 @@ const Box = ({image, name, emailTo}) =>{
             </div>
 
             <Modal isOpen={isOpen} onRequestClose={()=>setIsOpen(false) } style={customStyles}>
-                <Form setIsOpen={setIsOpen} name={name} emailTo={emailTo} />
+                <Form setIsOpen={setIsOpen} name={name} to={to} />
             </Modal>
         </div>
     )

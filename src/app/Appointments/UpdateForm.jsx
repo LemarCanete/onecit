@@ -66,6 +66,21 @@ const UpdateForm = ({setIsEdit, appointment, currentUser}) => {
                     status:  status
                 }); 
 
+                // Send notifications to all participants about the changed status
+                appointment.to.forEach(async (participant) => {
+                    await addDoc(collection(db, "notifications"), 
+                        {
+                            senderName: `${currentUser.firstname} ${currentUser.lastname}`,
+                            senderUid: currentUser.uid,
+                            receivedByUid: participant.uid,
+                            senderMessage: `The appointment for ${reason} has been updated. Please review the details`,
+                            date: Timestamp.now(),
+                            link: '/Appointments',
+                            isRead: false,
+                        }
+                    );
+                });
+
                 // Add notifications for added participants
                 participants.forEach(async (participant) => {
                     if (!appointment.to.some(t => t.uid === participant.uid)) {
@@ -74,9 +89,9 @@ const UpdateForm = ({setIsEdit, appointment, currentUser}) => {
                                 senderName: `${currentUser.firstname} ${currentUser.lastname}`,
                                 senderUid: currentUser.uid,
                                 receivedByUid: participant.uid,
-                                senderMessage: "has scheduled an appointment with you. Please confirm.",
+                                senderMessage: `An appointment for ${reason} has been scheduled. Please confirm.`,
                                 date: Timestamp.now(),
-                                link: '/Services/Appointments',
+                                link: '/Appointments',
                                 isRead: false,
                             }
                         );
@@ -91,30 +106,14 @@ const UpdateForm = ({setIsEdit, appointment, currentUser}) => {
                                 senderName: `${currentUser.firstname} ${currentUser.lastname}`,
                                 senderUid: currentUser.uid,
                                 receivedByUid: participant.uid,
-                                senderMessage: "has removed you from an appointment.",
+                                senderMessage: `An appoinment for ${reason} has been removed for you.`,
                                 date: Timestamp.now(),
-                                link: '/Services/Appointments',
+                                link: '/Appointments',
                                 isRead: false,
                             }
                         );
                     }
                 });
-
-                // Send notifications to all participants about the changed status
-                appointment.to.forEach(async (participant) => {
-                    await addDoc(collection(db, "notifications"), 
-                        {
-                            senderName: `${currentUser.firstname} ${currentUser.lastname}`,
-                            senderUid: currentUser.uid,
-                            receivedByUid: participant.uid,
-                            senderMessage: `has updated the details of the appointment`,
-                            date: Timestamp.now(),
-                            link: '/Services/Appointments',
-                            isRead: false,
-                        }
-                    );
-                });
-
 
                 setIsEdit(false)
         }catch(err){

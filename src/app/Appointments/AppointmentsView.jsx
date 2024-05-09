@@ -272,25 +272,6 @@ const AppointmentsView = ({email}) => {
                 where("appointmentId", "==", id),
             ));
             
-            //copy notification and change the date(make it Timestamp.now()) and change senderMessage
-            if (deleteNotification.docs.length > 0) {
-                for (const doc of deleteNotification.docs) {
-                    const notificationData = doc.data();
-    
-                    // Create a new notification with modified details
-                    await addDoc(collection(db, "notifications"), {
-                        senderName: notificationData.senderName,
-                        senderUid: notificationData.senderUid,
-                        receivedByUid: notificationData.receivedByUid,
-                        senderMessage: "Appointment has been deleted.",
-                        date: Timestamp.now(),
-                        link: notificationData.link,
-                        isRead: false,
-                        appointmentId: id,
-                    });
-                }
-            }
-
             // Delete from appointments
             await deleteDoc(doc(db, 'appointments', id));
     
@@ -304,6 +285,27 @@ const AppointmentsView = ({email}) => {
                     await deleteDoc(docRef.ref);
                 }
             }
+
+            //copy notification and change the date(make it Timestamp.now()) and change senderMessage
+            if (deleteNotification.docs.length > 0) {
+                for (const doc of deleteNotification.docs) {
+                    const notificationData = doc.data();
+    
+                    // Create a new notification with modified details
+                    await addDoc(collection(db, "notifications"), {
+                        senderName: notificationData.senderName,
+                        senderUid: notificationData.senderUid,
+                        receivedByUid: notificationData.receivedByUid,
+                        senderMessage: `Your appointment for ${notificationData.reason} has been deleted.`,
+                        date: Timestamp.now(),
+                        link: notificationData.link,
+                        isRead: false,
+                        appointmentId: id,
+                    });
+                }
+            }
+
+            
         }
 
         // add notification

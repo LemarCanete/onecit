@@ -11,13 +11,28 @@ import { VscTypeHierarchySub } from "react-icons/vsc";
 import { BiSolidHardHat } from 'react-icons/bi'
 import { MdManageAccounts } from "react-icons/md";
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
+import { GiRoundTable } from "react-icons/gi";
+import { IoIosBulb } from "react-icons/io";
+
 
 const userApps = [
     {
-        name: "Services",
+        name: "Settings",
         isDone: true,
-        image: './Icons/Apps-Services.png',
-        icon: <IoBuild />
+        image: './schoolLogo.png',
+        icon: <IoSettings />
+    },
+    {
+        name: "Directory",
+        isDone: true,
+        image: './Icons/Apps-Directory.png',
+        icon: <VscTypeHierarchySub />
+    },
+    {
+        name: "Calendar of Events",
+        isDone: true,
+        image: './Icons/Apps-Calendar_Events.png',
+        icon: <IoCalendarSharp />
     },
     {
         name: "Library",
@@ -32,16 +47,10 @@ const userApps = [
         icon: <IoChatboxSharp />
     },
     {
-        name: "Calendar of Events",
+        name: "Appointments",
         isDone: true,
-        image: './Icons/Apps-Calendar_Events.png',
-        icon: <IoCalendarSharp />
-    },
-    {
-        name: "Directory",
-        isDone: true,
-        image: './Icons/Apps-Directory.png',
-        icon: <VscTypeHierarchySub />
+        image: '',
+        icon: <GiRoundTable />
     },
     {
         name: "Announcements",
@@ -56,16 +65,16 @@ const userApps = [
         icon: <IoCreateSharp />
     },
     {
-        name: "Feedback and Complaints",
+        name: "Class Tracker",
         isDone: true,
-        image: './Icons/Apps-Feedback_and_Complaints.png',
-        icon: <IoAlertCircleSharp />
+        image: './Icons/Apps-Class_Tracker.png',
+        icon: <IoTimeSharp />
     },
     {
-        name: "Settings",
+        name: "Inquiry",
         isDone: true,
         image: './schoolLogo.png',
-        icon: <IoSettings />
+        icon: <IoIosBulb />
     },
     {
         name: "Task Management",
@@ -74,56 +83,57 @@ const userApps = [
         icon: <IoListCircleSharp />
     },
     {
-        name: "Careers",
+        name: "Feedback and Complaints",
         isDone: true,
-        image: './Icons/Apps-Careers.png',
-        icon: <BiSolidHardHat />
+        image: './Icons/Apps-Feedback_and_Complaints.png',
+        icon: <IoAlertCircleSharp />
     },
-    {
-        name: "Grade Calculator",
-        isDone: false,
-        image: './Icons/Apps-Grade_Calculator.png',
-        icon: <IoCalculatorSharp />
-    },
-    {
-        name: "Class Tracker",
-        isDone: true,
-        image: './Icons/Apps-Class_Tracker.png',
-        icon: <IoTimeSharp />
-    },
-    {
-        name: "Courses",
-        isDone: false,
-        image: './Icons/Apps-Courses.png',
-        icon: <IoBookSharp />
-    },
-    {
-        name: "Campus Map",
-        isDone: false,
-        image: './schoolLogo.png',
-        icon: <IoMapSharp />
-    },
+    
+    // {
+    //     name: "Careers",
+    //     isDone: false,
+    //     image: './Icons/Apps-Careers.png',
+    //     icon: <BiSolidHardHat />
+    // },
+    // {
+    //     name: "Grade Calculator",
+    //     isDone: false,
+    //     image: './Icons/Apps-Grade_Calculator.png',
+    //     icon: <IoCalculatorSharp />
+    // },
+    // {
+    //     name: "Courses",
+    //     isDone: false,
+    //     image: './Icons/Apps-Courses.png',
+    //     icon: <IoBookSharp />
+    // },
+    // {
+    //     name: "Campus Map",
+    //     isDone: false,
+    //     image: './schoolLogo.png',
+    //     icon: <IoMapSharp />
+    // },
     
 ]
 
 const adminApps = [
     {
-        name: "Services",
+        name: "Inquiry",
         isDone: true,
-        image: './Icons/Apps-Services.png',
-        icon: <IoBuild />
+        image: './schoolLogo.png',
+        icon: <IoIosBulb />
     },
     {
-        name: "Library",
+        name: "Settings",
         isDone: true,
-        image: './Icons/Apps-Library.png',
-        icon: <IoLibrarySharp />
+        image: './schoolLogo.png',
+        icon: <IoSettings />
     },
     {
-        name: "Chats",
+        name: "Appointments",
         isDone: true,
-        image: './Icons/Apps-Chat.png',
-        icon: <IoChatboxSharp />
+        image: '',
+        icon: <GiRoundTable />
     },
     {
         name: "Calendar of Events",
@@ -137,18 +147,25 @@ const adminApps = [
         image: "./schoolLogo.png",
         icon: <MdManageAccounts />
     },
-    {
-        name: "Directory",
-        isDone: true,
-        image: './Icons/Apps-Directory.png',
-        icon: <VscTypeHierarchySub />
-    },
-    {
-        name: "Settings",
-        isDone: true,
-        image: './schoolLogo.png',
-        icon: <IoSettings />
-    },
+    // {
+    //     name: "Library",
+    //     isDone: true,
+    //     image: './Icons/Apps-Library.png',
+    //     icon: <IoLibrarySharp />
+    // },
+    // {
+    //     name: "Chats",
+    //     isDone: true,
+    //     image: './Icons/Apps-Chat.png',
+    //     icon: <IoChatboxSharp />
+    // },
+    // {
+    //     name: "Directory",
+    //     isDone: true,
+    //     image: './Icons/Apps-Directory.png',
+    //     icon: <VscTypeHierarchySub />
+    // },
+    
 ]
 
 const Apps = () => {
@@ -199,10 +216,10 @@ const Apps = () => {
                         <div className={`w-full grid grid-cols-${profile ? '4' : '6'}`}>
                             {currentUser.role && renderDoneApps()}
                         </div>
-                        <p className="text-sm italic text-black/25">Not Started</p>
+                        {/* <p className="text-sm italic text-black/25">Unfinished</p>
                         <div className={`w-full grid grid-cols-${profile ? '4' : '6'}`}>
                             {currentUser.role && renderNotStartedApps()}
-                        </div>
+                        </div> */}
                     </div>
 
                     <div className={`grow quicklink-background ${mode ? 'bg-slate-600 text-white border-none' : 'bg-white'}`}>

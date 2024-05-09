@@ -1,10 +1,10 @@
 import { AuthContext } from '@/context/AuthContext';
 import { db } from '@/firebase-config';
 import { addDoc, collection, doc, setDoc, query, where, getDocs, Timestamp, arrayUnion } from 'firebase/firestore';
-import React, { useContext, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { BsX } from 'react-icons/bs';
 
-const Form = ({setIsOpen, name, emailTo}) => {
+const Form = ({setIsOpen, name, to}) => {
 
     const ref = useRef();
     const [phonenumber, setPhonenumber] = useState("");
@@ -16,6 +16,10 @@ const Form = ({setIsOpen, name, emailTo}) => {
     const [search, setSearch] = useState("");
     const [err, setErr] = useState("")
     const [participants, setParticipants] = useState([]);
+
+    useEffect(()=>{
+        to !== undefined && setParticipants([{uid: to, status: "Pending"}])
+    }, [to])
 
     const handleSubmit = async(e) =>{
         if(date === null) return;
@@ -37,11 +41,12 @@ const Form = ({setIsOpen, name, emailTo}) => {
                         senderName: `${firstname} ${lastname}`,
                         senderUid: uid,
                         receivedByUid: participant.uid,
-                        senderMessage: "has scheduled an appointment with you. Please confirm.",
+                        senderMessage: `An appointment for ${reason} has been scheduled. Please confirm.`,
                         date: Timestamp.now(),
-                        link: '/Services/Appointments',
+                        link: '/Appointments',
                         isRead: false,
-                        appointmentId: appointment.id
+                        appointmentId: appointment.id,
+                        reason: reason
                     }
                 )
             })
@@ -104,7 +109,7 @@ const Form = ({setIsOpen, name, emailTo}) => {
                 <label htmlFor="location">Location</label>
                 <input type="text" id='location' className='border p-2 text-sm' onChange={(e)=>setLocation(e.target.value)} required/>
 
-                <label className="" htmlFor='reason'>Reason for visit</label>
+                <label className="" htmlFor='reason'>Reason</label>
                 <textarea name="" id="reason" cols="30" rows="10" className='border p-2 text-sm' onChange={(e)=>setReason(e.target.value)} required></textarea>
 
                 <button className='p-3 bg-amber-400 my-2 hover:bg-amber-600 text-white' onClick={handleSubmit}>Book Now</button>
