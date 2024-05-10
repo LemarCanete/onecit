@@ -21,14 +21,14 @@ export default function RootLayout({ children }) {
         <Providers>
             <AuthContextProvider>
                 <ChatContextProvider>
-                    <NextBreadCrumb
+                    {/* <NextBreadCrumb
                         homeElement={''}
                         separator={<span> / </span>}
                         activeClasses='text-amber-500'
                         containerClasses='flex py-5 absolute bottom-0 right-0' 
                         listClasses='hover:underline mx-2 font-bold'
                         capitalizeLinks
-                    />
+                    /> */}
                     {children}
                 </ChatContextProvider>
             </AuthContextProvider>
