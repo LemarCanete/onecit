@@ -210,7 +210,7 @@ const Apps = () => {
                     <Top />
                 </div>
                 {/* Content */}
-                <div className="flex">
+                <div className="flex gap-2">
                     <div className="w-10/12">
                         {/* <p className="text-sm italic text-black/25">Done or Working</p> */}
                         <div className={`w-full grid grid-cols-${profile ? '4' : '6'}`}>
