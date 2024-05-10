@@ -34,7 +34,7 @@ const Results = ({details, books}) => {
                 }
                 setLoading("Loading...")
                 setSearchResults([{}, {}, {}, {}, {}, {}])
-                const res = await fetch("/Library/scrapping/searchprod/", {
+                const res = await fetch("./Library/scrapping/searchprod/", {
                     method: "POST",
                     body: JSON.stringify({ search, goto, searchElement, titleElement, authorElement, imageElement, dateElement, descriptionElement, linkElement }),
                     headers: {
