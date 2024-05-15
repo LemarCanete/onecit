@@ -3,6 +3,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import Navbar from '@/components/Navbar';
 import AddThreadForm from './AddThreadForm';
 import AddCommentForm from './AddCommentForm';
+import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
+import { useRouter } from 'next/navigation';
 import { db } from '@/firebase-config';
 import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
 import { AuthContext } from '@/context/AuthContext';
@@ -15,7 +17,8 @@ const ForumPage = () => {
     const [error, setError] = useState(null);
     const [showCommentForm, setShowCommentForm] = useState({});
     const [comments, setComments] = useState({}); 
-    const [commentInput, setCommentInput] = useState(''); 
+    const [commentInput, setCommentInput] = useState('');
+    const router = useRouter();
     const {currentUser} = useContext(AuthContext)
 
     useEffect(() => {
@@ -129,6 +132,13 @@ const ForumPage = () => {
         <div className="w-full h-screen flex bg-neutral-50 overflow-hidden">
             <Navbar active="Forum" />
             <div className="grow px-10 py-5 overflow-y-scroll">
+                <div className="flex gap-5 align-center justify-between">
+                    <button onClick={()=>router.back()}>
+                        <ArrowBackIosNewRoundedIcon sx={{ fontSize: 35}} className='bg-[#115E59] text-[#F5F5F5] rounded-full p-2 m-2 '/>Go back
+                    </button>
+                    {currentUser.role === 'student' && <button className="flex items-center gap-2 text-sm hover:underline" onClick={()=>setIsOpenAdmin(!isOpenAdmin)}>
+                    </button>}
+                </div>
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">Forum</h1>
                     <div>
