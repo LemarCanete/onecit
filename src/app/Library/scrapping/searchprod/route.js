@@ -16,10 +16,15 @@ export async function POST(request) {
             headless: true,
         });
         const page = await browser.newPage();
-        await page.setViewport({width: 2560, height: 1953});
+        await page.setViewport({width: 5000, height: 1953});
 
+        // console.log("uwuwu")
         await page.goto(goto);
+
+        // console.log("uwu")
+
         await page.type(searchElement, userSearch); // Assuming '.input' is the correct selector for the search input field
+        console.log(searchElement)
 
         await page.keyboard.press("Enter")
 
@@ -28,7 +33,7 @@ export async function POST(request) {
 
         const html = await page.content();
         const $ = cheerio.load(html)
-
+        // console.log(html)
         const titles = $(titleElement).map((index, elem)=>{
             const title = $(elem).text();
             return title

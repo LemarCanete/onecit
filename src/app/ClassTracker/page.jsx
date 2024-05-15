@@ -8,7 +8,7 @@ import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore'
 import NavbarIconsOnly from '@/components/NavbarIconsOnly';
 import { AuthContext } from '@/context/AuthContext';
 
-const ClassTrackerPage = () => {
+const ClassTracker = () => {
     const [classes, setClasses] = useState([]);
     const [showAddForm, setShowAddForm] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -114,4 +114,4 @@ const ClassTrackerPage = () => {
     );
 };
 
-export default ClassTrackerPage;
+export default ClassTracker;

@@ -44,7 +44,6 @@ const sites = [
     //     descriptionElement: "",
     //     linkElement: ""
     // },
-    
     {
         title: "Philippine Ebook Hub",
         description: "E-book",
@@ -165,6 +164,21 @@ const sites = [
         dateElement: ".artifact-info .publisher-date",
         descriptionElement: ".artifact-info .abstract",
         linkElement: ".artifact-description span a"
+    },
+    {
+        title: "CITU LIBRARY",
+        description: "Books - not working",
+        username: "",
+        password: "",
+        origin: "http://citulib.pinnacle.com.ph/",
+        goto: "http://citulib.pinnacle.com.ph/",
+        searchElement: "#searchform input[name='q']",
+        titleElement: ".title_summary a",
+        authorElement: ".title_summary p",
+        imageElement: ".coverimages img",
+        dateElement: ".title_summary .results_summary publisher",
+        descriptionElement: ".title_summary .availability",
+        linkElement: ".title_summary a"
     },
 ]
 
