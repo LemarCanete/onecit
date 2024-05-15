@@ -6,12 +6,18 @@ import { Timestamp, query, collection, where, onSnapshot, setDoc, doc, orderBy, 
 import { db } from '@/firebase-config';
 import { v4 as uuid } from 'uuid';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import Modal from 'react-modal'
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from '@/firebase-config'; // Make sure this is the correct path to your Firebase config
 
 const Message = ({setIsOpen, message}) => {
     const {currentUser} = useContext(AuthContext);
     const [response, setResponse] = useState('')
     const [convo, setConvo] = useState([])
+    const [selectedFiles, setSelectedFiles] = useState([]);
 
     useEffect(() => {
       if (currentUser && currentUser.uid && message) { // Check if message exists
@@ -50,12 +56,29 @@ const Message = ({setIsOpen, message}) => {
       }
     }, [currentUser, message]); // Add message to the dependency array
     
-
+    const handleChangeFile = (e) => {
+      const fileList = Array.from(e.target.files);
+      setSelectedFiles(fileList);
+    };
+  
+    const removeFile = (index) => {
+      const updatedFiles = [...selectedFiles];
+      updatedFiles.splice(index, 1);
+      setSelectedFiles(updatedFiles);
+    };    
+  
+    const truncateFileName = (fileName, maxLength) => {
+      if (fileName.length > maxLength) {
+        return fileName.substring(0, maxLength / 2) + '...' + fileName.substring(fileName.length - maxLength / 2);
+      }
+      return fileName;
+    };
+  
     const handleResponseChange = (event) => {
       setResponse(event.target.value);
     }
 
-  const handleResponse = async () => {
+  /*const handleResponse = async () => {
     console.log("Handle Response clicked.", currentUser)
 
     const docData = {
@@ -68,9 +91,10 @@ const Message = ({setIsOpen, message}) => {
       time: Timestamp.now().toDate().toLocaleTimeString(),
       lastinteraction: currentUser.uid,
       status: 'Sent',
+      isRead: false,
     };
 
-    console.log("Data to be sent: ", docData)
+    //console.log("Data to be sent: ", docData)
 
     try {
       await setDoc(doc(db, 'inquiries', uuid()), docData)
@@ -81,7 +105,47 @@ const Message = ({setIsOpen, message}) => {
     }
 
 
-  }
+  }*/
+
+  const handleResponse = async () => {
+    console.log("Handle Response clicked.", currentUser);
+  
+    const attachmentURLs = await uploadFilesToStorage(uuid());
+  
+    const docData = {
+      inquiryid: message.id,
+      recipient: message.recipient,
+      subject: message.subject,
+      message: response,
+      senderId: currentUser.uid,
+      date: Timestamp.now().toDate().toLocaleDateString(),
+      time: Timestamp.now().toDate().toLocaleTimeString(),
+      lastinteraction: currentUser.uid,
+      status: 'Sent',
+      isRead: false,
+      attachments: attachmentURLs,
+    };
+  
+    try {
+      await setDoc(doc(db, 'inquiries', uuid()), docData);
+  
+      setResponse('');
+      setSelectedFiles([]);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  
+  const uploadFilesToStorage = async (id) => {
+    const filePromises = selectedFiles.map((file) => {
+      const storageRef = ref(storage, `inquiries/attachments/${id}/${file.name}`);
+      return uploadBytes(storageRef, file).then(() => getDownloadURL(storageRef));
+    });
+  
+    const downloadURLs = await Promise.all(filePromises);
+    return downloadURLs;
+  };
+  
 
   const [openConfirmation, setOpenConfirmation] = useState(false)
   const openDeleteConfirmation = (id) => {
@@ -108,7 +172,7 @@ const Message = ({setIsOpen, message}) => {
                 <div className={`${data.senderId===currentUser.uid ? 'bg-slate-300' : 'bg-[#F0F0F0]'} rounded-[20px] p-[10px] w-3/4`}>
                   <label className='w-full p-[10px]'>{data.message}</label>
                   <div className='mt-[20px]'>
-                    {data.attachments && (
+                    {data.attachments.length > 0 && (
                       <div>
                         Attachments:
                         <Thumbnails downloadURLs={data.attachments}/>
@@ -132,6 +196,31 @@ const Message = ({setIsOpen, message}) => {
         
         <div className='flex my-auto w-full'>
           {/*This area here */}
+          <div className=' flex flex-col w-1/2 justify-center py-1'>
+              <div className='flex w-full justify-center'>
+                <label htmlFor="inputFile" className='flex content-center text-[#115E59] hover:text-[#883138] cursor-pointer transition-all'>
+                  Add attachments
+                  <input id="inputFile" type="file" multiple onChange={handleChangeFile} className="hidden" />
+                  <AddBoxRoundedIcon className='mx-2'/>
+                </label>
+              </div>
+              <div className=''>
+                <div className='h-[90px] overflow-y-auto scrollbar flex justify-center items-center'>
+                  {selectedFiles.length === 0 ? (
+                  <div className=''>No files attached</div>
+                  ) : (
+                    <ul className="list-none bg-none truncate text-ellipsis">
+                      {selectedFiles.map((file, index) => (
+                        <li key={index} title={file.name} className="mb-1.5 rounded-[0px] px-1.5 flex items-center justify-between my-1.5 bg-none hover:bg-[#115E59] text-black hover:text-white transition-all">
+                          <span>{truncateFileName(file.name, 17)}</span>
+                          <CloseRoundedIcon onClick={() => removeFile(index)} className="ml-2 cursor-pointer" />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+          </div>
           <textarea
             value={response}
             onChange={handleResponseChange} 
@@ -186,12 +275,12 @@ const ConfirmationMessage = ({id, isOpen, setIsOpen, messageBoxState}) => {
   const customStyles = {
     content: {
       borderRadius: '10px', 
-      width: '25%',
+      width: '20%',
       height: '20%',
       top: '50%',
       left: '50%',
       right: 'auto',
-      bottom: 'auto',
+      bottom: '50%',
       marginRight: '-50%',
       transform: 'translate(-50%, -50%)',
       backgroundColor: '#FFFFFF',
@@ -226,7 +315,7 @@ const ConfirmationMessage = ({id, isOpen, setIsOpen, messageBoxState}) => {
 
   return (
     <Modal isOpen={isOpen} onRequestClose={()=>setIsOpen(false)} style={customStyles}>
-          <p className='text-lg'>Are you sure you want to delete this conversation? This cannot be undone.</p>
+          <label className='flex justify-center text-lg'>Are you sure you want to delete this conversation? This cannot be undone.</label>
           <div className='flex flex-row justify-center mt-[30px] overflow-none'>
             <button className='text-xl text-white rounded-[20px] bg-[#115E59] py-[5px] px-[20px] mx-[20px]' onClick={() => handleDelete(id)}>Yes</button>
             <button className='text-xl text-white rounded-[20px] bg-[#701216] py-[5px] px-[20px] mx-[20px]' onClick={() => setIsOpen(false)}>No</button>

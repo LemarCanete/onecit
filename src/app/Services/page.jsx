@@ -111,7 +111,12 @@ const adminServices = [
     },
     {
         name: "Inquiry",
-        description: "rent equipments and places",
+        description: "Ask a department-specific question from a list of choices.",
+        isDone: true
+    },
+    {
+        name: "Feedback and Complaints",
+        description: "Let the administrators hear your thoughts.",
         isDone: true
     },
 ]

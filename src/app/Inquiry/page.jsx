@@ -148,7 +148,7 @@ const Inquiry = () => {
     { field: 'subject', headerClassName: 'header', headerName: 'Subject', flex: 0.3},
     { field: 'date', headerClassName: 'header', headerName: 'Date', flex: 0.2},
     { field: 'time', headerClassName: 'header', headerName: 'Time', flex: 0.2},
-    {
+    /*{
       field: 'actions',
       type: 'actions',
       headerName: '',
@@ -163,7 +163,7 @@ const Inquiry = () => {
           />
         ]
       },
-    },
+    },*/
   ]
   
 // SAMPLE HERE
@@ -272,6 +272,7 @@ const Inquiry = () => {
         time: Timestamp.now().toDate().toLocaleTimeString(),
         lastinteraction: currentUser.uid,
         status: 'Sent',
+        isRead: false,
         attachments: downloadURLs
       };
   
@@ -329,6 +330,7 @@ const Inquiry = () => {
                 className={`${errors['recipient'] || errors['form'] ? 'border-2 border-red-600 ring-gray-300 focus:ring-indigo-600' : 'border-0 ring-gray-300 focus:ring-indigo-600'} block px-5 w-full rounded-[10px]  py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}
                 value={selectedoption.email}
                 name='recipient'
+                disabled
               />
             </div>
             <div className='flex flex-col w-full py-1'>

@@ -13,6 +13,7 @@ import { MdManageAccounts } from "react-icons/md";
 import NavbarIconsOnly from '@/components/NavbarIconsOnly'
 import { GiRoundTable } from "react-icons/gi";
 import { IoIosBulb } from "react-icons/io";
+import { VscFeedback } from "react-icons/vsc";
 
 
 const userApps = [
@@ -146,6 +147,12 @@ const adminApps = [
         isDone: true,
         image: "./schoolLogo.png",
         icon: <MdManageAccounts />
+    },
+    {
+        name: "Feedback and Complaints",
+        isDone: true,
+        image: "./schoolLogo.png",
+        icon: <VscFeedback />
     },
     // {
     //     name: "Library",
