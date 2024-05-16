@@ -137,8 +137,6 @@ const ForumPage = () => {
                     <button onClick={()=>router.back()}>
                         <ArrowBackIosNewRoundedIcon sx={{ fontSize: 35}} className='bg-[#115E59] text-[#F5F5F5] rounded-full p-2 m-2 '/>Go back
                     </button>
-                    {currentUser.role === 'student' && <button className="flex items-center gap-2 text-sm hover:underline" onClick={()=>setIsOpenAdmin(!isOpenAdmin)}>
-                    </button>}
                 </div>
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">Forum</h1>
@@ -166,7 +164,7 @@ const ForumPage = () => {
                             </div>
                             <div className="mt-4 text-sm">
                                 <div className="flex justify-end">
-                                    {currentUser.uid === thread.uid && <button onClick={() => handleDeleteThread(thread.id)} className="bg-red-500 text-white px-4 py-2 rounded-md mr-2">Delete Thread</button>}
+                                    {(currentUser.uid === thread.uid || currentUser.role === "admin") && <button onClick={() => handleDeleteThread(thread.id)} className="bg-red-500 text-white px-4 py-2 rounded-md mr-2">Delete Thread</button>}
                                     <button onClick={() => handleToggleCommentForm(thread.id)} className="bg-[#115E59] text-white px-4 py-2 rounded-md mr-2">{showCommentForm[thread.id] ? 'Cancel' : 'Add Comment'}</button>
                                 </div>
                                 {showCommentForm[thread.id] && (
@@ -184,7 +182,7 @@ const ForumPage = () => {
                                     {comments[thread.id] && comments[thread.id].map(comment => (
                                         <div key={comment.id} className="border border-gray-200 rounded-lg p-3 mt-2">
                                             <p>{comment.content}</p>
-                                            {(currentUser.uid === comment.uid || currentUser.uid === thread.uid) && <button onClick={() => handleDeleteComment(comment.id, thread.id)} className="bg-red-500 text-white px-2 py-1 rounded-md mt-2">Delete Comment</button>}
+                                            {(currentUser.uid === comment.uid || currentUser.uid === thread.uid || currentUser.role === "admin") && <button onClick={() => handleDeleteComment(comment.id, thread.id)} className="bg-red-500 text-white px-2 py-1 rounded-md mt-2">Delete Comment</button>}
                                         </div>
                                     ))}
                                 </div>
