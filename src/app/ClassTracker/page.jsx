@@ -20,9 +20,9 @@ const ClassTracker = () => {
         const fetchClasses = async () => {
             try {
                 if(currentUser && currentUser.uid) {
-                    const querySnapshot = await getDocs(collection(db, 'classes'), where("userId", "==", currentUser.uid));
+                    const querySnapshot = await getDocs(collection(db, 'classes'), where("id", "==", currentUser.uid));
                     const fetchedClasses = querySnapshot.docs.map(doc => ({
-                        id: doc.id,
+                        uid: doc.id,
                         ...doc.data()
                     }));
                     setClasses(fetchedClasses);
@@ -51,8 +51,9 @@ const ClassTracker = () => {
     const handleDeleteClass = async (classId) => {
         try {
             if(currentUser && currentUser.uid) {
+                console.log(classId);
                 await deleteDoc(doc(db, 'classes', classId));
-                setClasses(prevClasses => prevClasses.filter(classItem => classItem.id !== classId));
+                setClasses(prevClasses => prevClasses.filter(classItem => classItem.uid !== classId));
             }
         } catch (error) {
             console.error('Error deleting class: ', error);
@@ -107,7 +108,7 @@ const ClassTracker = () => {
                         <div key={day}>
                             <h2 className="text-lg font-semibold mb-2">{day}</h2>
                             {classes.map(classItem => (
-                                <div key={classItem.id} className="bg-white shadow rounded-lg p-6 flex justify-between items-center">
+                                <div key={classItem.uid} className="bg-white shadow rounded-lg p-6 flex justify-between items-center">
                                     <div>
                                         <h3 className="text-lg font-semibold">{classItem.className}</h3>
                                         <p className="text-sm text-gray-500">{classItem.location}</p>
@@ -117,7 +118,7 @@ const ClassTracker = () => {
                                         <p className="text-sm text-gray-500">{classItem.schedule}</p>
                                     </div>
                                     <button
-                                        onClick={() => handleDeleteClass(classItem.id)}
+                                        onClick={() => handleDeleteClass(classItem.uid)}
                                         className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-150"
                                     >
                                         Delete
