@@ -154,6 +154,12 @@ const adminApps = [
         image: "./schoolLogo.png",
         icon: <VscFeedback />
     },
+    {
+        name: "Forum",
+        isDone: true,
+        image: "./schoolLogo.png",
+        icon: <VscFeedback />
+    },
     // {
     //     name: "Library",
     //     isDone: true,
