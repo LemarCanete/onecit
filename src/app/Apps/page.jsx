@@ -119,6 +119,12 @@ const userApps = [
 
 const adminApps = [
     {
+        name: "Forum",
+        isDone: true,
+        image: "./schoolLogo.png",
+        icon: <VscFeedback />
+    },
+    {
         name: "Inquiry",
         isDone: true,
         image: './schoolLogo.png',
@@ -150,12 +156,6 @@ const adminApps = [
     },
     {
         name: "Feedback and Complaints",
-        isDone: true,
-        image: "./schoolLogo.png",
-        icon: <VscFeedback />
-    },
-    {
-        name: "Forum",
         isDone: true,
         image: "./schoolLogo.png",
         icon: <VscFeedback />

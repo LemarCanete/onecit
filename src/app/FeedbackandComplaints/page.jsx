@@ -181,7 +181,7 @@ const FeedbackandComplaints = () => {
                   <RiEmotionLaughLine onClick={() => HandleRateChange(5)} className='hover:text-[#46D750] text-[150px] cursor-pointer'/>}
               </div>
               <label className='text-lg my-[10px]'>{`Do you have any thoughts you'd like to share?`}</label>
-              <textarea className='rounded-[20px] p-[15px] shadow-lg border-2 border-black-100 resize-none my-[10px]' name="feedback" value={feedback} onChange={HandleFeedbackInput} rows="5"/>
+              <textarea className='rounded-[20px] p-[15px] shadow-lg border-2 border-black-100 resize-none my-[10px] mx-4' name="feedback" value={feedback} onChange={HandleFeedbackInput} rows="5"/>
               <div className='my-[10px]'>
                 <label className='text-lg my-[10px]'>Categorize your feedback so we can get back to you faster!</label>
                 <div className='my-[10px]'>
@@ -226,6 +226,12 @@ const FeedbackandComplaints = () => {
                   pageSizeOptions={[5, 10]}
                   disableRowSelectionOnClick
                 />
+              </div>}
+              {currentUser.role !== 'admin' &&
+                <div className='flex flex-col justify-center items-center bg-[#00687B] rounded-[20px]'>
+                <img src="schoolLogo.png" className='w-1/2' />
+                <label className='one-cit-1'>OneCIT</label>
+                <label className='one-cit-2'>Explore. Connect. Succeed.</label>
               </div>}
             </div>
 
