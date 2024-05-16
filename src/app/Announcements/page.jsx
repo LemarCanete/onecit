@@ -78,7 +78,6 @@ const AnnouncementsPage = () => {
                     {currentUser.role === 'student' && <button className="flex items-center gap-2 text-sm hover:underline" onClick={()=>setIsOpenAdmin(!isOpenAdmin)}>
                     </button>}
                 </div>
-                
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">Announcements</h1>
                     <div>

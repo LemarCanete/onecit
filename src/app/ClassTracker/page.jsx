@@ -6,7 +6,7 @@ import AddClassForm from './AddClassForm';
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 import { useRouter } from 'next/navigation';
 import { db } from '@/firebase-config'; 
-import { collection, getDocs, addDoc, deleteDoc, doc, where } from 'firebase/firestore';
+import { collection, getDocs, addDoc, deleteDoc, doc, where, query } from 'firebase/firestore';
 import { AuthContext } from '@/context/AuthContext';
 
 const ClassTracker = () => {
@@ -20,7 +20,8 @@ const ClassTracker = () => {
         const fetchClasses = async () => {
             try {
                 if(currentUser && currentUser.uid) {
-                    const querySnapshot = await getDocs(collection(db, 'classes'), where("id", "==", currentUser.uid));
+                    const q = query(collection(db, 'classes'), where("id", "==", currentUser.uid));
+                    const querySnapshot = await getDocs(q);  
                     const fetchedClasses = querySnapshot.docs.map(doc => ({
                         uid: doc.id,
                         ...doc.data()
