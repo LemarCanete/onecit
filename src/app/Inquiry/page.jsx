@@ -10,7 +10,7 @@ import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 import RadioButton from './RadioButton';
-import GuideData from './GuideData';
+//import GuideData from './GuideData';
 import './inquiry.css';
 import { Timestamp, addDoc, arrayUnion, collection, doc, limit, onSnapshot, or, orderBy, query, setDoc, where, deleteDoc, getDocs } from 'firebase/firestore';
 import { db, storage } from '@/firebase-config';
@@ -21,6 +21,8 @@ import { DataGrid, GridActionsCellItem, GridColDef, GridValueGetterParams } from
 import Modal from 'react-modal'
 import Message from './Message';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SettingsIcon from '@mui/icons-material/Settings';
+import InquirySettings from './InquirySettings';
 
 const Inquiry = () => {
   const { currentUser } = useContext(AuthContext);
@@ -29,6 +31,7 @@ const Inquiry = () => {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('')
   const [showInbox, setShowInbox] = useState('')
+  const [showSettings, setShowSettings] = useState('')
   const [parameters, setParameters] = useState('')
   const [isOpen, setIsOpen] = useState(false);
   const [files, setFiles] = useState([]);
@@ -39,6 +42,22 @@ const Inquiry = () => {
     header: '',
   });
   const [rows, setRows] = useState([])
+  const [GuideData, setGuideData] = useState([])
+    
+    useEffect(() => {
+        const q = query(collection(db, "inquirySettings"));
+        
+        const unsub = onSnapshot(q, (querySnapshot) => {
+            const GuideData = [];
+            querySnapshot.forEach((doc) => {
+                GuideData.push(doc.data());
+            });
+            console.log(GuideData)
+            setGuideData(GuideData);
+        });
+        console.log(GuideData)
+        return () => unsub();
+    }, []);
 
 
   Modal.setAppElement("body")
@@ -55,8 +74,13 @@ const Inquiry = () => {
   }
 
   const handleRightPanelSwitch = () => {
-    if(!showInbox) setShowInbox('Show Inbox');
-    else setShowInbox('');
+    if(!showInbox) (setShowInbox('Show Inbox'), setShowSettings(''));
+    else (setShowInbox(''), setShowSettings(''));
+  }
+
+  const handleSettingsSwitch = () => {
+    if(!showSettings) (setShowSettings('Show Inbox'), setShowInbox(''));
+    else (setShowInbox(''), setShowSettings(''));
   }
   
 
@@ -275,6 +299,17 @@ const Inquiry = () => {
         isRead: false,
         attachments: downloadURLs
       };
+
+      await addDoc(collection(db, "notifications"), 
+        {
+            senderName: `${currentUser.firstname} ${currentUser.lastname}`,
+            senderUid: currentUser.uid,
+            receivedByUid: '',
+            senderMessage: `An inquiry was sent to you regarding ${subject}`,
+            date: Timestamp.now(),
+            link: '/Inquiry',
+        }
+      )
   
       console.log(docData);
       await setDoc(doc(db, 'inquiries', uniqueid), docData)
@@ -316,6 +351,10 @@ const Inquiry = () => {
               <QuestionAnswerIcon sx={{ fontSize: 35}} className='bg-[#115E59] hover:bg-[#883138] text-[#F5F5F5] rounded-full p-2 m-2 '/>
             </button>
             Inquiries
+            {currentUser.role === 'admin' && <div><button onClick={handleSettingsSwitch}>
+              <SettingsIcon sx={{ fontSize: 35}} className='bg-[#115E59] hover:bg-[#883138] text-[#F5F5F5] rounded-full p-2 m-2 '/>
+            </button>
+            Settings</div>}
           </div>
         </div>
 
@@ -398,7 +437,7 @@ const Inquiry = () => {
           {/*child2*/}
           <div className='px-[30px] flex w-full'>
 
-            {!showInbox &&
+            {!showInbox && !showSettings &&
               <div className='w-full flex flex-col'>
                 <label className='flex justify-center w-full text-2xl font-weight-900 py-4'>CATEGORY</label>
                 {GuideData.map((data, index) => (
@@ -453,6 +492,10 @@ const Inquiry = () => {
                   disableRowSelectionOnClick
                 />
               </div>
+            }
+
+            {showSettings &&
+            <div className='w-full'><InquirySettings/></div>
             }
 
           </div>
