@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { db } from '@/firebase-config';
 import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
 import { AuthContext } from '@/context/AuthContext';
+import NavbarIconsOnly from '@/components/NavbarIconsOnly';
 
 const ForumPage = () => {
     const [threads, setThreads] = useState([]);
@@ -130,7 +131,7 @@ const ForumPage = () => {
 
     return (
         <div className="w-full h-screen flex bg-neutral-50 overflow-hidden">
-            <Navbar active="Forum" />
+            <NavbarIconsOnly active="Forum" />
             <div className="grow px-10 py-5 overflow-y-scroll">
                 <div className="flex gap-5 align-center justify-between">
                     <button onClick={()=>router.back()}>

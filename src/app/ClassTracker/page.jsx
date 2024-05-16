@@ -110,11 +110,11 @@ const ClassTracker = () => {
                             <h2 className="text-lg font-semibold mb-2">{day}</h2>
                             {classes.map(classItem => (
                                 <div key={classItem.uid} className="bg-white shadow rounded-lg p-6 flex justify-between items-center">
-                                    <div>
+                                    <div className='w-1/3'>
                                         <h3 className="text-lg font-semibold">{classItem.className}</h3>
                                         <p className="text-sm text-gray-500">{classItem.location}</p>
                                     </div>
-                                    <div>
+                                    <div className='w-1/3'>
                                         <p className="text-sm text-gray-500">{classItem.instructor}</p>
                                         <p className="text-sm text-gray-500">{classItem.schedule}</p>
                                     </div>

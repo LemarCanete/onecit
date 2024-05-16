@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { AuthContext } from '@/context/AuthContext';
 import { db } from '@/firebase-config';
 import { doc, collection, getDocs, deleteDoc, setDoc } from 'firebase/firestore';
+import NavbarIconsOnly from '@/components/NavbarIconsOnly';
 
 const AnnouncementsPage = () => {
     const [announcements, setAnnouncements] = useState([]);
@@ -69,7 +70,7 @@ const AnnouncementsPage = () => {
 
     return (
         <div className="w-full h-screen flex bg-neutral-50 overflow-hidden">
-            <Navbar active="Announcements" />
+            <NavbarIconsOnly active="Announcements" />
             <div className="grow px-10 py-5 overflow-y-scroll">
                 <div className="flex gap-5 align-center justify-between">
                     <button onClick={()=>router.back()}>
@@ -95,7 +96,7 @@ const AnnouncementsPage = () => {
                 <div className="space-y-4 mt-4 block">
                     {filteredAnnouncements.map((announcement) => (
                         <div key={announcement.id} className="bg-white shadow rounded-lg p-6 flex justify-between items-center">
-                            <div className='max-w-[78vw]'>
+                            <div className='max-w-[80vw]'>
                                 <h2 className="text-lg font-semibold">{announcement.title}</h2>
                                 <p className="text-sm text-gray-500">{announcement.date}</p>
                                 <p className="mt-2 text-gray-700 overflow-hidden overflow-ellipsis" style={{ wordWrap: 'break-word' }}>{announcement.content}</p>
